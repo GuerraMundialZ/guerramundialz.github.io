@@ -2,9 +2,17 @@
     "text": {
         "info": [
             {
-                "title": "news",
+                "title": "Info 1",
                 "list": [
-                    "Sin Configurar :/"
+                    "Sin Configurar :/",
+                    "Sin Configurar2 :/"
+                ]
+            },
+            {
+                "title": "Info 2",
+                "list": [
+                    "Sin Configurar :/",
+                    "Sin Configurar3 :/"
                 ]
             }
         ],
