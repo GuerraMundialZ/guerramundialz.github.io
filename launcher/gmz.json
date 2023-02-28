@@ -18,9 +18,12 @@
         ],
         "changelog": [
             {
-                "title": "Cambio",
+                "title": "Launcher Update (v1.0.1) - 28/02/2023",
                 "list": [
-                    "Sin Configurar :/"
+                    "· Arreglado bug en el menú para cambiarse el nombre de usuario.",
+                    "· Arreglado bug en la información del servidor.",
+                    "· Arreglado el botón para entrar al discord.",
+                    "· Pequeños cambios en el sistema de updates."
                 ]
             }
         ],
