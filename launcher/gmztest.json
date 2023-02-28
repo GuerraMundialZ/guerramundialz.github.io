@@ -1,1 +1,37 @@
-
+{
+    "text": {
+        "info": [
+            {
+                "title": "[ESP] Guerra Mundial Z |PVE/PVP|100K+TRADE|",
+                "list": [
+                    "- Próximo wipe: 18 de Marzo de 2023"
+                ]
+            },
+            {
+                "title": "Cambios Normativa - 22/01/2023",
+                "list": [
+                    "- Los sábados y domingos el Mapa será full PVP."
+                ]
+            }
+        ],
+        "changelog": [
+            {
+                "title": "Launcher Update (v1.0.1) - 28/02/2023",
+                "list": [
+                    "· Arreglado bug en el menú para cambiarse el nombre de usuario.",
+                    "· Arreglado bug en la información del servidor.",
+                    "· Arreglado el botón para entrar al discord.",
+                    "· Pequeños cambios en el sistema de updates."
+                ]
+            }
+        ],
+        "rules": [
+            {
+                "title": "Norma",
+                "list": [
+                    "Sin Configurar :/"
+                ]
+            }
+        ]
+    }
+}
