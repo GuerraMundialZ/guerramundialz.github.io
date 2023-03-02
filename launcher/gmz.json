@@ -31,6 +31,14 @@
         ],
         "changelog": [
             {
+                "title": "Launcher Update (v1.0.3) - 02/03/2023",
+                "list": [
+                    "· Mejorado más de un 20% el rendimiento de la aplicación.",
+                    "· Añadido botón para acceder a la lista de mods.",
+                    "· Arreglado bug, que permitía tener mas de 1 instancia del launcher abierta."
+                ]
+            },
+            {
                 "title": "Launcher Update (v1.0.1) - 28/02/2023",
                 "list": [
                     "· Arreglado bug en el menú para cambiarse el nombre de usuario.",
