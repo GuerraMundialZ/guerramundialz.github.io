@@ -1,0 +1,24 @@
+body {
+    background: #000405;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 900;
+  }
+p {
+font-size: 8vw;
+text-transform: uppercase;
+text-align: center;
+line-height: 1;
+}
+.fancy {
+background-image: url('background2.jpg');
+background-position:10%;
+background-size: 70%;
+color: transparent;
+-webkit-background-clip: text;
+background-clip: text;
+}
