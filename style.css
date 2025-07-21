@@ -702,3 +702,142 @@ a:hover {
         flex: 1 1 100%; /* 1 item por fila en móviles muy pequeños */
     }
 }
+
+/* --- Estilos para la Sección de Autenticación de Discord --- */
+.discord-auth-section {
+    display: flex;
+    align-items: center; /* Alinea verticalmente los elementos */
+    gap: 15px; /* Espacio entre el botón de login/sección de usuario */
+}
+
+/* Estilos para el botón de Iniciar Sesión con Discord */
+.discord-login-button {
+    background-color: #5865F2; /* Color oficial de Discord */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px; /* Bordes más suaves */
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
+    display: flex; /* Para alinear el icono y el texto */
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+    border: none; /* Eliminar borde por defecto */
+    cursor: pointer;
+}
+
+.discord-login-button:hover {
+    background-color: #4752C4; /* Tono más oscuro al pasar el ratón */
+    transform: translateY(-2px); /* Pequeño efecto de elevación */
+}
+
+.discord-login-button .fab.fa-discord {
+    margin-right: 10px; /* Espacio entre el icono de Discord y el texto */
+    font-size: 1.3em; /* Tamaño del icono */
+}
+
+/* Estilos para la sección de usuario logueado */
+#user-display {
+    display: flex; /* Asegura que la imagen y el nombre estén en línea */
+    align-items: center;
+    gap: 10px; /* Espacio entre el avatar, nombre y botón de logout */
+    background-color: #2c2f33; /* Fondo oscuro para contrastar */
+    padding: 8px 15px;
+    border-radius: 25px; /* Bordes muy redondeados para un look de "píldora" */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espacio entre el avatar y el nombre */
+}
+
+#user-avatar {
+    width: 40px; /* Tamaño del avatar */
+    height: 40px;
+    border-radius: 50%; /* Hacerlo circular */
+    border: 2px solid #5865F2; /* Borde alrededor del avatar */
+    object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse */
+}
+
+#user-name {
+    color: #ffffff; /* Color del texto del nombre */
+    font-weight: bold;
+    font-size: 1em;
+    white-space: nowrap; /* Evita que el nombre se rompa en varias líneas */
+    overflow: hidden; /* Oculta cualquier texto que se desborde */
+    text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es demasiado largo */
+    max-width: 120px; /* Ancho máximo para el nombre antes de truncar */
+}
+
+/* Estilos para el botón de cerrar sesión */
+#logout-button {
+    background-color: #cc3333; /* Un rojo para el botón de cierre */
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+#logout-button:hover {
+    background-color: #a32b2b;
+    transform: translateY(-1px);
+}
+
+/* Media Queries para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .discord-auth-section {
+        flex-direction: column; /* Apila el login/user display y el botón en columnas */
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        margin-top: 15px; /* Espacio si está en el header en un diseño responsivo */
+    }
+
+    #user-display {
+        flex-direction: column; /* Apila avatar, nombre y botón de logout */
+        padding: 10px;
+        gap: 8px;
+        width: auto; /* Ajuste automático para el ancho */
+    }
+
+    .user-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+/* Asegúrate de que los botones genéricos también sean impactantes */
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #e53935; /* Un rojo principal para los botones */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #c62828;
+    transform: translateY(-2px);
+}
+
+.button.secondary {
+    background-color: #4a4a4a; /* Un gris oscuro para botones secundarios */
+}
+
+.button.secondary:hover {
+    background-color: #333333;
+}
