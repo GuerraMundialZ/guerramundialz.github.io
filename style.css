@@ -88,7 +88,7 @@ body {
 }
 
 .header nav ul li {
-    **margin-left: 20px; /* Reducido para dar más espacio */**
+    **margin-left: 30px; /* Aumentado para dar más espacio entre los elementos del menú */**
 }
 
 .header nav ul li a {
@@ -127,7 +127,7 @@ body {
 /* ESTILOS ESPECÍFICOS PARA EL BOTÓN DE DISCORD EN LA NAVEGACIÓN */
 /* Anula el efecto de subrayado para el botón */
 .header nav ul li .nav-discord-button {
-    **padding: 6px 15px; /* Reducido para hacerlo más compacto */**
+    padding: 6px 15px; /* Reducido para hacerlo más compacto */
     font-size: 0.95em; /* Ajusta el tamaño de la fuente */
     margin: 0; /* Anula el margen del .button general */
     text-decoration: none; /* Asegura que no tenga subrayado */
@@ -545,7 +545,7 @@ a:hover {
 .discord-auth-section {
     display: flex;
     align-items: center;
-    **gap: 5px; /* Reducido para juntar más los elementos de Discord */**
+    gap: 5px; /* Reducido para juntar más los elementos de Discord */
     margin-left: auto; /* Empuja la sección a la derecha, separándola del nav */
     padding-left: 20px; /* Añade un poco de espacio interno a la izquierda */
 }
