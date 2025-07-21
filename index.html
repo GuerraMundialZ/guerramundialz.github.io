@@ -48,7 +48,7 @@
                     <button id="logout-button" class="button logout-button">Cerrar Sesión</button>
                 </div>
                 <a id="login-button" href="#" class="button discord-login-button">
-                    <i class="fab fa-discord"></i> Login
+                    <i class="fab fa-discord"></i> Iniciar Sesión con Discord
                 </a>
             </div>
         </div>
@@ -61,8 +61,8 @@
             <p>Prepárate para una supervivencia intensa.</p>
             <div class="hero-buttons">
                 <a class="button" href="steam://connect/193.25.252.100:2302">Conectarse Ahora</a>
-                <a class="button secondary" href="https://discord.com/channels/966528764878131240/966532644810682419" target="_blank">Discord Oficial</a>
-                <a class="button secondary" href="https://es.top-games.net/dayz/vote/guerra-mundial-z" target="_blank">Vota por el server</a>
+                <a class="button" href="https://discord.com/channels/966528764878131240/966532644810682419" target="_blank">Discord Oficial</a>
+                <a class="button" href="https://es.top-games.net/dayz/vote/guerra-mundial-z" target="_blank">Vota por el server</a>
             </div>
         </div>
     </section>
@@ -76,17 +76,17 @@
                     <i class="icon fas fa-server"></i> <strong>Nombre e IP del Servidor</strong>
                     <p>NEW WIPE|Guerra Mundial Z ESP|PvE-PvP|MISIONES|BOT|KEYS|EVENTOS</p>
                     <p>193.25.252.100:2302</p>
-                    <a href="steam://connect/193.25.252.100:2302" class="button primary">Conectar con Steam</a>
+                    <a href="steam://connect/193.25.252.100:2302" class="button">Conectar con Steam</a>
                 </li>
                 <li>
                     <i class="icon fab fa-discord"></i> <strong>Únete a nuestro Discord</strong>
                     <p>Para soporte, eventos, chats y comunidad activa. ¡Te esperamos!</p>
-                    <a href="https://discord.com/channels/966528764878131240/966532644810682419" target="_blank" class="button secondary">Unirse al Discord</a>
+                    <a href="https://discord.com/channels/966528764878131240/966532644810682419" target="_blank" class="button">Unirse al Discord</a>
                 </li>
                 <li>
                     <i class="icon fas fa-book-open"></i> <strong>Normativas Completas</strong>
                     <p>Recuerda leer nuestras normativas detalladas para una mejor convivencia y juego limpio.</p>
-                    <a href="https://discord.com/channels/966528764878131240/1262594357677264987" target="_blank" class="button secondary">Ver Normativas</a>
+                    <a href="https://discord.com/channels/966528764878131240/1262594357677264987" target="_blank" class="button">Ver Normativas</a>
                 </li>
             </ul>
         </div>
@@ -148,7 +148,7 @@
             <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/ZY8bhyJ6VF0?si=bPwmzIGNbESWPxrE"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
                 title="YouTube video player"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -164,7 +164,7 @@
         <div class="container">
             <h2>⚙️ Mods del Servidor</h2>
             <p>En nuestro servidor, hemos añadido una gran variedad de modificaciones para que tu experiencia de juego sea lo más divertida y gratificante posible. Si el DayZ oficial se limita a la supervivencia básica, nuestro servidor modificado te ofrece mecánicas y opciones completamente distintas a lo que estás acostumbrado.</p>
-            <a class="button primary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=2847014003" target="_blank">Ver Colección de Mods en Steam</a>
+            <a class="button" href="https://steamcommunity.com/sharedfiles/filedetails/?id=2847014003" target="_blank">Ver Colección de Mods en Steam</a>
             <p style="margin-top: 30px; font-size: 0.95em; color: #aaa;">Hemos preparado una lista directamente desde Steam para que puedas consultar parte de las modificaciones que implementamos en el servidor.</p>
         </div>
     </section>
@@ -180,7 +180,7 @@
     <footer class="footer">
         <div class="container">
             <p>© 2022-2025 Guerra Mundial Z - Servidor de DayZ. Todos los derechos reservados.</p>
-            <p><a href="https://youtu.be/xvFZjo5PgG0?si=eDcOmoAxG6rYqWOj" target="_blank">💣GMZ💣</a></p>
+            <p><a href="https://www.youtube.com/@GuerraMundialZDayZ" target="_blank">💣GMZ💣</a></p>
         </div>
     </footer>
     
@@ -193,9 +193,9 @@
     // Referencias a elementos del DOM
     const loginButton = document.getElementById('login-button');
     const logoutButton = document.getElementById('logout-button');
-    const userDisplay = document.getElementById('user-display'); // Corregido: antes era 'userInfo'
-    const userAvatar = document.getElementById('user-avatar');   // Corregido: antes era 'discordAvatar'
-    const userName = document.getElementById('user-name');     // Corregido: antes era 'discordUsername'
+    const userDisplay = document.getElementById('user-display');
+    const userAvatar = document.getElementById('user-avatar');    
+    const userName = document.getElementById('user-name');      
 
     // Función para guardar el token JWT
     function setAuthToken(token) {
@@ -235,7 +235,7 @@
             if (data.loggedIn) {
                 console.log('Sesión JWT verificada: Usuario logueado.', data.username);
                 // Aquí, pasar el ID del usuario también
-                showLoggedInState(data.username, data.avatar, data.id); // <-- ¡CAMBIO AQUÍ!
+                showLoggedInState(data.username, data.avatar, data.id);
             } else {
                 console.log('Sesión JWT no válida o expirada.');
                 setAuthToken(null); // Limpiar token inválido
@@ -249,12 +249,12 @@
     }
 
     // Función para mostrar el estado de logueado
-    function showLoggedInState(username, avatarHash, userId) { // Aceptar userId como argumento
+    function showLoggedInState(username, avatarHash, userId) {
         if (loginButton) loginButton.style.display = 'none';
         if (logoutButton) logoutButton.style.display = 'block';
-        if (userDisplay) userDisplay.style.display = 'flex'; // Corregido: usar userDisplay
+        if (userDisplay) userDisplay.style.display = 'flex';
 
-        if (userName) userName.textContent = username; // Corregido: usar userName
+        if (userName) userName.textContent = username;
         
         // Construye la URL del avatar de Discord
         let avatarUrl = '';
@@ -268,16 +268,16 @@
             avatarUrl = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarIndex}.png`;
         }
 
-        if (userAvatar) userAvatar.src = avatarUrl; // Corregido: usar userAvatar
+        if (userAvatar) userAvatar.src = avatarUrl;
     }
 
     // Función para mostrar el estado de no logueado
     function showLoggedOutState() {
         if (loginButton) loginButton.style.display = 'block';
         if (logoutButton) logoutButton.style.display = 'none';
-        if (userDisplay) userDisplay.style.display = 'none'; // Corregido: usar userDisplay
-        if (userName) userName.textContent = ''; // Corregido: usar userName
-        if (userAvatar) userAvatar.src = ''; // Corregido: usar userAvatar
+        if (userDisplay) userDisplay.style.display = 'none';
+        if (userName) userName.textContent = '';
+        if (userAvatar) userAvatar.src = '';
     }
 
     // Manejar el clic del botón de inicio de sesión (redirige a tu backend)
