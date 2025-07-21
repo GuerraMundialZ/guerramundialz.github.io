@@ -5,8 +5,8 @@
     --text-color: #f0f0f0; /* Blanco suave para el texto principal */
     --accent-color: #E74C3C; /* Rojo brillante (similar a Rearmed en sus acentos) */
     --dark-accent-color: #C0392B; /* Rojo un poco más oscuro para hover */
-    --font-primary: 'Arial', sans-serif; /* Mantenida como Arial */
-    --font-secondary: 'Verdana', sans-serif; /* Mantenida como Verdana */
+    --font-primary: 'Anton', sans-serif; /* Mantenida Anton */
+    --font-secondary: 'Open Sans', sans-serif; /* Mantenida Open Sans */
     /* Nuevas variables para los colores de Discord si quieres más control */
     --discord-brand-color: #5865F2; /* Color azul de Discord */
     --discord-brand-color-dark: #454FBF; /* Versión más oscura para hover */
@@ -88,7 +88,7 @@ body {
 }
 
 .header nav ul li {
-    margin-left: 30px; /* Espacio entre los elementos de la lista */
+    **margin-left: 20px; /* Reducido para dar más espacio */**
 }
 
 .header nav ul li a {
@@ -127,7 +127,7 @@ body {
 /* ESTILOS ESPECÍFICOS PARA EL BOTÓN DE DISCORD EN LA NAVEGACIÓN */
 /* Anula el efecto de subrayado para el botón */
 .header nav ul li .nav-discord-button {
-    padding: 8px 18px; /* Hazlo más pequeño y compacto */
+    **padding: 6px 15px; /* Reducido para hacerlo más compacto */**
     font-size: 0.95em; /* Ajusta el tamaño de la fuente */
     margin: 0; /* Anula el margen del .button general */
     text-decoration: none; /* Asegura que no tenga subrayado */
@@ -545,7 +545,7 @@ a:hover {
 .discord-auth-section {
     display: flex;
     align-items: center;
-    gap: 10px; /* Espacio entre elementos */
+    **gap: 5px; /* Reducido para juntar más los elementos de Discord */**
     margin-left: auto; /* Empuja la sección a la derecha, separándola del nav */
     padding-left: 20px; /* Añade un poco de espacio interno a la izquierda */
 }
