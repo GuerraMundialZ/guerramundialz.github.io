@@ -16,7 +16,7 @@
 
     <div id="popup-message" class="popup-hidden">
         <div class="popup-content">
-            <span class="close-popup">&times;</span>
+            <span class="close-popup">×</span>
             <h3>¡Noticia Importante!</h3>
             <p>¡No te pierdas las últimas novedades y eventos! Únete a nuestro Discord para estar siempre al día.</p>
             <a href="https://discord.gg/3VwMwDt3EP" target="_blank" class="button popup-button">Ir a nuestro Discord</a>
@@ -193,9 +193,9 @@
     // Referencias a elementos del DOM
     const loginButton = document.getElementById('login-button');
     const logoutButton = document.getElementById('logout-button');
-    const userInfo = document.getElementById('user-info');
-    const discordAvatar = document.getElementById('discord-avatar');
-    const discordUsername = document.getElementById('discord-username');
+    const userDisplay = document.getElementById('user-display'); // Corregido: antes era 'userInfo'
+    const userAvatar = document.getElementById('user-avatar');   // Corregido: antes era 'discordAvatar'
+    const userName = document.getElementById('user-name');     // Corregido: antes era 'discordUsername'
 
     // Función para guardar el token JWT
     function setAuthToken(token) {
@@ -234,7 +234,8 @@
 
             if (data.loggedIn) {
                 console.log('Sesión JWT verificada: Usuario logueado.', data.username);
-                showLoggedInState(data.username, data.avatar);
+                // Aquí, pasar el ID del usuario también
+                showLoggedInState(data.username, data.avatar, data.id); // <-- ¡CAMBIO AQUÍ!
             } else {
                 console.log('Sesión JWT no válida o expirada.');
                 setAuthToken(null); // Limpiar token inválido
@@ -248,38 +249,35 @@
     }
 
     // Función para mostrar el estado de logueado
-    function showLoggedInState(username, avatarHash) {
+    function showLoggedInState(username, avatarHash, userId) { // Aceptar userId como argumento
         if (loginButton) loginButton.style.display = 'none';
         if (logoutButton) logoutButton.style.display = 'block';
-        if (userInfo) userInfo.style.display = 'flex'; // Usar flex para avatar y nombre
+        if (userDisplay) userDisplay.style.display = 'flex'; // Corregido: usar userDisplay
 
-        if (discordUsername) discordUsername.textContent = username;
+        if (userName) userName.textContent = username; // Corregido: usar userName
+        
         // Construye la URL del avatar de Discord
-        // Si el usuario tiene un avatar personalizado, usa 'avatars'.
-        // Si no (avatarHash es null o undefined), usa 'embed/avatars' con el discriminador o un default.
-        const avatarUrl = avatarHash
-            ? `https://cdn.discordapp.com/avatars/${userInfo.dataset.discordId}/${avatarHash}.png`
-            : `https://cdn.discordapp.com/embed/avatars/${parseInt(username.split('#')[1] || '0') % 5}.png`; // Para avatares por defecto
-
-        // Actualizar el atributo data-discord-id del contenedor user-info
-        // Esto asume que tienes el ID del usuario en 'data.id'.
-        // Si no tienes el ID en 'data', podrías necesitar ajustarlo o eliminarlo.
-        if (userInfo && typeof data !== 'undefined' && data.id) {
-            userInfo.dataset.discordId = data.id;
+        let avatarUrl = '';
+        if (userId && avatarHash) {
+            // Si el usuario tiene un avatar personalizado
+            avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png`;
+        } else {
+            // Para usuarios sin avatar personalizado, usa el avatar por defecto
+            // El cálculo del avatar por defecto depende del ID de usuario
+            const defaultAvatarIndex = (userId ? parseInt(userId) : 0) % 5;
+            avatarUrl = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarIndex}.png`;
         }
 
-
-        if (discordAvatar) discordAvatar.src = avatarUrl;
+        if (userAvatar) userAvatar.src = avatarUrl; // Corregido: usar userAvatar
     }
 
     // Función para mostrar el estado de no logueado
     function showLoggedOutState() {
         if (loginButton) loginButton.style.display = 'block';
         if (logoutButton) logoutButton.style.display = 'none';
-        if (userInfo) userInfo.style.display = 'none';
-        if (discordUsername) discordUsername.textContent = '';
-        if (discordAvatar) discordAvatar.src = '';
-        if (userInfo) userInfo.removeAttribute('data-discord-id'); // Limpiar el ID
+        if (userDisplay) userDisplay.style.display = 'none'; // Corregido: usar userDisplay
+        if (userName) userName.textContent = ''; // Corregido: usar userName
+        if (userAvatar) userAvatar.src = ''; // Corregido: usar userAvatar
     }
 
     // Manejar el clic del botón de inicio de sesión (redirige a tu backend)
