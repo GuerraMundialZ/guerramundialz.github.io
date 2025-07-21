@@ -185,69 +185,137 @@
     </footer>
     
     <script src="script.js"></script>
-    <script>
-        // ¡IMPORTANTE! Asegúrate de que esta URL sea la de tu backend desplegado en Render.
-        const BACKEND_URL = 'https://guerra-mundial-z-backend.onrender.com';
 
-        const loginButton = document.getElementById('login-button');
-        const logoutButton = document.getElementById('logout-button');
-        const userDisplay = document.getElementById('user-display');
-        const userName = document.getElementById('user-name');
-        const userAvatar = document.getElementById('user-avatar');
+<script>
+    // URL de tu backend
+    const BACKEND_URL = 'https://guerra-mundial-z-backend.onrender.com';
 
-        // Función para verificar el estado de la sesión
-        async function checkLoginStatus() {
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/user`, {
-                    credentials: 'include' // Esto es crucial para enviar las cookies de sesión
-                });
-                const data = await response.json();
+    // Referencias a elementos del DOM
+    const loginButton = document.getElementById('login-button');
+    const logoutButton = document.getElementById('logout-button');
+    const userInfo = document.getElementById('user-info');
+    const discordAvatar = document.getElementById('discord-avatar');
+    const discordUsername = document.getElementById('discord-username');
 
-                if (data.loggedIn) {
-                    userName.textContent = data.username;
-                    // Construye la URL del avatar de Discord
-                    // https://cdn.discordapp.com/avatars/{user_id}/{user_avatar}.png?size=128
-                    userAvatar.src = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=64`;
-                    userDisplay.style.display = 'flex'; // Muestra la info del usuario
-                    loginButton.style.display = 'none'; // Oculta el botón de login
-                } else {
-                    userDisplay.style.display = 'none'; // Oculta la info del usuario
-                    loginButton.style.display = 'flex'; // Muestra el botón de login
-                }
-            } catch (error) {
-                console.error('Error al verificar el estado de login:', error);
-                userDisplay.style.display = 'none';
-                loginButton.style.display = 'flex';
-            }
+    // Función para guardar el token JWT
+    function setAuthToken(token) {
+        if (token) {
+            localStorage.setItem('jwt_token', token);
+            console.log('Token JWT guardado.');
+        } else {
+            localStorage.removeItem('jwt_token');
+            console.log('Token JWT eliminado.');
+        }
+    }
+
+    // Función para obtener el token JWT
+    function getAuthToken() {
+        return localStorage.getItem('jwt_token');
+    }
+
+    // Función para verificar el estado de la sesión
+    async function checkSession() {
+        const token = getAuthToken();
+
+        if (!token) {
+            console.log('No hay token JWT en localStorage.');
+            showLoggedOutState();
+            return;
         }
 
-        // Event listener para el botón de login
+        try {
+            // Incluir el token en el encabezado Authorization
+            const response = await fetch(`${BACKEND_URL}/api/user`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+
+            if (data.loggedIn) {
+                console.log('Sesión JWT verificada: Usuario logueado.', data.username);
+                showLoggedInState(data.username, data.avatar);
+            } else {
+                console.log('Sesión JWT no válida o expirada.');
+                setAuthToken(null); // Limpiar token inválido
+                showLoggedOutState();
+            }
+        } catch (error) {
+            console.error('Error al verificar sesión con JWT:', error);
+            setAuthToken(null); // Limpiar token en caso de error de red o servidor
+            showLoggedOutState();
+        }
+    }
+
+    // Función para mostrar el estado de logueado
+    function showLoggedInState(username, avatarHash) {
+        if (loginButton) loginButton.style.display = 'none';
+        if (logoutButton) logoutButton.style.display = 'block';
+        if (userInfo) userInfo.style.display = 'flex'; // Usar flex para avatar y nombre
+
+        if (discordUsername) discordUsername.textContent = username;
+        // Construye la URL del avatar de Discord
+        // Si el usuario tiene un avatar personalizado, usa 'avatars'.
+        // Si no (avatarHash es null o undefined), usa 'embed/avatars' con el discriminador o un default.
+        const avatarUrl = avatarHash
+            ? `https://cdn.discordapp.com/avatars/${userInfo.dataset.discordId}/${avatarHash}.png`
+            : `https://cdn.discordapp.com/embed/avatars/${parseInt(username.split('#')[1] || '0') % 5}.png`; // Para avatares por defecto
+
+        // Actualizar el atributo data-discord-id del contenedor user-info
+        // Esto asume que tienes el ID del usuario en 'data.id'.
+        // Si no tienes el ID en 'data', podrías necesitar ajustarlo o eliminarlo.
+        if (userInfo && typeof data !== 'undefined' && data.id) {
+            userInfo.dataset.discordId = data.id;
+        }
+
+
+        if (discordAvatar) discordAvatar.src = avatarUrl;
+    }
+
+    // Función para mostrar el estado de no logueado
+    function showLoggedOutState() {
+        if (loginButton) loginButton.style.display = 'block';
+        if (logoutButton) logoutButton.style.display = 'none';
+        if (userInfo) userInfo.style.display = 'none';
+        if (discordUsername) discordUsername.textContent = '';
+        if (discordAvatar) discordAvatar.src = '';
+        if (userInfo) userInfo.removeAttribute('data-discord-id'); // Limpiar el ID
+    }
+
+    // Manejar el clic del botón de inicio de sesión (redirige a tu backend)
+    if (loginButton) {
         loginButton.addEventListener('click', () => {
             window.location.href = `${BACKEND_URL}/auth/discord`;
         });
+    }
 
-        // Event listener para el botón de logout
-        logoutButton.addEventListener('click', async () => {
-            try {
-                const response = await fetch(`${BACKEND_URL}/auth/logout`, {
-                    method: 'GET', // O 'POST' si tu backend lo espera así
-                    credentials: 'include'
-                });
-                if (response.ok) {
-                    // Si el logout es exitoso, actualiza la UI
-                    checkLoginStatus(); // Vuelve a verificar el estado para actualizar los botones
-                    alert('Has cerrado sesión correctamente.');
-                } else {
-                    alert('Error al cerrar sesión.');
-                }
-            } catch (error) {
-                console.error('Error al cerrar sesión:', error);
-                alert('Error de conexión al cerrar sesión.');
-            }
+    // Manejar el clic del botón de cierre de sesión
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            setAuthToken(null); // Eliminar el token JWT
+            showLoggedOutState(); // Actualizar la UI
+            // Opcional: Notificar al backend si hay alguna limpieza de sesión específica (con JWT no suele ser necesario)
+            // fetch(`${BACKEND_URL}/auth/logout`);
+            console.log('Sesión cerrada (token JWT eliminado del cliente).');
+            // Redirigir a la misma página para limpiar la URL de cualquier token anterior.
+            window.location.href = window.location.origin + window.location.pathname;
         });
+    }
 
-        // Llama a la función al cargar la página para verificar el estado inicial
-        document.addEventListener('DOMContentLoaded', checkLoginStatus);
-    </script>
+    // Cuando la página carga, verificar si hay un token en la URL o en localStorage
+    window.addEventListener('load', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (token) {
+            setAuthToken(token); // Guardar el token del URL
+            // Limpiar la URL para que el token no sea visible ni guardado en el historial
+            window.history.replaceState({}, document.title, window.location.pathname);
+            console.log('Token JWT recibido y guardado desde la URL.');
+        }
+        checkSession(); // Verificar la sesión después de manejar el token
+    });
+
+</script>
 </body>
 </html>
