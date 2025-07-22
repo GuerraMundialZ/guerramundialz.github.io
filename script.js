@@ -39,10 +39,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return localStorage.getItem('jwt_token');
     }
 
-    // Función para verificar si el usuario es administrador
+    // --- CAMBIO CLAVE AQUÍ: Función para verificar si el usuario es administrador por ID de ROL ---
     function isAdmin(userRoles) {
-        return userRoles && userRoles.includes('admin');
+        // **IMPORTANTE:** Reemplaza 'TU_ID_DE_ROL_ADMIN_1', 'TU_ID_DE_ROL_ADMIN_2'
+        // con los IDs reales de los roles de Discord que consideras administradores.
+        // Estos IDs deben coincidir con los roles que tu backend verificará.
+        const ADMIN_DISCORD_ROLE_IDS = [
+            '1397175186935255091', // Ejemplo: '123456789012345678'
+            // Añade más IDs si tienes múltiples roles de administrador
+        ];
+
+        // userRoles debe ser un array de strings (IDs de rol de Discord)
+        if (!userRoles || !Array.isArray(userRoles) || userRoles.length === 0) {
+            return false;
+        }
+
+        // Verifica si el usuario tiene AL MENOS UNO de los roles de administrador definidos
+        return userRoles.some(roleId => ADMIN_DISCORD_ROLE_IDS.includes(roleId));
     }
+    // --- FIN DEL CAMBIO ---
 
     // Función para verificar el estado de la sesión y actualizar la UI
     async function checkSession() {
@@ -65,10 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.loggedIn) {
                 console.log('Sesión JWT verificada: Usuario logueado.', data.username);
+                // Asegúrate de que `data.roles` del backend contiene el array de IDs de rol de Discord del usuario
                 showLoggedInState(data.username, data.avatar, data.id, data.roles);
 
                 // Mostrar/ocultar el botón de crear subasta
                 if (createAuctionBtn) {
+                    // Ahora `isAdmin` usa los roles de Discord directamente
                     if (isAdmin(data.roles)) {
                         createAuctionBtn.style.display = 'block';
                     } else {
