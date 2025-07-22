@@ -5,70 +5,161 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - Guerra Mundial Z</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="images/icono_pestana.png" type="image/png">
+    <link rel="icon" href="img/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
-<body>
-    <header>
-        <div class="header-content">
-            <a href="index.html" class="logo-link">
-                <img src="images/logo.webp" alt="Guerra Mundial Z Logo" class="logo">
-            </a>
-            <h1>Panel de Administración</h1>
-            <nav>
-                <a href="index.html">Inicio</a>
-                <a href="subastas.html">Subastas</a>
-                <a href="#" id="loginButton">Iniciar Sesión</a>
-                <div id="userInfo" style="display: none;">
-                    <img id="userAvatar" src="" alt="Avatar" class="user-avatar">
-                    <span id="usernameDisplay"></span>
-                    <button id="createAuctionBtn" class="nav-button" style="display: none;">Crear Nueva Subasta</button>
-                    <button id="adminPanelBtn" class="nav-button" style="display: none;">Panel Admin</button>
-                    <button id="logoutButton" class="nav-button">Cerrar Sesión</button>
+<body class="subpage-body">
+    <header class="header">
+        <div class="container">
+            <div class="header-top-row">
+                <a href="index.html" class="logo">
+                    <img src="img/logo.gif" alt="Logo de Guerra Mundial Z" class="logo-img">
+                    Guerra Mundial Z
+                </a>
+                <div class="discord-auth-section">
+                    <a id="login-button" class="button discord-login-button" href="#">
+                        <i class="fab fa-discord"></i> Iniciar Sesión
+                    </a>
+                    <div id="user-display" class="user-info" style="display: none;">
+                        <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
+                        <span id="user-name"></span>
+                        <button id="create-auction-btn-nav" class="button" style="display: none;">Crear Subasta</button>
+                        <button id="admin-panel-btn-nav" class="button" style="display: none;">Panel Admin</button>
+                        <button id="logout-button" class="button">Cerrar Sesión</button>
+                    </div>
                 </div>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="index.html#server-info">Info Servidor</a></li>
+                    <li><a href="index.html#features">Características</a></li>
+                    <li><a href="index.html#trailer">Tráiler</a></li>
+                    <li><a href="index.html#mods">Mods</a></li>
+                    <li><a href="index.html#community">Comunidad</a></li>
+                    <li><a href="subastas.html">Subastas</a></li>
+                </ul>
             </nav>
         </div>
     </header>
 
-    <main class="admin-main">
-        <section class="admin-panel">
-            <h2>Gestionar Subastas</h2>
-            <div id="adminAuctionList" class="auction-grid">
-                <p id="loadingMessage">Cargando subastas...</p>
-                </div>
-            <p id="noAuctionsMessage" style="display: none;">No hay subastas para mostrar.</p>
-        </section>
+    <main class="main-content">
+        <div class="container">
+            <h1>Panel de Administración de Subastas</h1>
 
-        <div id="editAuctionModal" class="modal">
-            <div class="modal-content">
-                <span class="close-button" onclick="closeEditModal()">&times;</span>
-                <h3>Editar Subasta</h3>
-                <form id="editAuctionForm">
-                    <p class="form-message" style="display:none;"></p>
-                    <input type="hidden" id="editAuctionId">
-                    
-                    <label for="editTitle">Título:</label>
-                    <input type="text" id="editTitle" name="title" required>
-                    
-                    <label for="editDescription">Descripción:</label>
-                    <textarea id="editDescription" name="description" required></textarea>
-                    
-                    <label for="editImageUrl">URL de la Imagen:</label>
-                    <input type="url" id="editImageUrl" name="imageUrl" placeholder="Opcional">
-                    
-                    <label for="editStartBid">Puja Inicial:</label>
-                    <input type="number" id="editStartBid" name="startBid" min="0" step="0.01" required>
-                    
-                    <label for="editEndDate">Fecha de Finalización:</label>
-                    <input type="datetime-local" id="editEndDate" name="endDate" required>
-                    
-                    <button type="submit" class="button">Guardar Cambios</button>
+            <section class="admin-section">
+                <h2>Crear Nueva Subasta</h2>
+                <form id="create-auction-form" class="admin-form">
+                    <div class="form-group">
+                        <label for="auction-title">Título del Artículo:</label>
+                        <input type="text" id="auction-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="auction-description">Descripción:</label>
+                        <textarea id="auction-description" rows="5" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="auction-image-url">URL de la Imagen:</label>
+                        <input type="url" id="auction-image-url" placeholder="Opcional">
+                    </div>
+                    <div class="form-group">
+                        <label for="auction-start-bid">Puja Inicial (Rublos):</label>
+                        <input type="number" id="auction-start-bid" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="auction-end-date">Fecha y Hora de Finalización:</label>
+                        <input type="datetime-local" id="auction-end-date" required>
+                    </div>
+                    <button type="submit" class="button">Crear Subasta</button>
+                    <p id="create-auction-message" class="message" style="display: none;"></p>
                 </form>
-            </div>
+            </section>
+
+            <section class="admin-section">
+                <h2>Gestionar Subastas Existentes</h2>
+                <p id="auctions-loading-message" class="message info-message" style="display: none;">Cargando subastas...</p>
+                <p id="auctions-error-message" class="message error-message" style="display: none;"></p>
+                <div class="table-responsive">
+                    <table id="admin-auctions-table" class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Puja Actual</th>
+                                <th>Finaliza</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Las subastas se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </div>
     </main>
 
+    <!-- Modal para Editar Subasta -->
+    <div id="edit-auction-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>Editar Subasta</h3>
+            <form id="edit-auction-form" class="admin-form">
+                <input type="hidden" id="edit-auction-id">
+                <div class="form-group">
+                    <label for="edit-title">Título:</label>
+                    <input type="text" id="edit-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-description">Descripción:</label>
+                    <textarea id="edit-description" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-image-url">URL de la Imagen:</label>
+                    <input type="url" id="edit-image-url" placeholder="Opcional">
+                </div>
+                <div class="form-group">
+                    <label for="edit-start-bid">Puja Inicial:</label>
+                    <input type="number" id="edit-start-bid" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-end-date">Fecha y Hora de Finalización:</label>
+                    <input type="datetime-local" id="edit-end-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-status">Estado:</label>
+                    <select id="edit-status">
+                        <option value="active">Activa</option>
+                        <option value="finalized">Finalizada</option>
+                        <option value="cancelled">Cancelada</option>
+                    </select>
+                </div>
+                <button type="submit" class="button">Guardar Cambios</button>
+                <p id="edit-auction-message" class="message" style="display: none;"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Confirmación de Eliminación -->
+    <div id="confirm-delete-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>Confirmar Eliminación</h3>
+            <p>¿Estás seguro de que quieres eliminar la subasta "<span id="auction-to-delete-title"></span>"?</p>
+            <div class="modal-actions">
+                <button id="confirm-delete-btn" class="button button-danger">Eliminar</button>
+                <button id="cancel-delete-btn" class="button button-secondary">Cancelar</button>
+            </div>
+            <p id="delete-auction-message" class="message" style="display: none;"></p>
+        </div>
+    </div>
+
     <footer>
-        <p>&copy; 2024 Guerra Mundial Z. Todos los derechos reservados.</p>
+        <div class="container">
+            <p>&copy; 2022-2025 Guerra Mundial Z - Servidor de DayZ. Todos los derechos reservados.</p>
+            <p><a href="https://youtu.be/dQw4w9WgXcQ" target="_blank">💣GMZ💣</a></p>
+        </div>
     </footer>
 
     <script src="script.js"></script>
