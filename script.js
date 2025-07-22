@@ -1,75 +1,21 @@
-// Espera a que todo el contenido de la página (HTML, CSS, imágenes) haya cargado
-window.addEventListener('load', function() {
-    const preloader = document.getElementById('preloader');
-    const popupMessage = document.getElementById('popup-message'); // Nuevo: Referencia al pop-up
-    const closePopup = document.querySelector('.close-popup');     // Nuevo: Referencia al botón de cerrar
+// La lógica del preloader y el popup se ha eliminado.
+// El código se iniciará directamente al cargar el DOM.
 
-    // Lógica para la pantalla de carga (preloader)
-    // Añade un pequeño retardo opcional (ej. 500ms = 0.5 segundos)
-    setTimeout(function() {
-        if (preloader) {
-            preloader.classList.add('fade-out'); // Añade la clase para iniciar el desvanecimiento
-            // Opcional: Elimina el preloader del DOM después de la transición
-            preloader.addEventListener('transitionend', function() {
-                preloader.style.display = 'none';
-                // Mostrar el pop-up DESPUÉS de que el preloader haya desaparecido
-                // con un retardo adicional de 1 segundo para que no aparezca de golpe
-                setTimeout(function() {
-                    if (popupMessage) {
-                        popupMessage.classList.remove('popup-hidden'); // Muestra el pop-up
-                    }
-                }, 1000); // Retardo de 1 segundo después de la desaparición del preloader
-            }, { once: true }); // 'once: true' asegura que el evento se ejecuta solo una vez
-        } else {
-            // Si por alguna razón el preloader no existe o no se carga,
-            // mostrar el pop-up después de un retardo normal de la página
-            setTimeout(function() {
-                if (popupMessage) {
-                    popupMessage.classList.remove('popup-hidden'); // Muestra el pop-up
-                }
-            }, 2000); // 2 segundos de retardo si no hay preloader
-        }
-    }, 500); // Retardo de 500 milisegundos para el preloader antes de empezar a desvanecerse
-
-    // Lógica para cerrar el pop-up al hacer clic en la X
-    if (closePopup) {
-        closePopup.addEventListener('click', function() {
-            if (popupMessage) {
-                popupMessage.classList.add('popup-hidden'); // Oculta el pop-up
-            }
-        });
-    }
-
-    // Opcional: Lógica para cerrar el pop-up al hacer clic fuera del contenido del pop-up
-    if (popupMessage) {
-        popupMessage.addEventListener('click', function(event) {
-            // Si el clic fue directamente en el fondo del pop-up (no en su contenido interno)
-            if (event.target === popupMessage) {
-                popupMessage.classList.add('popup-hidden');
-            }
-        });
-    }
-});
-
----
-
-## Lógica Principal de la Aplicación
-
-```javascript
 document.addEventListener('DOMContentLoaded', () => {
     // URL de tu backend de Render
-    const BACKEND_URL = '[https://guerra-mundial-z-backend.onrender.com](https://guerra-mundial-z-backend.onrender.com)';
+    const BACKEND_URL = 'https://guerra-mundial-z-backend.onrender.com'; // <--- CORREGIDO AQUÍ PREVIAMENTE
 
     // Referencias a elementos del DOM (autenticación)
-    const loginButton = document.getElementById('login-button'); // Tu HTML usa 'login-button'
-    const logoutButton = document.getElementById('logout-button'); // Tu HTML usa 'logout-button'
-    const userDisplay = document.getElementById('user-display'); // Tu HTML usa 'user-display'
-    const userAvatar = document.getElementById('user-avatar');     // Tu HTML usa 'user-avatar'
-    const userName = document.getElementById('user-name');         // Tu HTML usa 'user-name'
+    const loginButton = document.getElementById('login-button');
+    const logoutButton = document.getElementById('logout-button');
+    const userDisplay = document.getElementById('user-display');
+    const userAvatar = document.getElementById('user-avatar');
+    const userName = document.getElementById('user-name');
 
-    // NUEVO: Referencias a elementos de la modal de creación de subastas
+    // Referencias a elementos de la modal de creación de subastas
     const createAuctionBtn = document.getElementById('create-auction-btn');
     const createAuctionModal = document.getElementById('create-auction-modal');
+    // Asegúrate de que closeButton se obtiene solo si la modal existe para evitar errores
     const closeButton = createAuctionModal ? createAuctionModal.querySelector('.close-button') : null;
     const createAuctionForm = document.getElementById('create-auction-form');
     const auctionMessage = document.getElementById('auction-message'); // Para mensajes de la modal
@@ -192,7 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Cuando la página carga, verificar si hay un token en la URL o en localStorage
-    // Nota: window.addEventListener('load') ya maneja esto, pero DOMContentLoaded es más rápido para elementos del DOM
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     if (token) {
@@ -204,11 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkSession(); // Verificar la sesión después de manejar el token
     fetchAuctions(); // Cargar las subastas al cargar la página
 
-    ---
-
-    ## Lógica de la Modal de Creación de Subastas
-
-    ```javascript
+    // Lógica de la Modal de Creación de Subastas
     // Abrir la modal al hacer clic en el botón "Crear Nueva Subasta"
     if (createAuctionBtn) {
         createAuctionBtn.addEventListener('click', () => {
@@ -261,9 +202,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const title = document.getElementById('auction-title').value;
             const description = document.getElementById('auction-description').value;
-            const imageUrl = document.getElementById('auction-image-url').value; // Usar auction-image-url
+            const imageUrl = document.getElementById('auction-image-url').value;
             const startBid = parseFloat(document.getElementById('auction-start-bid').value);
-            const endDate = document.getElementById('auction-end-date').value; // Formato YYYY-MM-DDTHH:MM
+            const endDate = document.getElementById('auction-end-date').value;
 
             const token = getAuthToken();
 
@@ -279,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const response = await fetch(`${BACKEND_URL}/api/auctions/admin`, { // Endpoint correcto para admin
+                const response = await fetch(`${BACKEND_URL}/api/auctions/admin`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -293,7 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     showAuctionFormMessage('Subasta creada con éxito!', 'success');
                     createAuctionForm.reset(); // Limpiar el formulario
-                    // Opcional: cerrar la modal después de un tiempo o forzar actualización de la lista
                     setTimeout(() => {
                         if (createAuctionModal) createAuctionModal.style.display = 'none';
                         fetchAuctions(); // Recargar las subastas para mostrar la nueva
@@ -308,11 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    ---
-
-    ## Lógica de Visualización y Puja de Subastas
-
-    ```javascript
+    // Lógica de Visualización y Puja de Subastas
     async function fetchAuctions() {
         if (!activeAuctionsList) {
             console.error("Elemento 'active-auctions-list' no encontrado en el HTML.");
@@ -321,10 +257,10 @@ document.addEventListener('DOMContentLoaded', () => {
         activeAuctionsList.innerHTML = '<p>Cargando subastas...</p>';
 
         try {
-            const response = await fetch(`${BACKEND_URL}/api/auctions`); // Obtener todas las subastas
+            const response = await fetch(`${BACKEND_URL}/api/auctions`);
             const auctions = await response.json();
 
-            renderAuctions(auctions); // Renderizar las subastas
+            renderAuctions(auctions);
         } catch (error) {
             console.error('Error al cargar las subastas:', error);
             activeAuctionsList.innerHTML = '<p class="message error">Error al cargar las subastas. Inténtalo de nuevo más tarde.</p>';
@@ -332,19 +268,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderAuctions(auctions) {
-        if (!activeAuctionsList) return; // Asegurarse de que el elemento exista
+        if (!activeAuctionsList) return;
 
         if (auctions.length === 0) {
             activeAuctionsList.innerHTML = '<p>No hay subastas activas en este momento. ¡Vuelve pronto!</p>';
             return;
         }
 
-        activeAuctionsList.innerHTML = ''; // Limpiar el contenido existente
+        activeAuctionsList.innerHTML = '';
         auctions.forEach(auction => {
             const auctionCard = document.createElement('div');
             auctionCard.classList.add('auction-card');
             auctionCard.innerHTML = `
-                <img src="${auction.imageUrl || '[https://via.placeholder.com/150](https://via.placeholder.com/150)'}" alt="${auction.title}">
+                <img src="${auction.imageUrl || 'https://via.placeholder.com/300'}" alt="${auction.title}">
                 <h3>${auction.title}</h3>
                 <p>${auction.description}</p>
                 <p>Puja Actual: <strong>${auction.currentBid} Rublos</strong> (por ${auction.currentBidderName || 'Nadie'})</p>
@@ -358,10 +294,8 @@ document.addEventListener('DOMContentLoaded', () => {
             activeAuctionsList.appendChild(auctionCard);
         });
 
-        // Iniciar los temporizadores de cuenta regresiva
         startCountdowns();
 
-        // Añadir event listeners a los botones de pujar después de renderizar
         document.querySelectorAll('.bid-button').forEach(button => {
             button.addEventListener('click', async (e) => {
                 const auctionId = e.target.dataset.auctionId;
@@ -393,8 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (response.ok) {
                         showBidMessage(bidMessageElement, '¡Puja realizada con éxito!', 'success');
-                        // Actualizar la subasta en la UI o recargar todas las subastas
-                        setTimeout(fetchAuctions, 1000); // Recargar después de 1 segundo
+                        setTimeout(fetchAuctions, 1000);
                     } else {
                         showBidMessage(bidMessageElement, `Error al pujar: ${result.message || 'Error desconocido'}`, 'error');
                     }
@@ -406,17 +339,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Función para mostrar mensajes de puja
     function showBidMessage(element, message, type) {
         element.textContent = message;
         element.className = `bid-message ${type}`;
         element.style.display = 'block';
         setTimeout(() => {
             element.style.display = 'none';
-        }, 3000); // Ocultar mensaje después de 3 segundos
+        }, 3000);
     }
 
-    // Función para iniciar la cuenta regresiva de las subastas
     function startCountdowns() {
         document.querySelectorAll('.countdown').forEach(countdownElement => {
             const endDate = new Date(countdownElement.dataset.endDate).getTime();
@@ -427,12 +358,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (distance < 0) {
                     countdownElement.innerHTML = '¡Finalizada!';
-                    // Puedes deshabilitar botones de pujar para subastas finalizadas aquí
                     const bidButton = countdownElement.closest('.auction-card').querySelector('.bid-button');
                     const bidInput = countdownElement.closest('.auction-card').querySelector('.bid-input');
                     if (bidButton) bidButton.disabled = true;
                     if (bidInput) bidInput.disabled = true;
-                    clearInterval(countdownElement.intervalId); // Detener el intervalo
+                    clearInterval(countdownElement.intervalId);
                     return;
                 }
 
@@ -444,13 +374,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
             };
 
-            // Limpiar cualquier intervalo anterior para evitar múltiples contadores
             if (countdownElement.intervalId) {
                 clearInterval(countdownElement.intervalId);
             }
 
-            updateCountdown(); // Actualizar inmediatamente
-            countdownElement.intervalId = setInterval(updateCountdown, 1000); // Actualizar cada segundo
+            updateCountdown();
+            countdownElement.intervalId = setInterval(updateCountdown, 1000);
         });
     }
 });
