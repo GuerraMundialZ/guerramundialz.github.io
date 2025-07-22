@@ -51,11 +51,12 @@ body {
     backdrop-filter: blur(5px); /* Efecto de desenfoque */
 }
 
+/* Modificado: header .container para organizar las filas */
 .header .container {
     display: flex;
-    flex-direction: column; /* Apila las dos nuevas filas verticalmente */
-    justify-content: space-between; /* Ajuste para el espacio */
-    align-items: center; /* Centra horizontalmente */
+    flex-direction: column; /* Apila las dos filas verticalmente */
+    justify-content: space-between;
+    align-items: center;
     gap: 10px; /* Espacio entre la fila superior y la inferior */
 }
 
@@ -63,7 +64,7 @@ body {
 .header-top-row {
     width: 100%; /* Ocupa todo el ancho */
     display: flex;
-    justify-content: center; /* Centra el logo y el título */
+    justify-content: space-between; /* Distribuye el logo a la izquierda y Discord a la derecha */
     align-items: center;
 }
 
@@ -79,7 +80,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
     text-decoration: none;
-    padding: 0; /* Asegura que no haya padding extra que lo empuje */
+    padding: 0;
 }
 
 /* Estilos para la imagen del logo dentro del contenedor */
@@ -89,14 +90,13 @@ body {
     vertical-align: middle;
 }
 
-/* Fila Inferior del Encabezado */
+/* Fila Inferior del Encabezado (para la navegación) */
 .header-bottom-row {
     width: 100%; /* Ocupa todo el ancho */
     display: flex;
-    justify-content: center; /* Centra la navegación y el Discord */
+    justify-content: center; /* Centra la navegación */
     align-items: center;
     flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
-    gap: 20px; /* Espacio entre la nav y la sección de Discord */
 }
 
 .header nav ul {
@@ -105,7 +105,7 @@ body {
     padding: 0;
     display: flex;
     align-items: center;
-    gap: 30px; /* Esto crea un espacio de 30px ENTRE cada elemento del menú */
+    gap: 30px; /* Espacio entre cada elemento del menú */
 }
 
 .header nav ul li {
@@ -143,20 +143,6 @@ body {
 
 .header nav ul li a:hover::after {
     width: 100%;
-}
-
-/* ELIMINAR ESTILOS ESPECÍFICOS PARA EL BOTÓN DE DISCORD EN LA NAVEGACIÓN ANTERIORES */
-/* Porque ahora el botón de Discord no está dentro de un <li> */
-.header nav ul li .nav-discord-button {
-    /* Esto ya no es necesario, se elimina o se ignora */
-}
-
-.header nav ul li .nav-discord-button::after {
-    /* Esto ya no es necesario */
-}
-
-.header nav ul li .nav-discord-button:hover {
-    /* Esto ya no es necesario */
 }
 
 /* --- */
@@ -546,7 +532,6 @@ a:hover {
     display: flex;
     align-items: center;
     gap: 10px; /* Espacio entre el avatar/nombre y el botón de Discord */
-    /* Ya no necesita margin-left: auto; porque el header-bottom-row lo centra */
 }
 
 .discord-auth-section .user-info {
@@ -612,12 +597,14 @@ a:hover {
     }
 
     .header-top-row {
+        flex-direction: column; /* Apilar el logo y Discord en pantallas pequeñas */
         justify-content: center; /* Centrar en móvil */
+        gap: 10px; /* Espacio entre logo y Discord cuando están apilados */
     }
 
     .header-bottom-row {
-        flex-direction: column; /* Apila nav y discord verticalmente */
-        gap: 15px; /* Espacio entre nav y discord */
+        flex-direction: column; /* Apila nav verticalmente */
+        gap: 15px; /* Espacio entre nav */
     }
 
     .header nav ul {
@@ -664,7 +651,7 @@ a:hover {
     }
 
     .discord-auth-section {
-        justify-content: center; /* Centrar el bloque de discord */
+        justify-content: center; /* Centrar el bloque de discord cuando está apilado */
         width: 100%;
         padding-left: 0;
     }
