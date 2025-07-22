@@ -11,235 +11,259 @@
     --discord-brand-color: #5865F2; /* Color azul de Discord */
     --discord-brand-color-dark: #454FBF; /* Versión más oscura para hover */
     --error-color: #f04747; /* Color rojo para errores/logout */
-    --text-color-dark: #1a1a1a; /* Color oscuro para el texto de los botones popup */
+    --text-color-dark: #1a1a1a; /* Color oscuro para el texto de los botones popup y éxito */
     --text-color-light: #cccccc; /* Color claro para el texto/icono de cierre popup */
     /* Nuevas variables para mensajes de éxito/error */
     --success-color: #4CAF50; /* Verde para mensajes de éxito */
-    --info-color: #2196F3; /* Azul para mensajes informativos */
+    --info-color: #2196F3; /* Azul para información */
 }
 
-/* Base */
+/* Estilos Generales */
 body {
     font-family: var(--font-secondary);
-    background-image: url('img/fondoweb.jpg');
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
     background-color: var(--bg-color-primary);
-
     color: var(--text-color);
     margin: 0;
     line-height: 1.6;
-    scroll-behavior: smooth;
-    /* Hemos eliminado el padding-top del body general para que scroll-margin-top gestione el espacio en navegación interna */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-/* Esta regla es para las subpáginas que cargan directamente y tienen el header fijo */
-body.subpage-body {
-    padding-top: 150px; /* Mantengo este valor, que funciona para subastas */
+.subpage-body {
+    background-color: var(--bg-color-secondary); /* Un color ligeramente diferente para subpáginas */
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-}
-
-/* Encabezado (Header) */
-.header {
-    background-color: rgba(26, 26, 26, 0.9); /* Un poco transparente */
-    color: var(--text-color);
-    padding: 15px 0;
-    position: fixed;
     width: 100%;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    backdrop-filter: blur(5px); /* Efecto de desenfoque */
+    box-sizing: border-box;
 }
 
-/* Modificado: header .container para organizar las filas */
-.header .container {
-    display: flex;
-    flex-direction: column; /* Apila las dos filas verticalmente */
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px; /* Espacio entre la fila superior y la inferior */
-}
-
-/* Fila Superior del Encabezado */
-.header-top-row {
-    width: 100%; /* Ocupa todo el ancho */
-    display: flex;
-    justify-content: space-between; /* Distribuye el logo a la izquierda y Discord a la derecha */
-    align-items: center;
-}
-
-/* Estilos para el contenedor del logo (clase .logo que ya existe) */
-.header .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Espacio entre el logo y el texto */
+h1, h2, h3 {
     font-family: var(--font-primary);
-    font-size: 1.8em;
-    font-weight: bold;
     color: var(--accent-color);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-decoration: none;
-    padding: 0;
-}
-
-/* Estilos para la imagen del logo dentro del contenedor */
-.logo-img {
-    height: 80px; /* Ajusta la altura de tu logo */
-    width: auto;
-    vertical-align: middle;
-}
-
-/* Fila Inferior del Encabezado (para la navegación) */
-.header-bottom-row {
-    width: 100%; /* Ocupa todo el ancho */
-    display: flex;
-    justify-content: center; /* Centra la navegación */
-    align-items: center;
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
-}
-
-.header nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    gap: 30px; /* Espacio entre cada elemento del menú */
-}
-
-.header nav ul li {
-    margin: 0; /* Reiniciamos márgenes para evitar conflictos con gap */
-}
-
-.header nav ul li a {
-    color: var(--text-color);
-    font-family: var(--font-primary);
-    font-size: 1.1em;
-    font-weight: 600;
-    transition: color 0.3s ease, transform 0.2s ease;
-    position: relative;
-    padding-bottom: 5px;
-    text-decoration: none;
-    display: block;
-}
-
-/* Subrayado animado para enlaces de texto */
-.header nav ul li a::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 3px;
-    background-color: var(--accent-color);
-    left: 0;
-    bottom: 0;
-    transition: width 0.3s ease;
-}
-
-.header nav ul li a:hover {
-    color: var(--accent-color);
-    transform: translateY(-2px);
-}
-
-.header nav ul li a:hover::after {
-    width: 100%;
-}
-
-/* --- */
-/* Estilo para el texto rojo */
-.text-red {
-    color: #ff0000;
-}
-
-
-/* Secciones generales */
-.section {
-    padding: 40px 0;
     text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.section:nth-of-type(odd) {
-    background-color: var(--bg-color-primary);
-}
-
-.section:nth-of-type(even) {
-    background-color: var(--bg-color-secondary);
-}
-
-h1, h2 {
-    font-family: var(--font-primary);
-    color: var(--accent-color);
-    font-size: 3em;
     margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-shadow: 2px 2px 5px rgba(0,0,0,0.4);
-}
-
-h2 {
-    font-size: 2.5em;
 }
 
 p {
-    font-size: 1.1em;
-    max-width: 800px;
-    margin: 0 auto 30px auto;
-    line-height: 1.8;
+    margin-bottom: 10px;
 }
 
-/* Botones - Unificados para tener el estilo de 'secondary' */
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--dark-accent-color);
+}
+
 .button {
     display: inline-block;
-    background-color: transparent;
-    color: var(--accent-color);
-    padding: 15px 30px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 1.1em;
-    transition: all 0.3s ease;
-    border: 2px solid var(--accent-color);
-    cursor: pointer;
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    padding: 10px 20px;
+    border-radius: 8px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 10px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.9em;
 }
 
 .button:hover {
-    background-color: var(--accent-color);
-    color: #000;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 18px rgba(0,0,0,0.5);
-    text-decoration: none;
+    background-color: var(--dark-accent-color);
+    transform: translateY(-2px);
 }
 
-.button.secondary {
-    margin-left: 15px;
+.button:active {
+    transform: translateY(0);
 }
 
-/* Sección Hero */
-.hero {
-    background: url('img/hero-bg.jpg') no-repeat center center/cover;
-    height: 100vh;
+.button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.button.discord-login-button {
+    background-color: var(--discord-brand-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+}
+
+.button.discord-login-button:hover {
+    background-color: var(--discord-brand-color-dark);
+}
+
+.button-small {
+    padding: 5px 10px;
+    font-size: 0.8em;
+    border-radius: 5px;
+    margin: 2px;
+}
+
+.button-edit {
+    background-color: var(--info-color);
+}
+.button-edit:hover {
+    background-color: #1a7bbd;
+}
+
+.button-danger {
+    background-color: var(--error-color);
+}
+.button-danger:hover {
+    background-color: #c43030;
+}
+
+.button-finalize {
+    background-color: #f39c12; /* Naranja */
+}
+.button-finalize:hover {
+    background-color: #e67e22;
+}
+
+.button-secondary {
+    background-color: #555;
+}
+.button-secondary:hover {
+    background-color: #444;
+}
+
+/* Header */
+.header {
+    background-color: var(--bg-color-secondary);
+    padding: 15px 0;
+    border-bottom: 2px solid var(--accent-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.header-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    gap: 15px; /* Espacio entre elementos */
+    margin-bottom: 15px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-primary);
+    font-size: 1.8em;
+    color: var(--text-color);
+    text-transform: uppercase;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.logo-img {
+    height: 60px;
+    width: auto;
+    border-radius: 50%;
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+.discord-auth-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-color);
+}
+
+.main-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.main-nav li a {
+    color: var(--text-color);
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.main-nav li a:hover {
+    background-color: var(--accent-color);
+    color: var(--bg-color-primary);
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    padding: 40px 0;
+}
+
+.section {
+    padding: 60px 0;
+    text-align: center;
+    background-color: var(--bg-color-primary);
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.section:nth-child(even) {
+    background-color: var(--bg-color-secondary);
+}
+
+.section h2 {
+    color: var(--accent-color);
+    margin-bottom: 25px;
+    font-size: 2.5em;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.section p {
+    max-width: 800px;
+    margin: 0 auto 30px auto;
+    font-size: 1.1em;
+    color: var(--text-color);
+}
+
+/* Hero Section */
+.hero {
+    background: url('https://placehold.co/1920x1080/1a1a1a/f0f0f0?text=DayZ+Background') no-repeat center center/cover; /* Placeholder */
+    height: 60vh;
+    display: flex;
     align-items: center;
-    color: rgb(255, 255, 255);
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
-    padding-top: 150px; /* Mantenemos este padding para el diseño visual del hero */
+    justify-content: center;
+    text-align: center;
+    color: var(--text-color);
     position: relative;
-    z-index: 1;
+    overflow: hidden;
 }
 
 .hero::before {
@@ -247,158 +271,118 @@ p {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: -1;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6); /* Oscurecer la imagen */
+    z-index: 1;
 }
 
 .hero-content {
-    text-align: center;
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    padding: 20px;
 }
 
 .hero-content h1 {
-    font-size: 4.5em;
+    font-size: 3.5em;
     margin-bottom: 15px;
-    color: var(--text-color);
-    text-shadow: 3px 3px 10px rgba(0,0,0,0.8);
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
 }
 
 .hero-content p {
-    font-size: 1.5em;
-    margin-bottom: 40px;
-    max-width: 900px;
+    font-size: 1.3em;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
 }
 
-.hero-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-/* Listas de Características (usadas en Server Info y Features) */
-.feature-list {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+/* Server Info Section */
+.server-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
-    margin-top: 50px;
+    margin-top: 40px;
 }
 
-.feature-list li {
-    background-color: var(--bg-color-secondary);
-    padding: 30px;
-    border-radius: 8px;
-    flex: 1 1 calc(33% - 40px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+.info-card {
+    background-color: var(--bg-color-primary);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
     text-align: left;
-    min-width: 280px;
-    border-left: 4px solid var(--accent-color);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.feature-list li:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+.info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
 }
 
-.feature-list li .icon {
-    font-size: 2.5em;
+.info-card h3 {
     color: var(--accent-color);
+    font-size: 1.8em;
     margin-bottom: 15px;
-    display: block;
+    text-align: center;
 }
 
-.feature-list li strong {
-    font-family: var(--font-primary);
-    color: var(--accent-color);
-    font-size: 1.4em;
-    display: block;
-    margin-bottom: 15px;
-}
-
-.feature-list li p {
+.info-card p {
     font-size: 1em;
-    margin-bottom: 0;
-    max-width: none;
-    line-height: 1.7;
+    color: var(--text-color);
+    margin-bottom: 10px;
 }
 
-/* Sección de Tienda / Donaciones */
-.store-items {
+.info-card strong {
+    color: var(--text-color);
+}
+
+/* Features Section */
+.features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    margin-top: 50px;
+    gap: 25px;
+    margin-top: 40px;
 }
 
-.store-item {
-    background-color: var(--bg-color-secondary);
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+.feature-item {
+    background-color: var(--bg-color-primary);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-top: 4px solid var(--accent-color);
+    transition: transform 0.3s ease;
 }
 
-.store-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+.feature-item:hover {
+    transform: scale(1.03);
 }
 
-.store-item img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    border: 1px solid var(--dark-accent-color);
-}
-
-.store-item h3 {
-    font-family: var(--font-primary);
+.feature-item i {
+    font-size: 3em;
     color: var(--accent-color);
-    font-size: 1.7em;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 }
 
-.store-item .price {
-    font-family: var(--font-primary);
-    font-size: 1.8em;
+.feature-item h3 {
+    font-size: 1.5em;
     color: var(--text-color);
-    font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
-.store-item p {
+.feature-item p {
     font-size: 0.95em;
-    margin-bottom: 25px;
+    color: var(--text-color-light);
 }
 
-/* Sección de Trailer Oficial */
+/* Trailer Section */
 .video-container {
     position: relative;
     width: 100%;
-    padding-bottom: 56.25%;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
     height: 0;
     overflow: hidden;
-    margin-top: 40px;
-    background-color: #000;
-    border-radius: 8px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-    border: 2px solid var(--accent-color);
-}
-
-.video-container video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    margin: 40px auto;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
 }
 
 .video-container iframe {
@@ -410,394 +394,123 @@ p {
     border: none;
 }
 
-/* Pie de página (Footer) */
-.footer {
+/* Store Section */
+.store-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.store-item-card {
     background-color: var(--bg-color-primary);
-    color: #bbb;
-    padding: 30px 0;
-    font-size: 0.9em;
-    text-align: center;
-    border-top: 1px solid #333;
-}
-
-.footer p {
-    margin: 5px 0;
-    max-width: none;
-}
-
-/* Estilos para enlaces de texto generales */
-a {
-    color: var(--text-color);
-    text-decoration: none;
-    transition: color 0.3s ease, text-decoration 0.3s ease;
-}
-
-a:hover {
-    color: var(--accent-color);
-    text-decoration: underline;
-}
-
-/* Excepción para enlaces específicos dentro de Server Info para que sigan siendo botones */
-.server-info-links a {
-    color: var(--text-color);
-    background-color: var(--accent-color);
-    border: 2px solid var(--accent-color);
-}
-
-/* Estilos para el espacio entre el nombre del servidor y la IP */
-#server-info .feature-list li p:nth-child(2) {
-    margin-bottom: 80px;
-}
-
-/* --- POP-UP STYLES --- */
-#popup-message {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-}
-
-#popup-message:not(.popup-hidden) {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-
-.popup-content {
-    background-color: var(--bg-color-secondary);
-    color: var(--text-color);
-    padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.7);
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     text-align: center;
-    max-width: 500px;
-    width: 90%;
-    position: relative;
-    transform: scale(0.9);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-#popup-message:not(.popup-hidden) .popup-content {
-    transform: scale(1);
+.store-item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
 }
 
-.popup-content h3 {
-    margin-top: 0;
-    color: var(--accent-color);
-    font-size: 1.8em;
+.store-item-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--accent-color);
+}
+
+.store-item-card-content {
+    padding: 20px;
+}
+
+.store-item-card-content h3 {
+    color: var(--text-color);
+    font-size: 1.6em;
+    margin-bottom: 10px;
+}
+
+.store-item-card-content p {
+    color: var(--text-color-light);
+    font-size: 0.95em;
     margin-bottom: 15px;
 }
 
-.popup-content p {
-    margin-bottom: 25px;
-    line-height: 1.6;
-    font-size: 1.1em;
-}
-
-.close-popup {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 2.5em;
-    line-height: 1;
-    cursor: pointer;
-    color: var(--text-color-light);
-    transition: color 0.2s ease;
-}
-
-.close-popup:hover {
-    color: var(--accent-color);
-}
-
-.popup-button {
-    display: inline-block;
-    padding: 12px 25px;
-    background-color: var(--accent-color);
-    color: var(--text-color-dark);
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    font-weight: bold;
-    font-size: 1.1em;
-}
-
-.popup-button:hover {
-    filter: brightness(0.9);
-    transform: translateY(-2px);
-}
-
-/* --- ESTILOS PARA LA SECCIÓN DE AUTENTICACIÓN DE DISCORD --- */
-.discord-auth-section {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Espacio entre el avatar/nombre y el botón de Discord */
-}
-
-.discord-auth-section .user-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-color);
-    font-weight: bold;
-    font-size: 0.9em;
-}
-
-.discord-auth-section .user-info img {
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    border: 2px solid var(--discord-brand-color);
-}
-
-.discord-auth-section .button.discord-login-button {
-    background-color: var(--discord-brand-color);
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.9em;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: background-color 0.3s ease;
-    margin: 0; /* Asegura que no tenga los márgenes del .button general */
-}
-
-.discord-auth-section .button.discord-login-button:hover {
-    background-color: var(--discord-brand-color-dark);
-}
-
-.discord-auth-section .button.logout-button {
-    background-color: var(--error-color);
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.9em;
-    transition: background-color 0.3s ease;
-    margin: 0; /* Asegura que no tenga los márgenes del .button general */
-}
-
-.discord-auth-section .button.logout-button:hover {
-    background-color: #cc3c3c;
-}
-
-
-/* --- NUEVOS ESTILOS PARA LA SECCIÓN DE SUBASTAS --- */
-.admin-panel {
-    background-color: var(--bg-color-secondary);
-    border: 2px solid var(--accent-color);
-    border-radius: 8px;
-    padding: 25px;
-    margin-bottom: 40px;
-    text-align: left;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-}
-
-.admin-panel h3 {
-    color: var(--accent-color);
+.store-item-card-content .price {
     font-family: var(--font-primary);
     font-size: 1.8em;
-    margin-top: 0;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-/* Estilos para los mensajes de formulario (éxito/error) */
-.message {
-    padding: 10px 15px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    font-weight: bold;
-    text-align: center;
-    display: none; /* Por defecto oculto, JS lo mostrará */
-}
-
-.message.success {
-    background-color: var(--success-color);
-    color: var(--text-color-dark); /* Texto oscuro para contraste en fondo claro */
-}
-
-.message.error {
-    background-color: var(--error-color);
-    color: white;
-}
-
-/* Estilos de la Modal de Creación de Subastas */
-#create-auction-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1050; /* Más alto que el preloader/popup normal */
-    display: none; /* Oculto por defecto, JS lo mostrará */
-}
-
-#create-auction-modal .modal-content {
-    background-color: var(--bg-color-primary);
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
-    max-width: 600px;
-    width: 90%;
-    position: relative;
-    border: 2px solid var(--accent-color);
-    text-align: left; /* Restablecer el texto a la izquierda dentro de la modal */
-}
-
-#create-auction-modal .modal-content .close-button {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 2.5em;
-    line-height: 1;
-    cursor: pointer;
-    color: var(--text-color-light);
-    transition: color 0.2s ease;
-}
-
-#create-auction-modal .modal-content .close-button:hover {
     color: var(--accent-color);
-}
-
-#create-auction-modal h3 {
-    color: var(--accent-color);
-    font-family: var(--font-primary);
-    font-size: 2em;
-    margin-top: 0;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-.auction-form .form-group {
     margin-bottom: 20px;
 }
 
-.auction-form label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: var(--text-color);
-}
-
-.auction-form input[type="text"],
-.auction-form input[type="url"],
-.auction-form input[type="number"],
-.auction-form input[type="datetime-local"],
-.auction-form textarea {
-    width: calc(100% - 20px);
-    padding: 10px;
-    border: 1px solid #555;
-    border-radius: 5px;
-    background-color: #3a3a3a;
-    color: var(--text-color);
-    font-size: 1em;
-    box-sizing: border-box; /* Incluye padding en el ancho */
-}
-
-.auction-form textarea {
-    resize: vertical; /* Permite redimensionar verticalmente */
-    min-height: 80px;
-}
-
-.auction-form button[type="submit"] {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    font-size: 1.2em;
-    margin-top: 30px;
-    background-color: var(--accent-color);
-    color: var(--text-color-dark);
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.auction-form button[type="submit"]:hover {
-    background-color: var(--dark-accent-color);
-    transform: translateY(-2px);
-}
-
+/* Auction Section (subastas.html) */
 .auction-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
-    margin-top: 50px;
+    margin-top: 40px;
 }
 
 .auction-card {
-    background-color: var(--bg-color-secondary);
-    border: 2px solid #444;
-    border-radius: 8px;
-    padding: 20px;
+    background-color: var(--bg-color-primary);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auction-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.auction-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--accent-color);
+}
+
+.auction-card-content {
+    padding: 20px;
+    flex-grow: 1; /* Permite que el contenido crezca y empuje el footer hacia abajo */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
-.auction-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
-}
-
-.auction-card img {
-    max-width: 100%;
-    height: 200px; /* Altura fija para las imágenes */
-    object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse */
-    border-radius: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #666;
-}
-
-.auction-card h3 {
-    font-family: var(--font-primary);
-    color: var(--accent-color);
-    font-size: 1.6em;
-    margin-top: 0;
-    margin-bottom: 10px;
-}
-
-.auction-card p {
-    font-size: 1em;
-    margin-bottom: 10px;
-    flex-grow: 1; /* Permite que el párrafo de descripción ocupe el espacio disponible */
-}
-
-.auction-card p strong {
+.auction-card-content h3 {
     color: var(--text-color);
+    font-size: 1.6em;
+    margin-bottom: 10px;
 }
 
-.auction-card .countdown {
-    font-weight: bold;
+.auction-card-content p {
+    color: var(--text-color-light);
+    font-size: 0.95em;
+    margin-bottom: 10px;
+}
+
+.auction-card-content .current-bid {
+    font-family: var(--font-primary);
+    font-size: 1.8em;
     color: var(--accent-color);
-    font-size: 1.1em;
     margin-bottom: 15px;
-    display: block; /* Para que ocupe su propia línea */
+}
+
+.auction-card-content .countdown {
+    font-family: monospace;
+    font-size: 1.1em;
+    color: var(--info-color);
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-weight: bold;
 }
 
 .auction-card .bid-controls {
@@ -806,75 +519,213 @@ a:hover {
     margin-top: 15px;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
 }
 
 .auction-card .bid-input {
-    width: 100px;
+    width: 120px;
     padding: 8px;
     border: 1px solid #555;
     border-radius: 5px;
-    background-color: #3a3a3a;
+    background-color: #333;
     color: var(--text-color);
     font-size: 1em;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--bg-color-secondary);
+    color: var(--text-color-light);
     text-align: center;
+    padding: 20px 0;
+    border-top: 2px solid var(--accent-color);
+    margin-top: auto; /* Empuja el footer hacia abajo */
 }
 
-.auction-card .bid-button {
-    padding: 8px 15px;
+.footer p {
+    margin: 5px 0;
     font-size: 0.9em;
-    margin: 0; /* Anula el margen general del botón */
 }
 
-/* Mensajes de puja específicos por tarjeta */
-.auction-card .bid-message {
-    font-size: 0.9em;
-    padding: 5px 10px;
-    border-radius: 3px;
-    margin-top: 10px;
-    width: 100%; /* Ocupa todo el ancho disponible */
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.7); /* Black w/ opacity */
+    display: flex; /* Use flexbox for centering */
+    justify-content: center;
+    align-items: center;
+    padding: 20px; /* Add some padding */
     box-sizing: border-box;
 }
 
-.auction-card .bid-message.success {
+.modal-content {
+    background-color: var(--bg-color-secondary);
+    margin: auto;
+    padding: 30px;
+    border: 1px solid var(--accent-color);
+    border-radius: 10px;
+    width: 90%; /* Responsive width */
+    max-width: 600px; /* Max width for larger screens */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content h3 {
+    color: var(--accent-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.modal .close-button {
+    color: var(--text-color-light);
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.modal .close-button:hover,
+.modal .close-button:focus {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Form Styles (General for admin forms) */
+.admin-form .form-group {
+    margin-bottom: 15px;
+}
+
+.admin-form label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.admin-form input[type="text"],
+.admin-form input[type="url"],
+.admin-form input[type="number"],
+.admin-form input[type="datetime-local"],
+.admin-form textarea,
+.admin-form select {
+    width: calc(100% - 20px); /* Ajuste por padding */
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #333;
+    color: var(--text-color);
+    font-size: 1em;
+    box-sizing: border-box; /* Incluye padding y border en el width */
+}
+
+.admin-form textarea {
+    resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+.admin-form button[type="submit"] {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Table Styles (Admin Panel) */
+.table-responsive {
+    overflow-x: auto; /* Permite el scroll horizontal en tablas grandes */
+    margin-top: 20px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: var(--bg-color-primary);
+    border-radius: 8px;
+    overflow: hidden; /* Para que los bordes redondeados se apliquen al contenido */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #444;
+}
+
+.admin-table th {
+    background-color: var(--accent-color);
+    color: var(--bg-color-primary);
+    font-family: var(--font-primary);
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.admin-table tbody tr:nth-child(even) {
+    background-color: #222; /* Fila par */
+}
+
+.admin-table tbody tr:hover {
+    background-color: #3a3a3a; /* Resaltar fila al pasar el ratón */
+}
+
+.admin-table td {
+    color: var(--text-color-light);
+    vertical-align: middle;
+}
+
+.admin-table td:last-child {
+    white-space: nowrap; /* Evita que los botones se rompan en varias líneas */
+}
+
+/* Message Styles */
+.message {
+    padding: 10px 15px;
+    margin-top: 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.info-message {
+    background-color: var(--info-color);
+    color: var(--text-color-dark);
+}
+
+.success-message {
     background-color: var(--success-color);
     color: var(--text-color-dark);
 }
 
-.auction-card .bid-message.error {
+.error-message {
     background-color: var(--error-color);
-    color: white;
+    color: var(--text-color);
 }
 
-/* --- RESPONSIVE DESIGN --- */
-@media (max-width: 900px) { /* Ajustar breakpoint si es necesario */
-    .header .container {
-        gap: 10px; /* Mantener el espacio entre filas */
-    }
-
+/* Responsive Design */
+@media (max-width: 768px) {
     .header-top-row {
-        flex-direction: column; /* Apilar el logo y Discord en pantallas pequeñas */
-        justify-content: center; /* Centrar en móvil */
-        gap: 10px; /* Espacio entre logo y Discord cuando están apilados */
+        flex-direction: column;
+        text-align: center;
     }
 
-    .header-bottom-row {
-        flex-direction: column; /* Apila nav verticalmente */
-        gap: 15px; /* Espacio entre nav */
-    }
-
-    .header nav ul {
-        flex-wrap: wrap; /* Permitir que los ítems del menú se envuelvan */
-        justify-content: center;
-        gap: 15px; /* Reducir el gap del menú en móviles */
-    }
-
-    .header nav ul li {
-        margin: 0; /* Reiniciar márgenes específicos para móvil */
-    }
-
-    .hero {
-        padding-top: 120px; /* Reducir el padding para el hero en móviles */
+    .main-nav ul {
+        flex-direction: column;
+        gap: 10px;
     }
 
     .hero-content h1 {
@@ -882,45 +733,12 @@ a:hover {
     }
 
     .hero-content p {
-        font-size: 1.1em;
-    }
-
-    .section {
-        padding: 25px 0;
-    }
-
-    h1, h2 {
-        font-size: 2em;
-    }
-
-    p {
         font-size: 1em;
     }
 
-    .feature-list li {
-        flex: 1 1 calc(50% - 20px);
-        min-width: unset;
-    }
-
-    .store-items {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    }
-
-    .discord-auth-section {
-        justify-content: center; /* Centrar el bloque de discord cuando está apilado */
-        width: 100%;
-        padding-left: 0;
-    }
-
-    .header .logo {
-        font-size: 1.5em;
-        gap: 5px;
-    }
-
-    .logo-img {
-        height: 50px; /* Ajustar el tamaño del logo en móvil */
-    }
-
+    .server-info-grid,
+    .features-grid,
+    .store-items,
     .auction-grid {
         grid-template-columns: 1fr; /* Una columna en móvil */
     }
@@ -932,6 +750,30 @@ a:hover {
 
     .auction-card .bid-input {
         width: 80%; /* Más ancho en móvil */
+    }
+
+    .modal .modal-content {
+        width: 95%; /* Más ancho en móviles */
+        padding: 20px;
+    }
+
+    .admin-form input[type="text"],
+    .admin-form input[type="url"],
+    .admin-form input[type="number"],
+    .admin-form input[type="datetime-local"],
+    .admin-form textarea,
+    .admin-form select {
+        width: calc(100% - 20px); /* Ajuste por box-sizing */
+    }
+
+    .admin-table th, .admin-table td {
+        padding: 8px 10px;
+        font-size: 0.9em;
+    }
+
+    .button-small {
+        padding: 4px 8px;
+        font-size: 0.75em;
     }
 }
 
@@ -945,25 +787,17 @@ a:hover {
     }
 
     .button {
-        padding: 10px 20px;
-        font-size: 0.9em;
+        padding: 8px 15px;
+        font-size: 0.8em;
     }
 
-    .hero-buttons {
-        flex-direction: column;
-        align-items: center;
+    .logo {
+        font-size: 1.5em;
+        gap: 5px;
     }
 
-    .hero-buttons a {
-        margin: 8px 0;
-    }
-
-    h2 {
-        font-size: 1.6em;
-    }
-
-    .feature-list li,
-    .store-item {
-        flex: 1 1 100%;
+    .logo-img {
+        height: 50px;
     }
 }
+
