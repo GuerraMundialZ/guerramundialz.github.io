@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Referencias a elementos del DOM (Autenticación y Navegación) ---
     // Asegúrate de que los IDs aquí coincidan exactamente con tu HTML
     const loginButton = document.getElementById('loginButton'); // Botón "Iniciar Sesión"
-    const logoutButton = document.getElementById('logoutButton'); // Botón "Cerrar Sesión"
-    const userInfo = document.getElementById('userInfo'); // Contenedor para info de usuario logueado
-    const userAvatar = document.getElementById('userAvatar'); // Imagen del avatar
-    const usernameDisplay = document.getElementById('usernameDisplay'); // Nombre de usuario
+    const logoutButton = document.getElementById('logoutButton'); // CORREGIDO: Usar 'logoutButton' (sin guion) para coincidir con el HTML recomendado
+    const userInfo = document.getElementById('user-display'); // CORREGIDO: ID en HTML es 'user-display'
+    const userAvatar = document.getElementById('user-avatar'); // CORREGIDO: ID en HTML es 'user-avatar'
+    const usernameDisplay = document.getElementById('user-name'); // CORREGIDO: ID en HTML es 'user-name'
 
     // Botones de navegación para usuarios logueados (visibilidad controlada por JS)
     const createAuctionBtn = document.getElementById('createAuctionBtn'); // Botón "Crear Nueva Subasta" en la nav
@@ -182,6 +182,13 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Sesión cerrada (token JWT eliminado del cliente).');
             // Redirigir a la misma página para limpiar la URL
             window.location.href = window.location.origin + window.location.pathname;
+        });
+    }
+
+    // AÑADIDO: Listener para el botón del Panel Admin
+    if (adminPanelBtn) {
+        adminPanelBtn.addEventListener('click', () => {
+            window.location.href = 'admin.html'; // Redirige a la página de administración
         });
     }
 
