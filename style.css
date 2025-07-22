@@ -25,9 +25,7 @@ body {
     color: var(--text-color);
     margin: 0;
     line-height: 1.6;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+    /* Eliminado display: flex y flex-direction: column para restaurar el flujo normal de bloques */
 }
 
 .subpage-body {
@@ -146,6 +144,9 @@ a:hover {
     padding: 15px 0;
     border-bottom: 2px solid var(--accent-color);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    position: sticky; /* Restaurado: Hace que el encabezado se quede fijo al hacer scroll */
+    top: 0; /* Se pega a la parte superior */
+    z-index: 100; /* Asegura que esté por encima de otros elementos al hacer scroll */
 }
 
 .header-top-row {
@@ -222,7 +223,7 @@ a:hover {
 
 /* Main Content */
 .main-content {
-    flex-grow: 1;
+    /* Eliminado flex-grow: 1; para restaurar el flujo normal */
     padding: 40px 0;
 }
 
@@ -538,12 +539,7 @@ a:hover {
     text-align: center;
     padding: 20px 0;
     border-top: 2px solid var(--accent-color);
-    margin-top: auto; /* Empuja el footer hacia abajo */
-}
-
-.footer p {
-    margin: 5px 0;
-    font-size: 0.9em;
+    /* Eliminado margin-top: auto; para restaurar el flujo normal */
 }
 
 /* Modal Styles */
@@ -557,7 +553,7 @@ a:hover {
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0, 0, 0, 0.7); /* Black w/ opacity */
-    display: flex; /* Use flexbox for centering */
+    display: flex; /* Usar flexbox para centrar */
     justify-content: center;
     align-items: center;
     padding: 20px; /* Add some padding */
