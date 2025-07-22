@@ -18,6 +18,13 @@
     --info-color: #2196F3; /* Azul para mensajes informativos */
 }
 
+/* Ocultar elementos de UI por defecto hasta que JS los muestre */
+.discord-auth-section #user-display,
+.discord-auth-section #logoutButton,
+.discord-auth-section #adminPanelBtn {
+    display: none;
+}
+
 /* Base */
 body {
     font-family: var(--font-secondary);
@@ -76,14 +83,6 @@ body.subpage-body {
     justify-content: space-between; /* Distribuye el logo a la izquierda y Discord a la derecha */
     align-items: center;
 }
-
-/* CAMBIO: Permite que el logo y la sección de Discord se encojan si el espacio es limitado */
-.header-top-row .logo,
-.header-top-row .discord-auth-section {
-    min-width: 0; /* Permite que el contenido se encoja dentro del flex item si es necesario */
-    flex-shrink: 1; /* Permite que estos elementos se encojan si es necesario */
-}
-
 
 /* Estilos para el contenedor del logo (clase .logo que ya existe) */
 .header .logo {
@@ -549,8 +548,6 @@ a:hover {
     display: flex;
     align-items: center;
     gap: 10px; /* Espacio entre los elementos: avatar/nombre, login/logout, admin button */
-    /* CAMBIO: Evita que los botones se envuelvan prematuramente */
-    flex-wrap: nowrap;
 }
 
 .discord-auth-section .user-info {
@@ -560,8 +557,6 @@ a:hover {
     color: var(--text-color);
     font-weight: bold;
     font-size: 0.9em;
-    /* CAMBIO: Asegura que no hay márgenes no deseados que desalineen */
-    margin: 0;
 }
 
 .discord-auth-section .user-info img {
@@ -584,16 +579,12 @@ a:hover {
     display: flex;
     align-items: center;
     gap: 6px;
-    transition: background-color 0.3s ease, transform 0.2s ease; /* CAMBIO: Añadido transform a transition */
+    transition: background-color 0.3s ease;
     margin: 0; /* Asegura que no tenga los márgenes del .button general */
-    /* CAMBIO: Asegura que el transform inicial es nulo */
-    transform: none;
 }
 
 .discord-auth-section .button.discord-login-button:hover {
     background-color: var(--discord-brand-color-dark);
-    /* CAMBIO: Mantiene el efecto hover */
-    transform: translateY(-2px);
 }
 
 /* Estilo para el botón de Panel Admin (compartiendo algunas propiedades con .button y otras específicas) */
@@ -609,8 +600,6 @@ a:hover {
     font-size: 0.9em;
     transition: background-color 0.3s ease, transform 0.2s ease;
     margin: 0; /* Anular márgenes del .button general si los hereda */
-    /* CAMBIO: Asegura que el transform inicial es nulo */
-    transform: none;
 }
 
 #adminPanelBtn:hover {
@@ -629,16 +618,12 @@ a:hover {
     text-decoration: none;
     font-weight: bold;
     font-size: 0.9em;
-    transition: background-color 0.3s ease, transform 0.2s ease; /* CAMBIO: Añadido transform a transition */
+    transition: background-color 0.3s ease;
     margin: 0; /* Asegura que no tenga los márgenes del .button general */
-    /* CAMBIO: Asegura que el transform inicial es nulo */
-    transform: none;
 }
 
 .discord-auth-section .button.logout-button:hover {
     background-color: #cc3c3c;
-    /* CAMBIO: Mantiene el efecto hover */
-    transform: translateY(-2px);
 }
 
 
@@ -996,10 +981,6 @@ a:hover {
         gap: 8px; /* Reducir el gap en columnas */
         width: auto; /* Dejar que el contenido defina el ancho */
         padding-left: 0;
-        /* CAMBIO: Permite que los elementos se envuelvan si el espacio horizontal es muy limitado, incluso en columna */
-        flex-wrap: wrap;
-        /* CAMBIO: Centrar elementos cuando se apilan en columna */
-        justify-content: center;
     }
 
     .header-bottom-row {
