@@ -32,9 +32,7 @@ body {
     margin: 0;
     line-height: 1.6;
     scroll-behavior: smooth;
-    /* --- CAMBIO AÑADIDO AQUÍ --- */
-    padding-top: 130px; /* Ajusta este valor si el encabezado aún cubre el contenido */
-    /* -------------------------- */
+    /* Hemos eliminado el padding-top del body para que scroll-margin-top gestione el espacio */
 }
 
 .container {
@@ -164,6 +162,9 @@ body {
     text-align: center;
     position: relative;
     overflow: hidden;
+    /* --- CAMBIO CLAVE: Añadido scroll-margin-top --- */
+    scroll-margin-top: 140px; /* Asegura que el contenido quede visible debajo del encabezado fijo */
+    /* ----------------------------------------------- */
 }
 
 .section:nth-of-type(odd) {
@@ -234,7 +235,7 @@ p {
     align-items: center;
     color: rgb(255, 255, 255);
     text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
-    padding-top: 150px; /* Ajuste para dar espacio al nuevo header de dos filas */
+    padding-top: 150px; /* Mantenemos este padding para el diseño visual del hero */
     position: relative;
     z-index: 1;
 }
