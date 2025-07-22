@@ -6,7 +6,7 @@
     --accent-color: #E74C3C; /* Rojo brillante (similar a Rearmed en sus acentos) */
     --dark-accent-color: #C0392B; /* Rojo un poco más oscuro para hover */
     --font-primary: 'Anton', sans-serif; /* Mantenida Anton */
-    --font-secondary: 'Open Sans', sans-serif; /* Mantenida Open Sans */
+    --font-secondary: 'Open Sans', "Roboto", "Helvetica", "Arial", sans-serif; /* MODIFICADO: Añadido Roboto, Helvetica, Arial */
     /* Nuevas variables para los colores de Discord si quieres más control */
     --discord-brand-color: #5865F2; /* Color azul de Discord */
     --discord-brand-color-dark: #454FBF; /* Versión más oscura para hover */
