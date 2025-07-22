@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Guerra Mundial Z - Subastas</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="img/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="header-top-row">
+                <a href="index.html" class="logo"> <img src="img/logo.gif" alt="Logo de Guerra Mundial Z" class="logo-img">
+                    Guerra Mundial Z
+                </a>
+                <div class="discord-auth-section">
+                    <a id="login-button" class="button discord-login-button" href="#">
+                        <i class="fab fa-discord"></i> Iniciar Sesión
+                    </a>
+                    <div id="user-display" class="user-info">
+                        <img id="user-avatar" src="" alt="Avatar de usuario">
+                        <span id="user-name"></span>
+                    </div>
+                    <button id="logout-button" class="button logout-button">Cerrar Sesión</button>
+                    
+                    <button id="create-auction-btn" class="button btn-success" style="display: none;">Crear Nueva Subasta</button>
+                </div>
+            </div>
+
+            <div class="header-bottom-row">
+                <nav>
+                    <ul>
+                        <li><a href="index.html#hero">Inicio</a></li> <li><a href="index.html#server-info">Servidor</a></li>
+                        <li><a href="index.html#features">Características</a></li>
+                        <li><a href="index.html#trailer">Trailer</a></li>
+                        <li><a href="index.html#mods-steam">Mods</a></li>
+                        <li><a href="auctions.html">Subastas</a></li> <li><a href="index.html#community">Comunidad</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section id="auctions" class="section">
+        <div class="container">
+            <h2>💰 Subastas Activas</h2>
+            <p>Aquí puedes ver y pujar por los objetos más codiciados del servidor. ¡No te quedes sin el tuyo!</p>
+
+            <div id="active-auctions-list" class="auction-grid">
+                <p>Cargando subastas...</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2022-2025 Guerra Mundial Z - Servidor de DayZ. Todos los derechos reservados.</p>
+            <p><a href="https://discord.gg/3VwMwDt3EP" target="_blank">💣GMZ💣</a></p>
+        </div>
+    </footer>
+
+    <div id="create-auction-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">×</span>
+            <h2>Crear Nueva Subasta</h2>
+            <form id="create-auction-form">
+                <div class="form-group">
+                    <label for="auction-title">Título del Artículo:</label>
+                    <input type="text" id="auction-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="auction-description">Descripción:</label>
+                    <textarea id="auction-description" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="auction-image-url">URL de la Imagen:</label>
+                    <input type="url" id="auction-image-url" placeholder="Opcional">
+                </div>
+                <div class="form-group">
+                    <label for="auction-start-bid">Puja Inicial (Rublos):</label>
+                    <input type="number" id="auction-start-bid" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="auction-end-date">Fecha y Hora de Finalización:</label>
+                    <input type="datetime-local" id="auction-end-date" required>
+                </div>
+                <button type="submit" class="button">Crear Subasta</button>
+                <p id="auction-message" class="message" style="display: none;"></p>
+            </form>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
