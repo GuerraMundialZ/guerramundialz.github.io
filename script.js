@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Calcula la posición a la que debe desplazarse
                 // offsetTop es la distancia del elemento al top del documento
                 // Le restamos la altura del header para que se detenga justo debajo de él
-                const targetPosition = targetElement.offsetTop - headerHeight - 10; // Resta 10px adicionales para un pequeño margen
+                const targetPosition = targetElement.offsetTop - headerHeight; // Ya no resta los 10px adicionales
 
                 window.scrollTo({
                     top: targetPosition,
