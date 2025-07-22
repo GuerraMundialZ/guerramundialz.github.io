@@ -168,8 +168,8 @@ body.subpage-body {
     position: relative;
     overflow: hidden;
     /* --- CAMBIO CLAVE REALIZADO AQUÍ --- */
-    /* Aumentamos de 200px a 250px para compensar la altura del encabezado. */
-    scroll-margin-top: 250px;
+    /* Aumentamos de 250px a 300px para ser más agresivos y dar suficiente espacio. */
+    scroll-margin-top: 300px; 
     /* ----------------------------------------------- */
 }
 
@@ -892,8 +892,8 @@ a:hover {
     .section {
         padding: 60px 0;
         /* --- CAMBIO ADICIONAL PARA MÓVILES --- */
-        /* Aumentamos de 200px a 250px para compensar la altura del encabezado en móvil. */
-        scroll-margin-top: 250px;
+        /* Aumentamos de 250px a 300px también en móviles. */
+        scroll-margin-top: 300px;
     }
 
     h1, h2 {
