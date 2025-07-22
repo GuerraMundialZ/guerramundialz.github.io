@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const editImageUrl = document.getElementById('editImageUrl');
     const editStartBid = document.getElementById('editStartBid');
     const editEndDate = document.getElementById('editEndDate');
+    // NUEVA REFERENCIA: Elemento para la vista previa de la imagen
+    const imageUrlPreview = document.getElementById('imageUrlPreview');
+
 
     // --- Variables Auxiliares ---
     // Variable para controlar el intervalo de actualización del contador (lo haremos global para limpiarlo bien)
@@ -262,10 +265,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const hours = String(endDate.getHours()).padStart(2, '0');
             const minutes = String(endDate.getMinutes()).padStart(2, '0');
             editEndDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+            // Actualizar vista previa de imagen
+            if (imageUrlPreview) {
+                imageUrlPreview.src = auction.imageUrl || 'https://via.placeholder.com/150';
+                imageUrlPreview.style.display = 'block';
+            }
         } else {
             // Modo creación
             document.querySelector('#editAuctionModal h3').textContent = 'Crear Nueva Subasta';
             editAuctionId.value = ''; // Asegurarse de que no haya ID para creación
+            // Ocultar vista previa en modo creación
+            if (imageUrlPreview) {
+                imageUrlPreview.src = '';
+                imageUrlPreview.style.display = 'none';
+            }
         }
         if (editAuctionModal) editAuctionModal.style.display = 'flex'; // Usamos flex para centrar
     }
@@ -277,6 +291,11 @@ document.addEventListener('DOMContentLoaded', () => {
             editAuctionForm.reset();
             const formMessage = editAuctionForm.querySelector('.form-message');
             if (formMessage) formMessage.style.display = 'none';
+            // Ocultar vista previa al cerrar el modal
+            if (imageUrlPreview) {
+                imageUrlPreview.src = '';
+                imageUrlPreview.style.display = 'none';
+            }
         }
     };
 
@@ -297,6 +316,27 @@ document.addEventListener('DOMContentLoaded', () => {
             if (event.target === editAuctionModal) {
                 closeEditModal();
             }
+        });
+    }
+
+    // NUEVO: Listener para previsualizar la URL de la imagen en el formulario del modal
+    if (editImageUrl && imageUrlPreview) {
+        editImageUrl.addEventListener('input', () => {
+            const url = editImageUrl.value;
+            if (url) {
+                imageUrlPreview.src = url;
+                imageUrlPreview.style.display = 'block';
+            } else {
+                imageUrlPreview.src = '';
+                imageUrlPreview.style.display = 'none';
+            }
+        });
+
+        // Manejar el error de carga de la imagen (por ejemplo, URL inválida)
+        imageUrlPreview.addEventListener('error', () => {
+            imageUrlPreview.src = 'https://via.placeholder.com/150?text=Error'; // Imagen de marcador de posición de error
+            imageUrlPreview.style.display = 'block';
+            console.error('Error al cargar la imagen de previsualización.');
         });
     }
 
@@ -606,6 +646,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Limpiar cualquier intervalo anterior para este ID específico
             if (countdownIntervals[auctionId]) {
                 clearInterval(countdownIntervals[auctionId]);
+                delete countdownIntervals[auctionId];
             }
 
             const updateCountdown = () => {
