@@ -35,6 +35,13 @@ body {
     /* Hemos eliminado el padding-top del body general para que scroll-margin-top gestione el espacio en navegación interna */
 }
 
+/* --- CAMBIO REALIZADO AQUÍ --- */
+/* Esta regla es para las subpáginas que cargan directamente y tienen el header fijo */
+body.subpage-body {
+    padding-top: 150px; /* Aumentado a 150px para dar más espacio. */
+}
+/* ----------------------------- */
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -162,8 +169,10 @@ body {
     text-align: center;
     position: relative;
     overflow: hidden;
+    /* --- CAMBIO REALIZADO AQUÍ --- */
     /* Asegura que el contenido quede visible debajo del encabezado fijo al usar enlaces de ancla */
-    scroll-margin-top: 140px;
+    scroll-margin-top: 150px; /* Aumentado a 150px para dar más espacio. */
+    /* ----------------------------------------------- */
 }
 
 .section:nth-of-type(odd) {
@@ -963,9 +972,4 @@ a:hover {
     .store-item {
         flex: 1 1 100%;
     }
-}
-
-/* Ajuste para el encabezado fijo en el body de subpáginas */
-body.subpage-body {
-    padding-top: 130px; /* O un valor ligeramente superior a la altura de tu header si es necesario */
 }
