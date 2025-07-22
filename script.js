@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const auctionCard = document.createElement('div');
             auctionCard.classList.add('auction-card');
             auctionCard.innerHTML = `
-                <img src="${auction.imageUrl || 'https://via.placeholder.com/300'}" alt="${auction.title}">
+                <img src="${auction.imageUrl || 'https://cdn.discordapp.com/attachments/1225080795132072039/1397334415578890240/descargar.png?ex=68815895&is=68800715&hm=0d272bd18fb45d369c3fd7b7000e3140fc214da84e3f7cc678ff29641f964a1f&'}" alt="${auction.title}">
                 <h3>${auction.title}</h3>
                 <p>${auction.description}</p>
                 <p>Puja Actual: <strong>${auction.currentBid} Rublos</strong> (por ${auction.currentBidderName || 'Nadie'})</p>
