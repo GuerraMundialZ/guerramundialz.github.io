@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const userDisplay = document.getElementById('user-display');
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
-    const createAuctionBtnNav = document.getElementById('create-auction-btn-nav');
-    const adminPanelBtnNav = document.getElementById('admin-panel-btn-nav');
+    const createAuctionBtnNav = document.getElementById('create-auction-btn-nav'); // Botón "Crear Subasta" en la navegación
+    const adminPanelBtnNav = document.getElementById('admin-panel-btn-nav');     // Botón "Panel Admin" en la navegación
 
     // Referencias para la sección de subastas activas (subastas.html)
     const activeAuctionsList = document.getElementById('active-auctions-list');
@@ -55,9 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Función para mostrar mensajes en una modal
+    // Función para mostrar mensajes en una modal (usada para pujas)
     function showModalMessage(title, message, type = 'info') {
         bidModalTitle.textContent = title;
+        // Ajusta la clase para el color del título de la modal
         bidModalTitle.className = type === 'success' ? 'success-message' : (type === 'error' ? 'error-message' : 'info-message');
         bidModalMessage.textContent = message;
         bidMessageModal.style.display = 'flex'; // Usar flex para centrar
@@ -105,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 loginButton.style.display = 'none';
                 logoutButton.style.display = 'block';
 
-                // Mostrar botón de crear subasta y panel de admin si es admin
+                // Mostrar/ocultar botones de navegación para admin
                 if (isAdminUser) {
                     if (createAuctionBtnNav) createAuctionBtnNav.style.display = 'block';
                     if (adminPanelBtnNav) adminPanelBtnNav.style.display = 'block';
@@ -114,16 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (adminPanelBtnNav) adminPanelBtnNav.style.display = 'none';
                 }
 
-                // Redirigir si no es admin y está en la página de admin
+                // Redirigir si está en la página de admin y no es admin
                 if (window.location.pathname.includes('admin.html') && !isAdminUser) {
-                    window.location.href = 'index.html'; // Redirige a la página principal
-                    return; // Detiene la ejecución para evitar cargar contenido de admin
-                }
-
-                // Si estamos en la página de admin y es admin, cargar las subastas
-                if (window.location.pathname.includes('admin.html') && isAdminUser) {
-                    // Lógica para admin.html (ya implementada en el turno anterior)
-                    // loadAdminAuctions(); // Esto se llamaría aquí si admin.html existiera en este script
+                    window.location.href = 'index.html';
+                    return;
                 }
 
             } else {
@@ -138,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Redirigir si no hay token y está en la página de admin
             if (window.location.pathname.includes('admin.html')) {
-                window.location.href = 'index.html'; // Redirige a la página principal
+                window.location.href = 'index.html';
             }
         }
     }
@@ -154,8 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function logoutUser() {
         setAuthToken(null);
         updateAuthUI();
-        // Redirigir a la página principal si se cierra sesión desde admin.html o subastas.html
-        if (window.location.pathname.includes('admin.html') || window.location.pathname.includes('subastas.html')) {
+        // Redirigir a la página principal si se cierra sesión desde subastas.html
+        if (window.location.pathname.includes('subastas.html')) {
             window.location.href = 'index.html';
         }
     }
@@ -176,6 +171,28 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAuthUI(); // Actualizar la UI al cargar la página si no hay token en la URL
     }
 
+    // --- Lógica de Scroll Suave (mantener como estaba) ---
+    document.querySelectorAll('.header nav ul li a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+
+            if (targetElement) {
+                const header = document.querySelector('.header');
+                const headerHeight = header ? header.offsetHeight : 0;
+
+                const targetPosition = targetElement.offsetTop - headerHeight;
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
     // --- Lógica específica para la página de subastas (subastas.html) ---
     if (window.location.pathname.includes('subastas.html')) {
 
@@ -192,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 delete countdownIntervals[auctionId]; // Eliminar del objeto de intervalos
                 // Opcional: Recargar solo esta subasta para mostrar el ganador si ya está en el backend
                 // O simplemente recargar todas las subastas para actualizar el estado
-                loadActiveAuctions();
+                loadActiveAuctions(); // Recargar para mostrar el estado finalizado
                 return;
             }
 
@@ -241,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const endDate = new Date(auction.endDate).getTime();
                     const now = new Date().getTime();
-                    const isEnded = endDate < now;
+                    const isEnded = auction.status === 'finalized' || auction.status === 'cancelled' || endDate < now;
 
                     auctionCard.innerHTML = `
                         <img src="${auction.imageUrl}" alt="${auction.title}" onerror="this.onerror=null;this.src='https://placehold.co/300x200?text=No+Image';">
@@ -252,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="current-bidder">${auction.currentBidderName ? `Pujador actual: <strong>${auction.currentBidderName}</strong>` : 'Sé el primero en pujar!'}</p>
                             <p class="countdown" data-end-date="${auction.endDate}"></p>
                             <div class="bid-controls">
-                                <input type="number" class="bid-input" placeholder="Tu puja" min="${auction.currentBid + 0.01}" step="0.01" ${isEnded ? 'disabled' : ''}>
+                                <input type="number" class="bid-input" placeholder="Tu puja" min="${(auction.currentBid + 0.01).toFixed(2)}" step="0.01" ${isEnded ? 'disabled' : ''}>
                                 <button class="button bid-button" data-id="${auction._id}" ${isEnded ? 'disabled' : ''}>Pujar</button>
                             </div>
                         </div>
