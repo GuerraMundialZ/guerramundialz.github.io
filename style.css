@@ -18,12 +18,20 @@
     --info-color: #2196F3; /* Azul para mensajes informativos */
 }
 
+/* NEW: Global hidden class */
+.hidden {
+    display: none !important; /* Use !important to ensure it overrides other display properties */
+}
+
 /* Ocultar elementos de UI por defecto hasta que JS los muestre */
-.discord-auth-section #user-display,
+/* REMOVED: .discord-auth-section #user-display,
 .discord-auth-section #logoutButton,
 .discord-auth-section #adminPanelBtn {
     display: none;
 }
+These elements should now initially have the 'hidden' class added directly in your HTML or via initial JS setup,
+rather than being hidden by these specific CSS rules. This promotes consistency with the new approach.
+*/
 
 /* Base */
 body {
@@ -474,7 +482,7 @@ a:hover {
     transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
 
-#popup-message:not(.popup-hidden) {
+#popup-message:not(.popup-hidden) { /* Assuming you'll add 'popup-hidden' to hide it */
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
