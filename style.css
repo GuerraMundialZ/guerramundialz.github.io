@@ -32,6 +32,9 @@ body {
     margin: 0;
     line-height: 1.6;
     scroll-behavior: smooth;
+    /* --- CAMBIO AÑADIDO AQUÍ --- */
+    padding-top: 130px; /* Ajusta este valor si el encabezado aún cubre el contenido */
+    /* -------------------------- */
 }
 
 .container {
