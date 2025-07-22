@@ -168,8 +168,8 @@ body.subpage-body {
     position: relative;
     overflow: hidden;
     /* --- CAMBIO CLAVE REALIZADO AQUÍ --- */
-    /* Asegura que el contenido quede visible debajo del encabezado fijo al usar enlaces de ancla */
-    scroll-margin-top: 170px; /* Aumentado a 170px para dar más espacio. */
+    /* Aumentamos de 170px a 200px para compensar la altura del encabezado. */
+    scroll-margin-top: 200px;
     /* ----------------------------------------------- */
 }
 
@@ -891,6 +891,9 @@ a:hover {
 
     .section {
         padding: 60px 0;
+        /* --- CAMBIO ADICIONAL PARA MÓVILES --- */
+        /* Puede que el encabezado sea más alto en móvil, así que aumentamos aquí también. */
+        scroll-margin-top: 200px; /* Asegura que funcione bien en pantallas pequeñas */
     }
 
     h1, h2 {
