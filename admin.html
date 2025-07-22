@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Guerra Mundial Z</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="images/icono_pestana.png" type="image/png">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo-link">
+                <img src="images/logo.webp" alt="Guerra Mundial Z Logo" class="logo">
+            </a>
+            <h1>Panel de Administración</h1>
+            <nav>
+                <a href="index.html">Inicio</a>
+                <a href="subastas.html">Subastas</a>
+                <a href="#" id="loginButton">Iniciar Sesión</a>
+                <div id="userInfo" style="display: none;">
+                    <img id="userAvatar" src="" alt="Avatar" class="user-avatar">
+                    <span id="usernameDisplay"></span>
+                    <button id="createAuctionBtn" class="nav-button" style="display: none;">Crear Nueva Subasta</button>
+                    <button id="adminPanelBtn" class="nav-button" style="display: none;">Panel Admin</button>
+                    <button id="logoutButton" class="nav-button">Cerrar Sesión</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <section class="admin-panel">
+            <h2>Gestionar Subastas</h2>
+            <div id="adminAuctionList" class="auction-grid">
+                <p id="loadingMessage">Cargando subastas...</p>
+            </div>
+            <p id="noAuctionsMessage" style="display: none;">No hay subastas para mostrar.</p>
+        </section>
+
+        <div id="editAuctionModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeEditModal()">&times;</span>
+                <h3>Editar Subasta</h3>
+                <form id="editAuctionForm">
+                    <input type="hidden" id="editAuctionId">
+                    <label for="editTitle">Título:</label>
+                    <input type="text" id="editTitle" name="title" required>
+                    
+                    <label for="editDescription">Descripción:</label>
+                    <textarea id="editDescription" name="description" required></textarea>
+                    
+                    <label for="editImageUrl">URL de la Imagen:</label>
+                    <input type="url" id="editImageUrl" name="imageUrl" placeholder="Opcional">
+                    
+                    <label for="editStartBid">Puja Inicial:</label>
+                    <input type="number" id="editStartBid" name="startBid" min="0" step="0.01" required>
+                    
+                    <label for="editEndDate">Fecha de Finalización:</label>
+                    <input type="datetime-local" id="editEndDate" name="endDate" required>
+                    
+                    <button type="submit">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Guerra Mundial Z. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
