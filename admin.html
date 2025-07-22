@@ -24,23 +24,25 @@
                     <div id="user-display" class="user-info" style="display: none;">
                         <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
                         <span id="user-name"></span>
-                        <button id="create-auction-btn-nav" class="button" style="display: none;">Crear Subasta</button>
+                        <!-- El botón "Crear Subasta" se gestiona desde aquí, no hay un botón separado en la navegación -->
                         <button id="admin-panel-btn-nav" class="button" style="display: none;">Panel Admin</button>
                         <button id="logout-button" class="button">Cerrar Sesión</button>
                     </div>
                 </div>
             </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="index.html">Inicio</a></li>
-                    <li><a href="index.html#server-info">Info Servidor</a></li>
-                    <li><a href="index.html#features">Características</a></li>
-                    <li><a href="index.html#trailer">Tráiler</a></li>
-                    <li><a href="index.html#mods">Mods</a></li>
-                    <li><a href="index.html#community">Comunidad</a></li>
-                    <li><a href="subastas.html">Subastas</a></li>
-                </ul>
-            </nav>
+            <div class="header-bottom-row">
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="index.html#hero">Inicio</a></li>
+                        <li><a href="index.html#server-info">Servidor</a></li>
+                        <li><a href="index.html#features">Características</a></li>
+                        <li><a href="index.html#trailer">Trailer</a></li>
+                        <li><a href="index.html#mods-steam">Mods</a></li>
+                        <li><a href="index.html#community">Comunidad</a></li>
+                        <li><a href="subastas.html">Subastas</a></li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </header>
 
@@ -162,6 +164,6 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="admin-script.js"></script>
 </body>
 </html>

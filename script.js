@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const userDisplay = document.getElementById('user-display');
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
-    const createAuctionBtnNav = document.getElementById('create-auction-btn-nav'); // Botón "Crear Subasta" en la navegación
+    // Eliminado: const createAuctionBtnNav = document.getElementById('create-auction-btn-nav');
     const adminPanelBtnNav = document.getElementById('admin-panel-btn-nav');     // Botón "Panel Admin" en la navegación
 
     // Referencias para la sección de subastas activas (subastas.html)
@@ -106,13 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 loginButton.style.display = 'none';
                 logoutButton.style.display = 'block';
 
-                // Mostrar/ocultar botones de navegación para admin
-                if (isAdminUser) {
-                    if (createAuctionBtnNav) createAuctionBtnNav.style.display = 'block';
-                    if (adminPanelBtnNav) adminPanelBtnNav.style.display = 'block';
-                } else {
-                    if (createAuctionBtnNav) createAuctionBtnNav.style.display = 'none';
-                    if (adminPanelBtnNav) adminPanelBtnNav.style.display = 'none';
+                // Mostrar/ocultar botón de Panel Admin
+                if (adminPanelBtnNav) {
+                    if (isAdminUser) {
+                        adminPanelBtnNav.style.display = 'block';
+                    } else {
+                        adminPanelBtnNav.style.display = 'none';
+                    }
                 }
 
                 // Redirigir si está en la página de admin y no es admin
@@ -128,8 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             userDisplay.style.display = 'none';
             loginButton.style.display = 'block';
             logoutButton.style.display = 'none';
-            if (createAuctionBtnNav) createAuctionBtnNav.style.display = 'none';
-            if (adminPanelBtnNav) adminPanelBtnNav.style.display = 'none';
+            if (adminPanelBtnNav) adminPanelBtnNav.style.display = 'none'; // Asegurarse de ocultarlo si no hay token
 
             // Redirigir si no hay token y está en la página de admin
             if (window.location.pathname.includes('admin.html')) {
@@ -149,14 +148,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function logoutUser() {
         setAuthToken(null);
         updateAuthUI();
-        // Redirigir a la página principal si se cierra sesión desde subastas.html
-        if (window.location.pathname.includes('subastas.html')) {
+        // Redirigir a la página principal si se cierra sesión desde subastas.html o admin.html
+        if (window.location.pathname.includes('subastas.html') || window.location.pathname.includes('admin.html')) {
             window.location.href = 'index.html';
         }
     }
 
     if (logoutButton) {
         logoutButton.addEventListener('click', logoutUser);
+    }
+
+    // Añadir listener para el botón "Panel Admin"
+    if (adminPanelBtnNav) {
+        adminPanelBtnNav.addEventListener('click', () => {
+            window.location.href = 'admin.html'; // Redirige a la página de administración
+        });
     }
 
     // Manejar el callback de Discord OAuth
