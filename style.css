@@ -169,7 +169,7 @@ body.subpage-body {
     overflow: hidden;
     /* --- CAMBIO CLAVE REALIZADO AQUÍ CON LA MEDIDA EXACTA --- */
     /* Altura del encabezado (206.25px) + un pequeño margen extra para el título. */
-    scroll-margin-top: 210px;
+    scroll-margin-top: 150px;
     /* ----------------------------------------------- */
 }
 
@@ -893,7 +893,7 @@ a:hover {
         padding: 60px 0;
         /* --- CAMBIO ADICIONAL PARA MÓVILES CON LA MEDIDA EXACTA --- */
         /* Altura del encabezado (206.25px) + un pequeño margen extra para el título. */
-        scroll-margin-top: 210px;
+        scroll-margin-top: 150px;
     }
 
     h1, h2 {
