@@ -149,6 +149,34 @@ document.addEventListener('DOMContentLoaded', () => {
     checkSession(); // Verificar la sesión después de manejar el token
     fetchAuctions(); // Cargar las subastas al cargar la página
 
+    // --- INICIO DE CAMBIOS PARA EL SCROLL SUAVE ---
+    document.querySelectorAll('.header nav ul li a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault(); // Evita el comportamiento de desplazamiento predeterminado del navegador
+
+            const targetId = this.getAttribute('href'); // Obtiene el ID del ancla (ej: "#caracteristicas")
+            const targetElement = document.querySelector(targetId); // Obtiene el elemento de la sección
+
+            if (targetElement) {
+                const header = document.querySelector('.header'); // Selecciona tu encabezado
+                // Obtiene la altura calculada del header. Según tus capturas, es ~206.25px.
+                // Usamos 210px para asegurar que el título no quede cortado y tenga un pequeño margen.
+                const headerHeight = header ? header.offsetHeight : 0;
+
+                // Calcula la posición a la que debe desplazarse
+                // offsetTop es la distancia del elemento al top del documento
+                // Le restamos la altura del header para que se detenga justo debajo de él
+                const targetPosition = targetElement.offsetTop - headerHeight - 10; // Resta 10px adicionales para un pequeño margen
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth' // Desplazamiento suave
+                });
+            }
+        });
+    });
+    // --- FIN DE CAMBIOS PARA EL SCROLL SUAVE ---
+
     // Lógica de la Modal de Creación de Subastas
     // Abrir la modal al hacer clic en el botón "Crear Nueva Subasta"
     if (createAuctionBtn) {
