@@ -26,7 +26,7 @@
     <header class="header">
         <div class="container">
             <div class="header-top-row">
-                <a href="#hero" class="logo">
+                <a href="#home" class="logo">
                     <img src="img/logo.gif" alt="Logo de Guerra Mundial Z" class="logo-img">
                     Guerra Mundial Z
                 </a>
@@ -39,6 +39,8 @@
                         <span id="user-name"></span>
                     </div>
                     <button id="logout-button" class="button logout-button">Cerrar Sesión</button>
+                    
+                    <button id="create-auction-btn" class="button btn-success" style="display: none;">Crear Nueva Subasta</button>
                 </div>
             </div>
 
@@ -49,7 +51,8 @@
                         <li><a href="#server-info">Servidor</a></li>
                         <li><a href="#features">Características</a></li>
                         <li><a href="#trailer">Trailer</a></li>
-                        <li><a href="#store">Mods</a></li>
+                        <li><a href="#mods-steam">Mods</a></li>
+                        <li><a href="#auctions">Subastas</a></li> 
                         <li><a href="#community">Comunidad</a></li>
                     </ul>
                 </nav>
@@ -172,6 +175,16 @@
         </div>
     </section>
 
+    <section id="auctions" class="section">
+        <div class="container">
+            <h2>💰 Subastas Activas</h2>
+            <p>Aquí puedes ver y pujar por los objetos más codiciados del servidor. ¡No te quedes sin el tuyo!</p>
+
+            <div id="active-auctions-list" class="auction-grid">
+                <p>Cargando subastas...</p>
+            </div>
+        </div>
+    </section>
     <section id="community" class="section">
         <div class="container">
             <h2>Únete a Nuestra Comunidad</h2>
@@ -186,137 +199,38 @@
             <p><a href="https://www.youtube.com/@GuerraMundialZDayZ" target="_blank">💣GMZ💣</a></p>
         </div>
     </footer>
+
+    <div id="create-auction-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Crear Nueva Subasta</h2>
+            <form id="create-auction-form">
+                <div class="form-group">
+                    <label for="auction-title">Título del Artículo:</label>
+                    <input type="text" id="auction-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="auction-description">Descripción:</label>
+                    <textarea id="auction-description" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="auction-image-url">URL de la Imagen:</label>
+                    <input type="url" id="auction-image-url" placeholder="Opcional">
+                </div>
+                <div class="form-group">
+                    <label for="auction-start-bid">Puja Inicial (Rublos):</label>
+                    <input type="number" id="auction-start-bid" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="auction-end-date">Fecha y Hora de Finalización:</label>
+                    <input type="datetime-local" id="auction-end-date" required>
+                </div>
+                <button type="submit" class="button">Crear Subasta</button>
+                <p id="auction-message" class="message" style="display: none;"></p>
+            </form>
+        </div>
+    </div>
     
     <script src="script.js"></script>
-
-<script>
-    // URL de tu backend
-    const BACKEND_URL = 'https://guerra-mundial-z-backend.onrender.com';
-
-    // Referencias a elementos del DOM
-    const loginButton = document.getElementById('login-button');
-    const logoutButton = document.getElementById('logout-button');
-    const userDisplay = document.getElementById('user-display');
-    const userAvatar = document.getElementById('user-avatar');    
-    const userName = document.getElementById('user-name');       
-
-    // Función para guardar el token JWT
-    function setAuthToken(token) {
-        if (token) {
-            localStorage.setItem('jwt_token', token);
-            console.log('Token JWT guardado.');
-        } else {
-            localStorage.removeItem('jwt_token');
-            console.log('Token JWT eliminado.');
-        }
-    }
-
-    // Función para obtener el token JWT
-    function getAuthToken() {
-        return localStorage.getItem('jwt_token');
-    }
-
-    // Función para verificar el estado de la sesión
-    async function checkSession() {
-        const token = getAuthToken();
-
-        if (!token) {
-            console.log('No hay token JWT en localStorage.');
-            showLoggedOutState();
-            return;
-        }
-
-        try {
-            // Incluir el token en el encabezado Authorization
-            const response = await fetch(`${BACKEND_URL}/api/user`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            const data = await response.json();
-
-            if (data.loggedIn) {
-                console.log('Sesión JWT verificada: Usuario logueado.', data.username);
-                // Aquí, pasar el ID del usuario también
-                showLoggedInState(data.username, data.avatar, data.id);
-            } else {
-                console.log('Sesión JWT no válida o expirada.');
-                setAuthToken(null); // Limpiar token inválido
-                showLoggedOutState();
-            }
-        } catch (error) {
-            console.error('Error al verificar sesión con JWT:', error);
-            setAuthToken(null); // Limpiar token en caso de error de red o servidor
-            showLoggedOutState();
-        }
-    }
-
-    // Función para mostrar el estado de logueado
-    function showLoggedInState(username, avatarHash, userId) {
-        if (loginButton) loginButton.style.display = 'none';
-        if (logoutButton) logoutButton.style.display = 'block';
-        if (userDisplay) userDisplay.style.display = 'flex';
-
-        if (userName) userName.textContent = username;
-        
-        // Construye la URL del avatar de Discord
-        let avatarUrl = '';
-        if (userId && avatarHash) {
-            // Si el usuario tiene un avatar personalizado
-            avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png`;
-        } else {
-            // Para usuarios sin avatar personalizado, usa el avatar por defecto
-            // El cálculo del avatar por defecto depende del ID de usuario
-            const defaultAvatarIndex = (userId ? parseInt(userId) : 0) % 5;
-            avatarUrl = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarIndex}.png`;
-        }
-
-        if (userAvatar) userAvatar.src = avatarUrl;
-    }
-
-    // Función para mostrar el estado de no logueado
-    function showLoggedOutState() {
-        if (loginButton) loginButton.style.display = 'block';
-        if (logoutButton) logoutButton.style.display = 'none';
-        if (userDisplay) userDisplay.style.display = 'none';
-        if (userName) userName.textContent = '';
-        if (userAvatar) userAvatar.src = '';
-    }
-
-    // Manejar el clic del botón de inicio de sesión (redirige a tu backend)
-    if (loginButton) {
-        loginButton.addEventListener('click', () => {
-            window.location.href = `${BACKEND_URL}/auth/discord`;
-        });
-    }
-
-    // Manejar el clic del botón de cierre de sesión
-    if (logoutButton) {
-        logoutButton.addEventListener('click', () => {
-            setAuthToken(null); // Eliminar el token JWT
-            showLoggedOutState(); // Actualizar la UI
-            // Opcional: Notificar al backend si hay alguna limpieza de sesión específica (con JWT no suele ser necesario)
-            // fetch(`${BACKEND_URL}/auth/logout`);
-            console.log('Sesión cerrada (token JWT eliminado del cliente).');
-            // Redirigir a la misma página para limpiar la URL de cualquier token anterior.
-            window.location.href = window.location.origin + window.location.pathname;
-        });
-    }
-
-    // Cuando la página carga, verificar si hay un token en la URL o en localStorage
-    window.addEventListener('load', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-
-        if (token) {
-            setAuthToken(token); // Guardar el token del URL
-            // Limpiar la URL para que el token no sea visible ni guardado en el historial
-            window.history.replaceState({}, document.title, window.location.pathname);
-            console.log('Token JWT recibido y guardado desde la URL.');
-        }
-        checkSession(); // Verificar la sesión después de manejar el token
-    });
-
-</script>
 </body>
 </html>
