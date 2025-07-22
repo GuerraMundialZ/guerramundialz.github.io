@@ -35,12 +35,10 @@ body {
     /* Hemos eliminado el padding-top del body general para que scroll-margin-top gestione el espacio en navegación interna */
 }
 
-/* --- CAMBIO REALIZADO AQUÍ --- */
 /* Esta regla es para las subpáginas que cargan directamente y tienen el header fijo */
 body.subpage-body {
-    padding-top: 150px; /* Aumentado a 150px para dar más espacio. */
+    padding-top: 150px; /* Mantengo este valor, que funciona para subastas */
 }
-/* ----------------------------- */
 
 .container {
     max-width: 1200px;
@@ -169,9 +167,9 @@ body.subpage-body {
     text-align: center;
     position: relative;
     overflow: hidden;
-    /* --- CAMBIO REALIZADO AQUÍ --- */
+    /* --- CAMBIO CLAVE REALIZADO AQUÍ --- */
     /* Asegura que el contenido quede visible debajo del encabezado fijo al usar enlaces de ancla */
-    scroll-margin-top: 150px; /* Aumentado a 150px para dar más espacio. */
+    scroll-margin-top: 170px; /* Aumentado a 170px para dar más espacio. */
     /* ----------------------------------------------- */
 }
 
