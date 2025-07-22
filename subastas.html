@@ -22,7 +22,7 @@
                         <i class="fab fa-discord"></i> Iniciar Sesión
                     </a>
                     <div id="user-display" class="user-info" style="display: none;">
-                        <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
+                        <img id="user-avatar" src="" alt="Avatar de usuario">
                         <span id="user-name"></span>
                         <button id="create-auction-btn-nav" class="button" style="display: none;">Crear Subasta</button>
                         <button id="admin-panel-btn-nav" class="button" style="display: none;">Panel Admin</button>
@@ -30,27 +30,31 @@
                     </div>
                 </div>
             </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="index.html">Inicio</a></li>
-                    <li><a href="index.html#server-info">Info Servidor</a></li>
-                    <li><a href="index.html#features">Características</a></li>
-                    <li><a href="index.html#trailer">Tráiler</a></li>
-                    <li><a href="index.html#mods">Mods</a></li>
-                    <li><a href="index.html#community">Comunidad</a></li>
-                    <li><a href="subastas.html">Subastas</a></li>
-                </ul>
-            </nav>
+            <div class="header-bottom-row">
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="index.html#hero">Inicio</a></li>
+                        <li><a href="index.html#server-info">Servidor</a></li>
+                        <li><a href="index.html#features">Características</a></li>
+                        <li><a href="index.html#trailer">Trailer</a></li>
+                        <li><a href="index.html#mods-steam">Mods</a></li>
+                        <li><a href="index.html#community">Comunidad</a></li>
+                        <li><a href="subastas.html">Subastas</a></li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </header>
 
     <main class="main-content">
         <div class="container">
-            <h1>Subastas Activas</h1>
+            <h1>💰 Subastas Activas</h1>
+            <p>Aquí puedes ver y pujar por los objetos más codiciados del servidor. ¡No te quedes sin el tuyo!</p>
+
             <p id="auctions-loading-message" class="message info-message" style="display: none;">Cargando subastas...</p>
             <p id="auctions-error-message" class="message error-message" style="display: none;"></p>
             <div id="active-auctions-list" class="auction-grid">
-                <!-- Las tarjetas de subasta se cargarán aquí dinámicamente -->
+                <!-- Las tarjetas de subasta se cargarán aquí dinámicamente mediante JavaScript -->
             </div>
             <p id="no-auctions-message" class="message info-message" style="display: none;">No hay subastas activas en este momento. ¡Vuelve pronto!</p>
         </div>
@@ -71,7 +75,7 @@
     <footer>
         <div class="container">
             <p>© 2022-2025 Guerra Mundial Z - Servidor de DayZ. Todos los derechos reservados.</p>
-            <p><a href="https://youtu.be/dQw4w9WgXcQ" target="_blank">💣GMZ💣</a></p>
+            <p><a href="https://discord.gg/3VwMwDt3EP" target="_blank">💣GMZ💣</a></p>
         </div>
     </footer>
 
