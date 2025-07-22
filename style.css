@@ -660,6 +660,31 @@ a:hover {
     color: white;
 }
 
+/* ESTILOS PARA EL ELEMENTO DE MENSAJE ESPECÍFICO DEL FORMULARIO DE EDICIÓN/CREACIÓN */
+.form-message {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    display: none; /* Asegura que esté oculto por defecto */
+    width: calc(100% - 20px); /* Ajustar al ancho del formulario */
+    box-sizing: border-box; /* Incluye padding en el ancho */
+}
+
+.form-message.success {
+    background-color: #d4edda; /* Un verde claro para éxito */
+    color: #155724; /* Texto verde oscuro */
+    border: 1px solid #c3e6cb;
+}
+
+.form-message.error {
+    background-color: #f8d7da; /* Un rojo claro para error */
+    color: #721c24; /* Texto rojo oscuro */
+    border: 1px solid #f5c6cb;
+}
+
+
 /* Estilos de la Modal de Creación/Edición de Subastas */
 .modal { /* Aplicamos esta clase a todos los modales genéricos */
     position: fixed;
