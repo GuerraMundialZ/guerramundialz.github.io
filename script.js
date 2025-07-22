@@ -5,47 +5,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // URL de tu backend de Render
     const BACKEND_URL = 'https://guerra-mundial-z-backend.onrender.com';
 
-    // --- Referencias a elementos del DOM (Autenticación y Navegación) ---
-    // Asegúrate de que los IDs aquí coincidan exactamente con tu HTML
-    const loginButton = document.getElementById('loginButton'); // Botón "Iniciar Sesión"
-    const logoutButton = document.getElementById('logoutButton'); // CORREGIDO: Usar 'logoutButton' (sin guion) para coincidir con el HTML recomendado
-    const userInfo = document.getElementById('user-display'); // CORREGIDO: ID en HTML es 'user-display'
-    const userAvatar = document.getElementById('user-avatar'); // CORREGIDO: ID en HTML es 'user-avatar'
-    const usernameDisplay = document.getElementById('user-name'); // CORREGIDO: ID en HTML es 'user-name'
+    // Referencias a elementos del DOM (autenticación)
+    const loginButton = document.getElementById('login-button');
+    const logoutButton = document.getElementById('logout-button');
+    const userDisplay = document.getElementById('user-display');
+    const userAvatar = document.getElementById('user-avatar');
+    const userName = document.getElementById('user-name');
 
-    // Botones de navegación para usuarios logueados (visibilidad controlada por JS)
-    const createAuctionBtn = document.getElementById('createAuctionBtn'); // Botón "Crear Nueva Subasta" en la nav
-    const adminPanelBtn = document.getElementById('adminPanelBtn'); // Botón "Panel Admin" en la nav
+    // Referencias a elementos de la modal de creación de subastas
+    const createAuctionBtn = document.getElementById('create-auction-btn');
+    const createAuctionModal = document.getElementById('create-auction-modal');
+    // Asegúrate de que closeButton se obtiene solo si la modal existe para evitar errores
+    const closeButton = createAuctionModal ? createAuctionModal.querySelector('.close-button') : null;
+    const createAuctionForm = document.getElementById('create-auction-form');
+    const auctionMessage = document.getElementById('auction-message'); // Para mensajes de la modal
 
-    // --- Referencias a elementos del DOM (Paneles de Contenido) ---
-    // Para la página de subastas (subastas.html)
+    // Referencias para la sección de subastas activas
     const activeAuctionsList = document.getElementById('active-auctions-list');
 
-    // Para la página de administración (admin.html)
-    const adminAuctionList = document.getElementById('adminAuctionList'); // Contenedor de subastas en el panel admin
-    const loadingMessage = document.getElementById('loadingMessage'); // Mensaje de carga en admin panel
-    const noAuctionsMessage = document.getElementById('noAuctionsMessage'); // Mensaje de no subastas en admin panel
-
-    // --- Referencias a elementos del DOM (Modal de Creación/Edición en admin.html) ---
-    const editAuctionModal = document.getElementById('editAuctionModal');
-    const closeEditModalButton = editAuctionModal ? editAuctionModal.querySelector('.close-button') : null;
-    const editAuctionForm = document.getElementById('editAuctionForm');
-    const editAuctionId = document.getElementById('editAuctionId'); // Campo oculto para el ID de la subasta a editar
-    const editTitle = document.getElementById('editTitle');
-    const editDescription = document.getElementById('editDescription');
-    const editImageUrl = document.getElementById('editImageUrl');
-    const editStartBid = document.getElementById('editStartBid');
-    const editEndDate = document.getElementById('editEndDate');
-    // NUEVA REFERENCIA: Elemento para la vista previa de la imagen
-    const imageUrlPreview = document.getElementById('imageUrlPreview');
-
-
-    // --- Variables Auxiliares ---
-    // Variable para controlar el intervalo de actualización del contador (lo haremos global para limpiarlo bien)
-    let countdownIntervals = {};
-
-    // --- Funciones de Utilidad de Autenticación ---
-
+    // Función para guardar el token JWT
     function setAuthToken(token) {
         if (token) {
             localStorage.setItem('jwt_token', token);
@@ -56,102 +34,85 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Función para obtener el token JWT
     function getAuthToken() {
         return localStorage.getItem('jwt_token');
     }
-
-    // `isAdmin` verifica si el usuario tiene alguno de los roles de Discord listados
     function isAdmin(userRoles) {
+        // **¡IMPORTANTE!**
+        // Reemplaza '1397175186935255091' con los IDs reales de los roles de Discord
+        // que deseas que tengan permisos de administrador en tu sitio web.
+        // Puedes añadir múltiples IDs de rol si tienes varios roles de administrador.
+        // Ejemplo: ['ID_ROL_ADMIN_1', 'ID_ROL_ADMIN_2', 'OTRO_ROL_ADMIN']
         const ADMIN_DISCORD_ROLE_IDS = [
             '1397175186935255091', // Tu ID de rol de administrador de Discord
-            // Agrega más IDs de rol si tienes otros roles de admin
+            // 'AGREGA_OTRA_ID_DE_ROL_AQUI_SI_ES_NECESARIO',
         ];
 
+        // userRoles debe ser un array de strings (IDs de rol de Discord) que el backend enviará.
         if (!userRoles || !Array.isArray(userRoles) || userRoles.length === 0) {
             return false;
         }
+
+        // Verifica si el usuario tiene AL MENOS UNO de los roles definidos en ADMIN_DISCORD_ROLE_IDS.
         return userRoles.some(roleId => ADMIN_DISCORD_ROLE_IDS.includes(roleId));
     }
-
-    // `updateAuthUI` actualiza el estado visual de la UI según si el usuario está logueado y su rol
-    async function updateAuthUI() {
+    // Función para verificar el estado de la sesión y actualizar la UI
+    async function checkSession() {
         const token = getAuthToken();
 
         if (!token) {
+            console.log('No hay token JWT en localStorage.');
             showLoggedOutState();
-            // Ocultar botones de administración si no hay token
-            if (createAuctionBtn) createAuctionBtn.style.display = 'none';
-            if (adminPanelBtn) adminPanelBtn.style.display = 'none';
-            // Si estamos en admin.html y no hay token, mostrar mensaje de acceso denegado
-            if (window.location.pathname.includes('admin.html') && adminAuctionList) {
-                adminAuctionList.innerHTML = '<p class="error-message">Por favor, inicia sesión como administrador para ver este panel.</p>';
-                if (loadingMessage) loadingMessage.style.display = 'none';
-                if (noAuctionsMessage) noAuctionsMessage.style.display = 'none';
-            }
+            if (createAuctionBtn) createAuctionBtn.style.display = 'none'; // Ocultar botón de crear subasta
             return;
         }
 
         try {
             const response = await fetch(`${BACKEND_URL}/api/user`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
             const data = await response.json();
 
             if (data.loggedIn) {
-                console.log('Sesión JWT verificada:', data.username);
-                showLoggedInState(data.username, data.avatar, data.id);
+                console.log('Sesión JWT verificada: Usuario logueado.', data.username);
+                // Asegúrate de que `data.roles` del backend contiene el array de IDs de rol de Discord del usuario
+                showLoggedInState(data.username, data.avatar, data.id, data.roles);
 
-                // Control de visibilidad de botones de admin
-                if (isAdmin(data.roles)) {
-                    if (createAuctionBtn) createAuctionBtn.style.display = 'inline-block';
-                    if (adminPanelBtn) adminPanelBtn.style.display = 'inline-block';
-                    // Si estamos en admin.html y el usuario es admin, cargar las subastas del panel
-                    if (window.location.pathname.includes('admin.html')) {
-                        loadAdminAuctions();
-                    }
-                } else {
-                    // Si el usuario está logueado pero NO es admin
-                    if (createAuctionBtn) createAuctionBtn.style.display = 'none';
-                    if (adminPanelBtn) adminPanelBtn.style.display = 'none';
-                    if (window.location.pathname.includes('admin.html') && adminAuctionList) {
-                        adminAuctionList.innerHTML = '<p class="error-message">No tienes permisos para acceder a esta sección.</p>';
-                        if (loadingMessage) loadingMessage.style.display = 'none';
-                        if (noAuctionsMessage) noAuctionsMessage.style.display = 'none';
+                // Mostrar/ocultar el botón de crear subasta
+                if (createAuctionBtn) {
+                    // Ahora `isAdmin` usa los roles de Discord directamente
+                    if (isAdmin(data.roles)) {
+                        createAuctionBtn.style.display = 'block';
+                    } else {
+                        createAuctionBtn.style.display = 'none';
                     }
                 }
             } else {
                 console.log('Sesión JWT no válida o expirada.');
-                setAuthToken(null);
+                setAuthToken(null); // Limpiar token inválido
                 showLoggedOutState();
-                if (createAuctionBtn) createAuctionBtn.style.display = 'none';
-                if (adminPanelBtn) adminPanelBtn.style.display = 'none';
-                if (window.location.pathname.includes('admin.html') && adminAuctionList) {
-                    adminAuctionList.innerHTML = '<p class="error-message">Sesión inválida. Por favor, inicia sesión como administrador.</p>';
-                    if (loadingMessage) loadingMessage.style.display = 'none';
-                    if (noAuctionsMessage) noAuctionsMessage.style.display = 'none';
-                }
+                if (createAuctionBtn) createAuctionBtn.style.display = 'none'; // Ocultar botón de crear subasta
             }
         } catch (error) {
             console.error('Error al verificar sesión con JWT:', error);
-            setAuthToken(null);
+            setAuthToken(null); // Limpiar token en caso de error de red o servidor
             showLoggedOutState();
-            if (createAuctionBtn) createAuctionBtn.style.display = 'none';
-            if (adminPanelBtn) adminPanelBtn.style.display = 'none';
-            if (window.location.pathname.includes('admin.html') && adminAuctionList) {
-                adminAuctionList.innerHTML = '<p class="error-message">Error de conexión al verificar permisos.</p>';
-                if (loadingMessage) loadingMessage.style.display = 'none';
-                if (noAuctionsMessage) noAuctionsMessage.style.display = 'none';
-            }
+            if (createAuctionBtn) createAuctionBtn.style.display = 'none'; // Ocultar botón de crear subasta
         }
     }
 
-    function showLoggedInState(username, avatarHash, userId) {
+    // Función para mostrar el estado de logueado
+    function showLoggedInState(username, avatarHash, userId, roles) {
         if (loginButton) loginButton.style.display = 'none';
         if (logoutButton) logoutButton.style.display = 'block';
-        if (userInfo) userInfo.style.display = 'flex';
+        if (userDisplay) userDisplay.style.display = 'flex';
 
-        if (usernameDisplay) usernameDisplay.textContent = username;
+        if (userName) userName.textContent = username;
 
+        // Construye la URL del avatar de Discord
         let avatarUrl = '';
         if (userId && avatarHash) {
             avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png`;
@@ -159,384 +120,183 @@ document.addEventListener('DOMContentLoaded', () => {
             const defaultAvatarIndex = (userId ? parseInt(userId) : 0) % 5;
             avatarUrl = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarIndex}.png`;
         }
+
         if (userAvatar) userAvatar.src = avatarUrl;
     }
 
+    // Función para mostrar el estado de no logueado
     function showLoggedOutState() {
         if (loginButton) loginButton.style.display = 'block';
         if (logoutButton) logoutButton.style.display = 'none';
-        if (userInfo) userInfo.style.display = 'none';
-        if (usernameDisplay) usernameDisplay.textContent = '';
+        if (userDisplay) userDisplay.style.display = 'none';
+        if (userName) userName.textContent = '';
         if (userAvatar) userAvatar.src = '';
     }
 
-    // --- Manejo de Eventos de Autenticación ---
-
+    // Manejar el clic del botón de inicio de sesión (redirige a tu backend)
     if (loginButton) {
         loginButton.addEventListener('click', () => {
             window.location.href = `${BACKEND_URL}/auth/discord`;
         });
     }
 
+    // Manejar el clic del botón de cierre de sesión
     if (logoutButton) {
         logoutButton.addEventListener('click', () => {
-            setAuthToken(null);
-            updateAuthUI(); // Llama a updateAuthUI para recalcular el estado y visibilidad de botones
+            setAuthToken(null); // Eliminar el token JWT
+            showLoggedOutState(); // Actualizar la UI
+            if (createAuctionBtn) createAuctionBtn.style.display = 'none'; // Ocultar botón de crear subasta
             console.log('Sesión cerrada (token JWT eliminado del cliente).');
-            // Redirigir a la misma página para limpiar la URL
+            // Redirigir a la misma página para limpiar la URL de cualquier token anterior.
             window.location.href = window.location.origin + window.location.pathname;
         });
     }
 
-    // AÑADIDO: Listener para el botón del Panel Admin
-    if (adminPanelBtn) {
-        adminPanelBtn.addEventListener('click', () => {
-            window.location.href = 'admin.html'; // Redirige a la página de administración
-        });
-    }
-
-    // --- Lógica de Inicialización General ---
-
-    // Al cargar la página, primero verifica si hay un token en la URL (después de Discord OAuth)
+    // Cuando la página carga, verificar si hay un token en la URL o en localStorage
     const urlParams = new URLSearchParams(window.location.search);
-    const tokenFromUrl = urlParams.get('token');
-    if (tokenFromUrl) {
-        setAuthToken(tokenFromUrl);
+    const token = urlParams.get('token');
+    if (token) {
+        setAuthToken(token); // Guardar el token del URL
         // Limpiar la URL para que el token no sea visible ni guardado en el historial
         window.history.replaceState({}, document.title, window.location.pathname);
         console.log('Token JWT recibido y guardado desde la URL.');
     }
-    
-    // Luego, verifica el estado de la sesión y actualiza la UI para todas las páginas
-    updateAuthUI(); 
+    checkSession(); // Verificar la sesión después de manejar el token
+    fetchAuctions(); // Cargar las subastas al cargar la página
 
-    // Cargar subastas activas SOLO si NO estamos en la página de administración
-    if (!window.location.pathname.includes('admin.html')) {
-        fetchAuctions();
-    }
-
-    // --- Lógica del Scroll Suave ---
-    document.querySelectorAll('.header nav a[href^="#"]').forEach(anchor => { // Selector más genérico para enlaces de navegación
+    // --- INICIO DE CAMBIOS PARA EL SCROLL SUAVE ---
+    document.querySelectorAll('.header nav ul li a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
-            e.preventDefault();
+            e.preventDefault(); // Evita el comportamiento de desplazamiento predeterminado del navegador
 
-            const targetId = this.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
+            const targetId = this.getAttribute('href'); // Obtiene el ID del ancla (ej: "#caracteristicas")
+            const targetElement = document.querySelector(targetId); // Obtiene el elemento de la sección
 
             if (targetElement) {
-                const header = document.querySelector('header');
+                const header = document.querySelector('.header'); // Selecciona tu encabezado
+                // Obtiene la altura calculada del header. Según tus capturas, es ~206.25px.
+                // Usamos 210px para asegurar que el título no quede cortado y tenga un pequeño margen.
                 const headerHeight = header ? header.offsetHeight : 0;
 
-                const targetPosition = targetElement.offsetTop - headerHeight;
+                // Calcula la posición a la que debe desplazarse
+                // offsetTop es la distancia del elemento al top del documento
+                // Le restamos la altura del header para que se detenga justo debajo de él
+                const targetPosition = targetElement.offsetTop - headerHeight; // Ya no resta los 10px adicionales
 
                 window.scrollTo({
                     top: targetPosition,
-                    behavior: 'smooth'
+                    behavior: 'smooth' // Desplazamiento suave
                 });
             }
         });
     });
+    // --- FIN DE CAMBIOS PARA EL SCROLL SUAVE ---
 
-    // --- INICIO DE LÓGICA ESPECÍFICA PARA ADMIN PANEL ---
-
-    // Función para abrir el modal de edición/creación
-    // `auction` será nulo para crear una nueva, o el objeto de subasta para editar
-    function openEditModal(auction = null) {
-        editAuctionForm.reset(); // Limpiar el formulario
-
-        // Limpiar cualquier mensaje de error/éxito previo en el formulario
-        const formMessage = editAuctionForm.querySelector('.form-message');
-        if (formMessage) formMessage.style.display = 'none';
-
-        if (auction) {
-            // Modo edición
-            document.querySelector('#editAuctionModal h3').textContent = 'Editar Subasta';
-            editAuctionId.value = auction._id;
-            editTitle.value = auction.title;
-            editDescription.value = auction.description;
-            editImageUrl.value = auction.imageUrl;
-            editStartBid.value = auction.startBid;
-
-            // Formatear la fecha para el input datetime-local (requiere YYYY-MM-DDTHH:mm)
-            const endDate = new Date(auction.endDate);
-            const year = endDate.getFullYear();
-            const month = String(endDate.getMonth() + 1).padStart(2, '0');
-            const day = String(endDate.getDate()).padStart(2, '0');
-            const hours = String(endDate.getHours()).padStart(2, '0');
-            const minutes = String(endDate.getMinutes()).padStart(2, '0');
-            editEndDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-            // Actualizar vista previa de imagen
-            if (imageUrlPreview) {
-                imageUrlPreview.src = auction.imageUrl || 'https://via.placeholder.com/150';
-                imageUrlPreview.style.display = 'block';
-            }
-        } else {
-            // Modo creación
-            document.querySelector('#editAuctionModal h3').textContent = 'Crear Nueva Subasta';
-            editAuctionId.value = ''; // Asegurarse de que no haya ID para creación
-            // Ocultar vista previa en modo creación
-            if (imageUrlPreview) {
-                imageUrlPreview.src = '';
-                imageUrlPreview.style.display = 'none';
-            }
-        }
-        if (editAuctionModal) editAuctionModal.style.display = 'flex'; // Usamos flex para centrar
-    }
-
-    // Función global para cerrar el modal (llamada también por el onclick en HTML)
-    window.closeEditModal = function() {
-        if (editAuctionModal) {
-            editAuctionModal.style.display = 'none';
-            editAuctionForm.reset();
-            const formMessage = editAuctionForm.querySelector('.form-message');
-            if (formMessage) formMessage.style.display = 'none';
-            // Ocultar vista previa al cerrar el modal
-            if (imageUrlPreview) {
-                imageUrlPreview.src = '';
-                imageUrlPreview.style.display = 'none';
-            }
-        }
-    };
-
-
-    // Listener para el botón "Crear Nueva Subasta" en el header (si existe)
+    // Lógica de la Modal de Creación de Subastas
+    // Abrir la modal al hacer clic en el botón "Crear Nueva Subasta"
     if (createAuctionBtn) {
-        createAuctionBtn.addEventListener('click', () => openEditModal());
+        createAuctionBtn.addEventListener('click', () => {
+            if (createAuctionModal) {
+                createAuctionModal.style.display = 'flex'; // Usamos flex para centrar
+                // Opcional: limpiar el formulario si se reabre
+                if (createAuctionForm) createAuctionForm.reset();
+                if (auctionMessage) {
+                    auctionMessage.style.display = 'none';
+                    auctionMessage.className = 'message'; // Resetear clases de mensaje
+                }
+            }
+        });
     }
 
-    // Listener para cerrar el modal haciendo clic en la 'x'
-    if (closeEditModalButton) {
-        closeEditModalButton.addEventListener('click', closeEditModal);
+    // Cerrar la modal con la 'x'
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            if (createAuctionModal) {
+                createAuctionModal.style.display = 'none';
+            }
+        });
     }
 
-    // Cerrar el modal si se hace clic fuera del contenido
-    if (editAuctionModal) {
+    // Cerrar la modal si se hace clic fuera del contenido
+    if (createAuctionModal) {
         window.addEventListener('click', (event) => {
-            if (event.target === editAuctionModal) {
-                closeEditModal();
+            if (event.target === createAuctionModal) {
+                createAuctionModal.style.display = 'none';
             }
         });
     }
 
-    // NUEVO: Listener para previsualizar la URL de la imagen en el formulario del modal
-    if (editImageUrl && imageUrlPreview) {
-        editImageUrl.addEventListener('input', () => {
-            const url = editImageUrl.value;
-            if (url) {
-                imageUrlPreview.src = url;
-                imageUrlPreview.style.display = 'block';
-            } else {
-                imageUrlPreview.src = '';
-                imageUrlPreview.style.display = 'none';
-            }
-        });
-
-        // Manejar el error de carga de la imagen (por ejemplo, URL inválida)
-        imageUrlPreview.addEventListener('error', () => {
-            imageUrlPreview.src = 'https://via.placeholder.com/150?text=Error'; // Imagen de marcador de posición de error
-            imageUrlPreview.style.display = 'block';
-            console.error('Error al cargar la imagen de previsualización.');
-        });
-    }
-
-    // Función para mostrar mensajes dentro del formulario del modal (creado dinámicamente si no existe)
-    function showFormMessage(formElement, message, type) {
-        let messageElement = formElement.querySelector('.form-message');
-        if (!messageElement) {
-            messageElement = document.createElement('p');
-            messageElement.classList.add('form-message');
-            // Insertar el mensaje antes del primer label/input para que esté visible
-            formElement.insertBefore(messageElement, formElement.firstChild);
+    // Función para mostrar mensajes dentro de la modal
+    function showAuctionFormMessage(message, type) {
+        if (auctionMessage) {
+            auctionMessage.textContent = message;
+            auctionMessage.className = `message ${type}`;
+            auctionMessage.style.display = 'block';
+            setTimeout(() => {
+                auctionMessage.style.display = 'none';
+            }, 3000); // Ocultar mensaje después de 3 segundos
         }
-        messageElement.textContent = message;
-        messageElement.className = `form-message ${type}`; // Reemplazar clases para el tipo
-        messageElement.style.display = 'block';
-        setTimeout(() => {
-            messageElement.style.display = 'none';
-        }, 3000); // Ocultar mensaje después de 3 segundos
     }
 
-    // Manejar el envío del formulario de edición/creación (POST o PUT)
-    if (editAuctionForm) {
-        editAuctionForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
+    // Manejar el envío del formulario de creación de subastas (solo admin)
+    if (createAuctionForm) {
+        createAuctionForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Evitar el envío por defecto del formulario
 
-            const id = editAuctionId.value;
-            const isEditing = !!id; // True si hay ID, False si es nueva
-            const method = isEditing ? 'PUT' : 'POST';
-            const url = isEditing ? `${BACKEND_URL}/api/auctions/${id}` : `${BACKEND_URL}/api/admin`;
+            const title = document.getElementById('auction-title').value;
+            const description = document.getElementById('auction-description').value;
+            const imageUrl = document.getElementById('auction-image-url').value;
+            const startBid = parseFloat(document.getElementById('auction-start-bid').value);
+            const endDate = document.getElementById('auction-end-date').value;
 
             const token = getAuthToken();
+
             if (!token) {
-                showFormMessage(editAuctionForm, 'Debes iniciar sesión para realizar esta acción.', 'error');
+                showAuctionFormMessage('Debes iniciar sesión como administrador para crear subastas.', 'error');
                 return;
             }
 
-            const formData = new FormData(editAuctionForm);
-            const data = Object.fromEntries(formData.entries());
-
-            // Convertir startBid a número, y endDate a formato ISO string
-            data.startBid = parseFloat(data.startBid);
-            data.endDate = new Date(data.endDate).toISOString();
-
-            // Si es edición, puedes mantener currentBid y bidder si no se modifican
-            // o permitir que el backend los actualice si startBid es mayor
-            // Por defecto, solo se envían los campos del formulario.
+            // Validaciones básicas
+            if (!title || !description || isNaN(startBid) || startBid < 0 || !endDate) {
+                showAuctionFormMessage('Por favor, completa todos los campos obligatorios (título, descripción, puja inicial, fecha de finalización).', 'error');
+                return;
+            }
 
             try {
-                const response = await fetch(url, {
-                    method: method,
+                const response = await fetch(`${BACKEND_URL}/api/auctions/admin`, {
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({ title, description, imageUrl, startBid, endDate })
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    showFormMessage(editAuctionForm, result.message || `Subasta ${isEditing ? 'actualizada' : 'creada'} con éxito!`, 'success');
-                    editAuctionForm.reset();
-                    // Dar tiempo al usuario para leer el mensaje antes de cerrar y recargar
+                    showAuctionFormMessage('Subasta creada con éxito!', 'success');
+                    createAuctionForm.reset(); // Limpiar el formulario
                     setTimeout(() => {
-                        closeEditModal();
-                        loadAdminAuctions(); // Recargar la lista de subastas en el panel de admin
-                    }, 1000);
+                        if (createAuctionModal) createAuctionModal.style.display = 'none';
+                        fetchAuctions(); // Recargar las subastas para mostrar la nueva
+                    }, 2000);
                 } else {
-                    showFormMessage(editAuctionForm, result.message || `Error al ${isEditing ? 'actualizar' : 'crear'} subasta.`, 'error');
-                    console.error(`Error al ${isEditing ? 'actualizar' : 'crear'} subasta:`, result);
+                    showAuctionFormMessage(`Error al crear subasta: ${result.message || 'Error desconocido'}`, 'error');
                 }
             } catch (error) {
-                console.error('Error de red al enviar subasta:', error);
-                showFormMessage(editAuctionForm, 'Error de conexión. Inténtalo de nuevo.', 'error');
+                console.error('Error de red al crear subasta:', error);
+                showAuctionFormMessage('Error de red al crear subasta. Inténtalo de nuevo.', 'error');
             }
         });
     }
 
-    // Función para renderizar una tarjeta de subasta en el panel de admin
-    function renderAdminAuctionCard(auction) {
-        const card = document.createElement('div');
-        card.className = 'auction-card admin-card'; // Clase para estilos específicos del admin
-        card.dataset.id = auction._id; // Almacena el ID para fácil acceso
-
-        const endDate = new Date(auction.endDate);
-        const formattedEndDate = endDate.toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'short' });
-        const discordTimestamp = Math.floor(endDate.getTime() / 1000); // Para formato de tiempo relativo en Discord
-
-        card.innerHTML = `
-            <img src="${auction.imageUrl || 'https://via.placeholder.com/300'}" alt="${auction.title}">
-            <h3>${auction.title}</h3>
-            <p>${auction.description}</p>
-            <p><strong>Creada por:</strong> ${auction.creatorName || 'Desconocido'}</p>
-            <p><strong>Puja Inicial:</strong> ${auction.startBid} Rublos</p>
-            <p><strong>Puja Actual:</strong> ${auction.currentBid} Rublos</p>
-            <p><strong>Pujador Actual:</strong> ${auction.currentBidderName || 'Nadie'}</p>
-            <p><strong>Estado:</strong> ${auction.status}</p>
-            <p><strong>Finaliza:</strong> ${formattedEndDate} (<t:${discordTimestamp}:R>)</p>
-            <div class="admin-actions">
-                <button class="edit-btn button" data-id="${auction._id}">Editar</button>
-                <button class="delete-btn button" data-id="${auction._id}">Eliminar</button>
-            </div>
-        `;
-
-        // Los Event Listeners se deben añadir a los botones recién creados
-        card.querySelector('.edit-btn').addEventListener('click', () => {
-            openEditModal(auction); // Pasa el objeto completo para prellenar el formulario
-        });
-        card.querySelector('.delete-btn').addEventListener('click', () => {
-            if (confirm(`¿Estás seguro de que quieres eliminar la subasta "${auction.title}"?`)) {
-                deleteAuction(auction._id);
-            }
-        });
-
-        return card;
-    }
-
-    // Función para cargar todas las subastas en el panel de administración
-    async function loadAdminAuctions() {
-        if (!adminAuctionList) return; // Salir si no estamos en admin.html
-
-        loadingMessage.style.display = 'block';
-        adminAuctionList.innerHTML = ''; // Limpiar lista existente
-        noAuctionsMessage.style.display = 'none';
-
-        try {
-            const token = getAuthToken();
-            if (!token) {
-                adminAuctionList.innerHTML = '<p class="error-message">No estás autenticado. Por favor, inicia sesión.</p>';
-                return;
-            }
-
-            // Esta ruta `/api/admin` debería devolver TODAS las subastas, activas e inactivas, para el admin
-            const response = await fetch(`${BACKEND_URL}/api/admin`, { 
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (response.ok) {
-                const auctions = await response.json();
-                if (auctions.length > 0) {
-                    auctions.forEach(auction => {
-                        adminAuctionList.appendChild(renderAdminAuctionCard(auction));
-                    });
-                } else {
-                    noAuctionsMessage.style.display = 'block';
-                }
-            } else if (response.status === 401 || response.status === 403) {
-                adminAuctionList.innerHTML = '<p class="error-message">No tienes permiso para ver este panel. Por favor, inicia sesión como administrador.</p>';
-                console.error('Acceso denegado al panel de administración.');
-            } else {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Error desconocido al cargar subastas de administración.');
-            }
-        } catch (error) {
-            console.error('Error al cargar subastas del panel de administración:', error);
-            adminAuctionList.innerHTML = `<p class="error-message">Error al cargar las subastas: ${error.message}</p>`;
-        } finally {
-            loadingMessage.style.display = 'none';
-        }
-    }
-
-    // Función para eliminar una subasta
-    async function deleteAuction(id) {
-        const token = getAuthToken();
-        if (!token) {
-            alert('Debes iniciar sesión para realizar esta acción.');
+    // Lógica de Visualización y Puja de Subastas
+    async function fetchAuctions() {
+        if (!activeAuctionsList) {
+            console.error("Elemento 'active-auctions-list' no encontrado en el HTML.");
             return;
         }
-        if (!confirm('¿Estás seguro de que quieres eliminar esta subasta? Esta acción es irreversible.')) {
-            return; // Cancelar si el usuario no confirma
-        }
-
-        try {
-            const response = await fetch(`${BACKEND_URL}/api/auctions/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert(result.message || 'Subasta eliminada con éxito.');
-                loadAdminAuctions(); // Recargar la lista de subastas
-            } else {
-                alert(`Error al eliminar subasta: ${result.message || 'Error desconocido'}`);
-                console.error('Error al eliminar subasta:', result);
-            }
-        } catch (error) {
-            console.error('Error de red al eliminar subasta:', error);
-            alert('Error de conexión al eliminar subasta. Inténtalo de nuevo.');
-        }
-    }
-    // --- FIN DE LÓGICA ESPECÍFICA PARA ADMIN PANEL ---
-
-    // --- Lógica de Visualización y Puja de Subastas (para subastas.html) ---
-
-    // Esta función solo se ejecuta si activeAuctionsList existe (es decir, en subastas.html)
-    async function fetchAuctions() {
-        if (!activeAuctionsList) return; // Asegura que solo se ejecute en subastas.html
-        
         activeAuctionsList.innerHTML = '<p>Cargando subastas...</p>';
 
         try {
@@ -553,12 +313,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderAuctions(auctions) {
         if (!activeAuctionsList) return;
 
-        // Limpiar intervalos de contadores anteriores para evitar duplicados
-        for (const id in countdownIntervals) {
-            clearInterval(countdownIntervals[id]);
-            delete countdownIntervals[id];
-        }
-
         if (auctions.length === 0) {
             activeAuctionsList.innerHTML = '<p>No hay subastas activas en este momento. ¡Vuelve pronto!</p>';
             return;
@@ -573,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3>${auction.title}</h3>
                 <p>${auction.description}</p>
                 <p>Puja Actual: <strong>${auction.currentBid} Rublos</strong> (por ${auction.currentBidderName || 'Nadie'})</p>
-                <p>Finaliza en: <span class="countdown" data-end-date="${auction.endDate}" data-auction-id="${auction._id}"></span></p>
+                <p>Finaliza en: <span class="countdown" data-end-date="${auction.endDate}"></span></p>
                 <div class="bid-controls">
                     <input type="number" class="bid-input" placeholder="Tu puja" min="${auction.currentBid + 1}" step="1" data-auction-id="${auction._id}">
                     <button class="button bid-button" data-auction-id="${auction._id}">Pujar</button>
@@ -583,9 +337,8 @@ document.addEventListener('DOMContentLoaded', () => {
             activeAuctionsList.appendChild(auctionCard);
         });
 
-        startCountdowns(); // Iniciar los contadores de tiempo para las subastas
-        
-        // Re-adjuntar listeners a los botones de puja después de que se han renderizado
+        startCountdowns();
+
         document.querySelectorAll('.bid-button').forEach(button => {
             button.addEventListener('click', async (e) => {
                 const auctionId = e.target.dataset.auctionId;
@@ -617,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (response.ok) {
                         showBidMessage(bidMessageElement, '¡Puja realizada con éxito!', 'success');
-                        setTimeout(fetchAuctions, 1000); // Recargar subastas después de un segundo
+                        setTimeout(fetchAuctions, 1000);
                     } else {
                         showBidMessage(bidMessageElement, `Error al pujar: ${result.message || 'Error desconocido'}`, 'error');
                     }
@@ -641,13 +394,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function startCountdowns() {
         document.querySelectorAll('.countdown').forEach(countdownElement => {
             const endDate = new Date(countdownElement.dataset.endDate).getTime();
-            const auctionId = countdownElement.dataset.auctionId; // Obtener el ID de la subasta
-
-            // Limpiar cualquier intervalo anterior para este ID específico
-            if (countdownIntervals[auctionId]) {
-                clearInterval(countdownIntervals[auctionId]);
-                delete countdownIntervals[auctionId];
-            }
 
             const updateCountdown = () => {
                 const now = new Date().getTime();
@@ -659,9 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const bidInput = countdownElement.closest('.auction-card').querySelector('.bid-input');
                     if (bidButton) bidButton.disabled = true;
                     if (bidInput) bidInput.disabled = true;
-                    clearInterval(countdownIntervals[auctionId]); // Limpiar el intervalo para esta subasta
-                    delete countdownIntervals[auctionId]; // Eliminar de la lista de intervalos
-                    fetchAuctions(); // Opcional: Recargar las subastas para que desaparezca la finalizada
+                    clearInterval(countdownElement.intervalId);
                     return;
                 }
 
@@ -673,9 +417,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
             };
 
-            // Ejecutar una vez inmediatamente y luego establecer el intervalo
+            if (countdownElement.intervalId) {
+                clearInterval(countdownElement.intervalId);
+            }
+
             updateCountdown();
-            countdownIntervals[auctionId] = setInterval(updateCountdown, 1000);
+            countdownElement.intervalId = setInterval(updateCountdown, 1000);
         });
     }
 });
