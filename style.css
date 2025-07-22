@@ -53,7 +53,17 @@ body {
 
 .header .container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column; /* Apila las dos nuevas filas verticalmente */
+    justify-content: space-between; /* Ajuste para el espacio */
+    align-items: center; /* Centra horizontalmente */
+    gap: 10px; /* Espacio entre la fila superior y la inferior */
+}
+
+/* Fila Superior del Encabezado */
+.header-top-row {
+    width: 100%; /* Ocupa todo el ancho */
+    display: flex;
+    justify-content: center; /* Centra el logo y el título */
     align-items: center;
 }
 
@@ -61,22 +71,32 @@ body {
 .header .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 10px; /* Espacio entre el logo y el texto */
     font-family: var(--font-primary);
-    font-size: 1.8em; /* Ajusta el tamaño de la fuente del texto del logo si es necesario */
+    font-size: 1.8em;
     font-weight: bold;
-    color: var(--accent-color); /* Logo en rojo */
+    color: var(--accent-color);
     text-transform: uppercase;
     letter-spacing: 1px;
     text-decoration: none;
-    padding: 10px 0; /* Padding si lo necesitas */
+    padding: 0; /* Asegura que no haya padding extra que lo empuje */
 }
 
 /* Estilos para la imagen del logo dentro del contenedor */
 .logo-img {
-    height: 80px; /* Ajusta la altura de tu logo. Ancho se ajustará automáticamente para mantener la proporción. */
-    width: auto; /* Mantener la proporción */
-    vertical-align: middle; /* Alinea la imagen con el texto adyacente */
+    height: 80px; /* Ajusta la altura de tu logo */
+    width: auto;
+    vertical-align: middle;
+}
+
+/* Fila Inferior del Encabezado */
+.header-bottom-row {
+    width: 100%; /* Ocupa todo el ancho */
+    display: flex;
+    justify-content: center; /* Centra la navegación y el Discord */
+    align-items: center;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    gap: 20px; /* Espacio entre la nav y la sección de Discord */
 }
 
 .header nav ul {
@@ -84,29 +104,24 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    align-items: center; /* Centra verticalmente todos los elementos de la nav */
+    align-items: center;
+    gap: 30px; /* Esto crea un espacio de 30px ENTRE cada elemento del menú */
 }
 
 .header nav ul li {
-    **margin-right: 30px; /* Espacio a la derecha de cada elemento del menú */**
-    **margin-left: 0; /* Aseguramos que no haya un margin-left adicional */**
-}
-
-/* Esto es importante: elimina el margin-right del último elemento para que no empuje el Discord Auth */
-.header nav ul li:last-of-type {
-    **margin-right: 0;**
+    margin: 0; /* Reiniciamos márgenes para evitar conflictos con gap */
 }
 
 .header nav ul li a {
-    color: var(--text-color); /* Texto de navegación blanco por defecto */
+    color: var(--text-color);
     font-family: var(--font-primary);
     font-size: 1.1em;
     font-weight: 600;
     transition: color 0.3s ease, transform 0.2s ease;
     position: relative;
-    padding-bottom: 5px; /* Deja espacio para la línea inferior */
-    text-decoration: none; /* Quita el subrayado por defecto */
-    display: block; /* Para que el padding y after se comporten mejor */
+    padding-bottom: 5px;
+    text-decoration: none;
+    display: block;
 }
 
 /* Subrayado animado para enlaces de texto */
@@ -122,7 +137,7 @@ body {
 }
 
 .header nav ul li a:hover {
-    color: var(--accent-color); /* Se pone rojo al pasar el ratón */
+    color: var(--accent-color);
     transform: translateY(-2px);
 }
 
@@ -130,40 +145,24 @@ body {
     width: 100%;
 }
 
-/* ESTILOS ESPECÍFICOS PARA EL BOTÓN DE DISCORD EN LA NAVEGACIÓN */
-/* Anula el efecto de subrayado para el botón */
+/* ELIMINAR ESTILOS ESPECÍFICOS PARA EL BOTÓN DE DISCORD EN LA NAVEGACIÓN ANTERIORES */
+/* Porque ahora el botón de Discord no está dentro de un <li> */
 .header nav ul li .nav-discord-button {
-    padding: 6px 15px; /* Reducido para hacerlo más compacto */
-    font-size: 0.95em; /* Ajusta el tamaño de la fuente */
-    margin: 0; /* Anula el margen del .button general */
-    text-decoration: none; /* Asegura que no tenga subrayado */
-    display: inline-block; /* Comportamiento de botón */
-    /* Colores del botón de Discord */
-    background-color: var(--accent-color); /* Fondo rojo sólido por defecto */
-    color: #000; /* Texto negro por defecto */
-    border: 2px solid var(--accent-color); /* Borde rojo */
-    /* Desactivar efectos del enlace normal */
-    position: static; /* Anula 'position: relative' del 'a' normal */
-    transform: none; /* Anula 'transform' del 'a' normal */
+    /* Esto ya no es necesario, se elimina o se ignora */
 }
 
-/* Anula la línea inferior (::after) para el botón de Discord */
 .header nav ul li .nav-discord-button::after {
-    content: none; /* Elimina la pseudo-clase ::after */
+    /* Esto ya no es necesario */
 }
 
-/* Estilos hover específicos para el botón de Discord */
 .header nav ul li .nav-discord-button:hover {
-    background-color: var(--dark-accent-color); /* Rojo más oscuro al pasar el ratón */
-    color: #fff; /* Texto blanco al pasar el ratón */
-    transform: translateY(-2px); /* Un ligero efecto de levantamiento al pasar el ratón */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* Sombra sutil al pasar el ratón */
+    /* Esto ya no es necesario */
 }
 
 /* --- */
 /* Estilo para el texto rojo */
 .text-red {
-    color: #ff0000; /* Color rojo. Puedes usar otro código hexadecimal si quieres un tono diferente. */
+    color: #ff0000;
 }
 
 
@@ -172,7 +171,7 @@ body {
     padding: 100px 0;
     text-align: center;
     position: relative;
-    overflow: hidden; /* Para contener elementos flotantes si los hubiera */
+    overflow: hidden;
 }
 
 .section:nth-of-type(odd) {
@@ -185,7 +184,7 @@ body {
 
 h1, h2 {
     font-family: var(--font-primary);
-    color: var(--accent-color); /* Títulos principales en rojo */
+    color: var(--accent-color);
     font-size: 3em;
     margin-bottom: 20px;
     text-transform: uppercase;
@@ -207,43 +206,43 @@ p {
 /* Botones - Unificados para tener el estilo de 'secondary' */
 .button {
     display: inline-block;
-    background-color: transparent; /* Fondo transparente por defecto */
-    color: var(--accent-color); /* Texto rojo por defecto */
+    background-color: transparent;
+    color: var(--accent-color);
     padding: 15px 30px;
     border-radius: 5px;
     text-decoration: none;
     font-weight: bold;
     font-size: 1.1em;
     transition: all 0.3s ease;
-    border: 2px solid var(--accent-color); /* Borde rojo por defecto */
+    border: 2px solid var(--accent-color);
     cursor: pointer;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin: 10px; /* Aplicado aquí para unificar el espaciado también */
+    margin: 10px;
 }
 
 .button:hover {
-    background-color: var(--accent-color); /* Fondo rojo al pasar el ratón */
-    color: #000; /* Texto negro al pasar el ratón */
+    background-color: var(--accent-color);
+    color: #000;
     transform: translateY(-3px);
     box-shadow: 0 8px 18px rgba(0,0,0,0.5);
     text-decoration: none;
 }
 
 .button.secondary {
-    margin-left: 15px; /* Para mantener el espaciado adicional que tenías */
+    margin-left: 15px;
 }
 
 /* Sección Hero */
 .hero {
-    background: url('img/hero-bg.jpg') no-repeat center center/cover; /* Asegúrate de tener una imagen hero-bg.jpg */
+    background: url('img/hero-bg.jpg') no-repeat center center/cover;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     color: rgb(255, 255, 255);
     text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
-    padding-top: 80px; /* Para evitar que el header fijo lo cubra */
+    padding-top: 150px; /* Ajuste para dar espacio al nuevo header de dos filas */
     position: relative;
     z-index: 1;
 }
@@ -255,7 +254,7 @@ p {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Oscurece la imagen de fondo */
+    background: rgba(0, 0, 0, 0.5);
     z-index: -1;
 }
 
@@ -266,7 +265,7 @@ p {
 .hero-content h1 {
     font-size: 4.5em;
     margin-bottom: 15px;
-    color: var(--text-color); /* Blanco para el título principal del hero */
+    color: var(--text-color);
     text-shadow: 3px 3px 10px rgba(0,0,0,0.8);
 }
 
@@ -279,7 +278,7 @@ p {
 .hero-buttons {
     display: flex;
     justify-content: center;
-    gap: 15px; /* Espacio entre los botones */
+    gap: 15px;
     margin-top: 20px;
 }
 
@@ -298,7 +297,7 @@ p {
     background-color: var(--bg-color-secondary);
     padding: 30px;
     border-radius: 8px;
-    flex: 1 1 calc(33% - 40px); /* 3 items por fila, con espacio */
+    flex: 1 1 calc(33% - 40px);
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     text-align: left;
     min-width: 280px;
@@ -329,7 +328,7 @@ p {
 .feature-list li p {
     font-size: 1em;
     margin-bottom: 0;
-    max-width: none; /* Reset para que no se limite el ancho dentro del li */
+    max-width: none;
     line-height: 1.7;
 }
 
@@ -366,7 +365,7 @@ p {
 
 .store-item h3 {
     font-family: var(--font-primary);
-    color: var(--accent-color); /* Títulos de productos en rojo */
+    color: var(--accent-color);
     font-size: 1.7em;
     margin-bottom: 12px;
 }
@@ -388,32 +387,32 @@ p {
 .video-container {
     position: relative;
     width: 100%;
-    padding-bottom: 56.25%; /* Relación de aspecto 16:9 (altura es 56.25% del ancho) */
-    height: 0; /* Necesario para que padding-bottom funcione como altura */
+    padding-bottom: 56.25%;
+    height: 0;
     overflow: hidden;
     margin-top: 40px;
-    background-color: #000; /* Fondo negro mientras carga el video */
+    background-color: #000;
     border-radius: 8px;
     box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-    border: 2px solid var(--accent-color); /* Borde acentuado */
+    border: 2px solid var(--accent-color);
 }
 
-.video-container video { /* <-- Añade o modifica esta regla para el video local */
+.video-container video {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Asegura que el video cubra el área sin distorsionarse */
+    object-fit: cover;
 }
-/* La regla .video-container iframe ya no es necesaria si solo usas video local, pero puedes dejarla si vas a volver a usar iframes */
+
 .video-container iframe {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    border: none; /* Asegura que el iframe no tenga bordes por defecto */
+    border: none;
 }
 
 /* Pie de página (Footer) */
@@ -428,82 +427,78 @@ p {
 
 .footer p {
     margin: 5px 0;
-    max-width: none; /* Para que el texto ocupe todo el ancho si es necesario */
+    max-width: none;
 }
 
 /* Estilos para enlaces de texto generales */
 a {
-    color: var(--text-color); /* Color blanco/gris claro por defecto */
+    color: var(--text-color);
     text-decoration: none;
     transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
 a:hover {
-    color: var(--accent-color); /* Se pone rojo al pasar el ratón */
+    color: var(--accent-color);
     text-decoration: underline;
 }
 
 /* Excepción para enlaces específicos dentro de Server Info para que sigan siendo botones */
 .server-info-links a {
-    color: var(--text-color); /* Para que el texto sea blanco como en los botones */
+    color: var(--text-color);
     background-color: var(--accent-color);
     border: 2px solid var(--accent-color);
 }
 
 /* Estilos para el espacio entre el nombre del servidor y la IP */
 #server-info .feature-list li p:nth-child(2) {
-    margin-bottom: 80px; /* Puedes ajustar este valor: 10px, 15px, 20px, etc. */
+    margin-bottom: 80px;
 }
 
 /* --- POP-UP STYLES --- */
 #popup-message {
-    position: fixed; /* Fija el pop-up en la pantalla */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semitransparente */
-    display: flex; /* Para centrar el contenido del pop-up */
-    justify-content: center; /* Centrar horizontalmente */
-    align-items: center; /* Centrar verticalmente */
-    z-index: 1000; /* Asegurarse de que esté por encima de todo lo demás */
-
-    /* Propiedades para ocultar/mostrar y transiciones */
-    opacity: 0; /* Empieza invisible */
-    visibility: hidden; /* No es accesible ni interactuable cuando está oculto */
-    pointer-events: none; /* Desactivar clics cuando está oculto */
-    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease; /* Transición suave */
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
 
-/* Clase para mostrar el pop-up (la añade JavaScript) */
 #popup-message:not(.popup-hidden) {
     opacity: 1;
     visibility: visible;
-    pointer-events: auto; /* Activar clics cuando está visible */
+    pointer-events: auto;
 }
 
 .popup-content {
-    background-color: var(--bg-color-secondary); /* Usa el color de fondo secundario que ya tienes */
+    background-color: var(--bg-color-secondary);
     color: var(--text-color);
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.7); /* Sombra más pronunciada */
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.7);
     text-align: center;
-    max-width: 500px; /* Ancho máximo para el contenido */
-    width: 90%; /* Ancho responsivo */
-    position: relative; /* Para posicionar el botón de cerrar */
-    transform: scale(0.9); /* Un poco encogido al inicio para el efecto de "aparecer" */
-    transition: transform 0.3s ease; /* Transición para el efecto de escala */
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
 }
 
-/* Efecto al mostrar el pop-up */
 #popup-message:not(.popup-hidden) .popup-content {
-    transform: scale(1); /* Vuelve al tamaño normal cuando se muestra */
+    transform: scale(1);
 }
 
 .popup-content h3 {
     margin-top: 0;
-    color: var(--accent-color); /* Color de acento para el título */
+    color: var(--accent-color);
     font-size: 1.8em;
     margin-bottom: 15px;
 }
@@ -518,23 +513,22 @@ a:hover {
     position: absolute;
     top: 10px;
     right: 15px;
-    font-size: 2.5em; /* Tamaño de la X */
-    line-height: 1; /* Asegura que la X no se desplace */
+    font-size: 2.5em;
+    line-height: 1;
     cursor: pointer;
-    color: var(--text-color-light); /* Color gris claro */
+    color: var(--text-color-light);
     transition: color 0.2s ease;
 }
 
 .close-popup:hover {
-    color: var(--accent-color); /* Cambia a color de acento al pasar el ratón */
+    color: var(--accent-color);
 }
 
 .popup-button {
-    /* Reutiliza estilos de los botones existentes, puedes ajustarlos si quieres */
     display: inline-block;
     padding: 12px 25px;
-    background-color: var(--accent-color); /* Usar tu color de acento */
-    color: var(--text-color-dark); /* Texto oscuro para el botón de acento */
+    background-color: var(--accent-color);
+    color: var(--text-color-dark);
     text-decoration: none;
     border-radius: 5px;
     transition: background-color 0.3s ease, transform 0.2s ease;
@@ -543,97 +537,109 @@ a:hover {
 }
 
 .popup-button:hover {
-    filter: brightness(0.9); /* Oscurece ligeramente el color de fondo */
-    transform: translateY(-2px); /* Un pequeño efecto de levantamiento */
+    filter: brightness(0.9);
+    transform: translateY(-2px);
 }
 
 /* --- ESTILOS PARA LA SECCIÓN DE AUTENTICACIÓN DE DISCORD --- */
 .discord-auth-section {
     display: flex;
     align-items: center;
-    gap: 5px; /* Reducido para juntar más los elementos de Discord */
-    margin-left: auto; /* Empuja la sección a la derecha, separándola del nav */
-    padding-left: 20px; /* Añade un poco de espacio interno a la izquierda */
+    gap: 10px; /* Espacio entre el avatar/nombre y el botón de Discord */
+    /* Ya no necesita margin-left: auto; porque el header-bottom-row lo centra */
 }
 
 .discord-auth-section .user-info {
     display: flex;
     align-items: center;
-    gap: 8px; /* Espacio dentro de la info del usuario */
+    gap: 8px;
     color: var(--text-color);
     font-weight: bold;
-    font-size: 0.9em; /* Tamaño del texto del nombre de usuario */
+    font-size: 0.9em;
 }
 
 .discord-auth-section .user-info img {
     border-radius: 50%;
-    width: 30px; /* Tamaño del avatar */
-    height: 30px; /* Tamaño del avatar */
-    border: 2px solid var(--discord-brand-color); /* Borde de color de Discord */
+    width: 30px;
+    height: 30px;
+    border: 2px solid var(--discord-brand-color);
 }
 
 .discord-auth-section .button.discord-login-button {
-    background-color: var(--discord-brand-color); /* Color azul de Discord */
+    background-color: var(--discord-brand-color);
     color: white;
-    border: none; /* Sin borde para este botón */
-    padding: 8px 12px; /* Padding reducido */
+    border: none;
+    padding: 8px 12px;
     border-radius: 5px;
     cursor: pointer;
     text-decoration: none;
     font-weight: bold;
-    font-size: 0.9em; /* Tamaño de fuente reducido */
+    font-size: 0.9em;
     display: flex;
     align-items: center;
-    gap: 6px; /* Espacio entre el icono y el texto */
+    gap: 6px;
     transition: background-color 0.3s ease;
     margin: 0; /* Asegura que no tenga los márgenes del .button general */
 }
 
 .discord-auth-section .button.discord-login-button:hover {
-    background-color: var(--discord-brand-color-dark); /* Azul más oscuro al pasar el ratón */
+    background-color: var(--discord-brand-color-dark);
 }
 
 .discord-auth-section .button.logout-button {
-    background-color: var(--error-color); /* Rojo para logout */
+    background-color: var(--error-color);
     color: white;
-    border: none; /* Sin borde */
-    padding: 8px 12px; /* Mismo padding que el de login */
+    border: none;
+    padding: 8px 12px;
     border-radius: 5px;
     cursor: pointer;
     text-decoration: none;
     font-weight: bold;
-    font-size: 0.9em; /* Mismo tamaño de fuente que el de login */
+    font-size: 0.9em;
     transition: background-color 0.3s ease;
     margin: 0; /* Asegura que no tenga los márgenes del .button general */
 }
 
 .discord-auth-section .button.logout-button:hover {
-    background-color: #cc3c3c; /* Rojo un poco más oscuro */
+    background-color: #cc3c3c;
 }
 
 
-/* Responsivo */
-@media (max-width: 768px) {
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 900px) { /* Ajustar breakpoint si es necesario */
     .header .container {
-        flex-direction: column;
+        gap: 10px; /* Mantener el espacio entre filas */
+    }
+
+    .header-top-row {
+        justify-content: center; /* Centrar en móvil */
+    }
+
+    .header-bottom-row {
+        flex-direction: column; /* Apila nav y discord verticalmente */
+        gap: 15px; /* Espacio entre nav y discord */
     }
 
     .header nav ul {
-        margin-top: 15px;
-        flex-wrap: wrap;
+        flex-wrap: wrap; /* Permitir que los ítems del menú se envuelvan */
         justify-content: center;
+        gap: 15px; /* Reducir el gap del menú en móviles */
     }
 
     .header nav ul li {
-        margin: 0 10px 10px 10px; /* Espacio para móviles */
+        margin: 0; /* Reiniciar márgenes específicos para móvil */
+    }
+
+    .hero {
+        padding-top: 120px; /* Reducir el padding para el hero en móviles */
     }
 
     .hero-content h1 {
-        font-size: 3em;
+        font-size: 2.5em;
     }
 
     .hero-content p {
-        font-size: 1.2em;
+        font-size: 1.1em;
     }
 
     .section {
@@ -649,46 +655,42 @@ a:hover {
     }
 
     .feature-list li {
-        flex: 1 1 calc(50% - 20px); /* 2 items por fila en pantallas más pequeñas */
-        min-width: unset; /* Reinicia el min-width */
+        flex: 1 1 calc(50% - 20px);
+        min-width: unset;
     }
 
     .store-items {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
 
-    /* Ajustes específicos para la sección de Discord en el encabezado en móvil */
     .discord-auth-section {
-        margin-top: 15px; /* Espacio entre la navegación y esta sección */
-        justify-content: center; /* Centrar en móvil */
-        width: 100%; /* Ocupar todo el ancho disponible */
-        margin-left: 0; /* Deshabilita el auto margin en móvil para centrar */
-        padding-left: 0; /* Elimina padding extra en móvil */
+        justify-content: center; /* Centrar el bloque de discord */
+        width: 100%;
+        padding-left: 0;
     }
 
-    /* Opcional: Ajustes responsivos para el logo en pantallas pequeñas */
     .header .logo {
-        font-size: 1.5em; /* Reduce el tamaño de la fuente en móviles */
+        font-size: 1.5em;
         gap: 5px;
     }
 
     .logo-img {
-        height: 30px; /* Reduce el tamaño del logo en móviles */
+        height: 50px; /* Ajustar el tamaño del logo en móvil */
     }
 }
 
 @media (max-width: 480px) {
     .hero-content h1 {
-        font-size: 2.2em;
+        font-size: 2em;
     }
 
     .hero-content p {
-        font-size: 1em;
+        font-size: 0.9em;
     }
 
     .button {
-        padding: 12px 25px;
-        font-size: 1em;
+        padding: 10px 20px;
+        font-size: 0.9em;
     }
 
     .hero-buttons {
@@ -697,15 +699,15 @@ a:hover {
     }
 
     .hero-buttons a {
-        margin: 10px 0; /* Espaciado vertical para botones en columnas */
+        margin: 8px 0;
     }
 
     h2 {
-        font-size: 1.8em;
+        font-size: 1.6em;
     }
 
     .feature-list li,
     .store-item {
-        flex: 1 1 100%; /* 1 item por fila en móviles muy pequeños */
+        flex: 1 1 100%;
     }
 }
