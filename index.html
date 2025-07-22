@@ -41,11 +41,21 @@
                     <li><a href="#trailer">Trailer</a></li>
                     <li><a href="#store">Mods</a></li>
                     <li><a href="#community">Comunidad</a></li>
-                    </ul>
+                </ul>
             </nav>
             <div class="discord-auth-section">
+                <a id="login-button" class="button discord-login-button" href="#">
+                    <i class="fab fa-discord"></i> Iniciar Sesión con Discord
+                </a>
+
+                <div id="user-display" class="user-info">
+                    <img id="user-avatar" src="" alt="Avatar de usuario">
+                    <span id="user-name"></span>
                 </div>
-        </div>
+
+                <button id="logout-button" class="button logout-button">Cerrar Sesión</button>
+            </div>
+            </div>
     </div>
 </header>
 
@@ -190,7 +200,7 @@
     const logoutButton = document.getElementById('logout-button');
     const userDisplay = document.getElementById('user-display');
     const userAvatar = document.getElementById('user-avatar');    
-    const userName = document.getElementById('user-name');      
+    const userName = document.getElementById('user-name');       
 
     // Función para guardar el token JWT
     function setAuthToken(token) {
