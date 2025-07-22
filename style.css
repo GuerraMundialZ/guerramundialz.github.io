@@ -88,7 +88,13 @@ body {
 }
 
 .header nav ul li {
-    **margin-left: 30px; /* Aumentado para dar más espacio entre los elementos del menú */**
+    **margin-right: 30px; /* Espacio a la derecha de cada elemento del menú */**
+    **margin-left: 0; /* Aseguramos que no haya un margin-left adicional */**
+}
+
+/* Esto es importante: elimina el margin-right del último elemento para que no empuje el Discord Auth */
+.header nav ul li:last-of-type {
+    **margin-right: 0;**
 }
 
 .header nav ul li a {
@@ -541,7 +547,7 @@ a:hover {
     transform: translateY(-2px); /* Un pequeño efecto de levantamiento */
 }
 
-/* --- ESTILOS PARA LA SECCIÓN DE AUTENTICACIÓN DE DISCORD (AJUSTE DE POSICIÓN) --- */
+/* --- ESTILOS PARA LA SECCIÓN DE AUTENTICACIÓN DE DISCORD --- */
 .discord-auth-section {
     display: flex;
     align-items: center;
@@ -619,7 +625,7 @@ a:hover {
     }
 
     .header nav ul li {
-        margin: 0 10px 10px 10px;
+        margin: 0 10px 10px 10px; /* Espacio para móviles */
     }
 
     .hero-content h1 {
