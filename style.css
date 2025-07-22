@@ -11,12 +11,27 @@
     --discord-brand-color: #5865F2; /* Color azul de Discord */
     --discord-brand-color-dark: #454FBF; /* Versión más oscura para hover */
     --error-color: #f04747; /* Color rojo para errores/logout */
-    --text-color-dark: #1a1a1a; /* Color oscuro para el texto de los botones popup */
+    --text-color-dark: #1a1a1a; /* Color oscuro para el texto de los botones popup y éxito */
     --text-color-light: #cccccc; /* Color claro para el texto/icono de cierre popup */
     /* Nuevas variables para mensajes de éxito/error */
     --success-color: #4CAF50; /* Verde para mensajes de éxito */
     --info-color: #2196F3; /* Azul para mensajes informativos */
 }
+
+/* NEW: Global hidden class */
+.hidden {
+    display: none !important; /* Use !important to ensure it overrides other display properties */
+}
+
+/* Ocultar elementos de UI por defecto hasta que JS los muestre */
+/* REMOVED: .discord-auth-section #user-display,
+.discord-auth-section #logoutButton,
+.discord-auth-section #adminPanelBtn {
+    display: none;
+}
+These elements should now initially have the 'hidden' class added directly in your HTML or via initial JS setup,
+rather than being hidden by these specific CSS rules. This promotes consistency with the new approach.
+*/
 
 /* Base */
 body {
@@ -218,7 +233,7 @@ p {
 
 .button:hover {
     background-color: var(--accent-color);
-    color: #000;
+    color: #000; /* Asegura el color de texto oscuro al hacer hover en botones generales */
     transform: translateY(-3px);
     box-shadow: 0 8px 18px rgba(0,0,0,0.5);
     text-decoration: none;
@@ -467,7 +482,7 @@ a:hover {
     transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
 
-#popup-message:not(.popup-hidden) {
+#popup-message:not(.popup-hidden) { /* Assuming you'll add 'popup-hidden' to hide it */
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -540,7 +555,7 @@ a:hover {
 .discord-auth-section {
     display: flex;
     align-items: center;
-    gap: 10px; /* Espacio entre el avatar/nombre y el botón de Discord */
+    gap: 10px; /* Espacio entre los elementos: avatar/nombre, login/logout, admin button */
 }
 
 .discord-auth-section .user-info {
@@ -580,6 +595,27 @@ a:hover {
     background-color: var(--discord-brand-color-dark);
 }
 
+/* Estilo para el botón de Panel Admin (compartiendo algunas propiedades con .button y otras específicas) */
+#adminPanelBtn {
+    background-color: var(--info-color); /* Un color que lo distinga, como el azul de info */
+    color: white; /* Color de texto blanco para contraste */
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 0; /* Anular márgenes del .button general si los hereda */
+}
+
+#adminPanelBtn:hover {
+    background-color: #1976D2; /* Un tono más oscuro de azul para el hover */
+    transform: translateY(-2px);
+}
+
+
 .discord-auth-section .button.logout-button {
     background-color: var(--error-color);
     color: white;
@@ -599,7 +635,7 @@ a:hover {
 }
 
 
-/* --- NUEVOS ESTILOS PARA LA SECCIÓN DE SUBASTAS --- */
+/* --- NUEVOS ESTILOS PARA LA SECCIÓN DE SUBASTAS Y ADMIN --- */
 .admin-panel {
     background-color: var(--bg-color-secondary);
     border: 2px solid var(--accent-color);
@@ -639,8 +675,33 @@ a:hover {
     color: white;
 }
 
-/* Estilos de la Modal de Creación de Subastas */
-#create-auction-modal {
+/* ESTILOS PARA EL ELEMENTO DE MENSAJE ESPECÍFICO DEL FORMULARIO DE EDICIÓN/CREACIÓN */
+.form-message {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    display: none; /* Asegura que esté oculto por defecto */
+    width: calc(100% - 20px); /* Ajustar al ancho del formulario */
+    box-sizing: border-box; /* Incluye padding en el ancho */
+}
+
+.form-message.success {
+    background-color: #d4edda; /* Un verde claro para éxito */
+    color: #155724; /* Texto verde oscuro */
+    border: 1px solid #c3e6cb;
+}
+
+.form-message.error {
+    background-color: #f8d7da; /* Un rojo claro para error */
+    color: #721c24; /* Texto rojo oscuro */
+    border: 1px solid #f5c6cb;
+}
+
+
+/* Estilos de la Modal de Creación/Edición de Subastas */
+.modal { /* Aplicamos esta clase a todos los modales genéricos */
     position: fixed;
     top: 0;
     left: 0;
@@ -654,7 +715,7 @@ a:hover {
     display: none; /* Oculto por defecto, JS lo mostrará */
 }
 
-#create-auction-modal .modal-content {
+.modal .modal-content {
     background-color: var(--bg-color-primary);
     padding: 30px;
     border-radius: 10px;
@@ -666,7 +727,7 @@ a:hover {
     text-align: left; /* Restablecer el texto a la izquierda dentro de la modal */
 }
 
-#create-auction-modal .modal-content .close-button {
+.modal .modal-content .close-button {
     position: absolute;
     top: 10px;
     right: 15px;
@@ -677,11 +738,11 @@ a:hover {
     transition: color 0.2s ease;
 }
 
-#create-auction-modal .modal-content .close-button:hover {
+.modal .modal-content .close-button:hover {
     color: var(--accent-color);
 }
 
-#create-auction-modal h3 {
+.modal h3 {
     color: var(--accent-color);
     font-family: var(--font-primary);
     font-size: 2em;
@@ -740,6 +801,7 @@ a:hover {
     transform: translateY(-2px);
 }
 
+/* Estilos de la grilla de subastas (tanto para la vista normal como para admin) */
 .auction-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -846,6 +908,69 @@ a:hover {
     color: white;
 }
 
+/* Estilos específicos para las tarjetas de subasta en el panel de administración */
+.admin-auction-card {
+    background-color: var(--bg-color-secondary);
+    border: 2px solid var(--dark-accent-color); /* Borde diferente para distinguir */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    padding: 15px; /* Menos padding que el auction-card general */
+    text-align: left; /* Alineación de texto a la izquierda para mejor lectura en admin */
+}
+
+.admin-auction-card img {
+    height: 150px; /* Altura más pequeña para el admin */
+    margin-bottom: 10px;
+}
+
+.admin-auction-card h3 {
+    font-size: 1.4em;
+    margin-bottom: 5px;
+}
+
+.admin-auction-card p {
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.admin-card-actions {
+    display: flex;
+    justify-content: space-around; /* O space-between, center */
+    margin-top: 15px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.admin-card-actions .button { /* Heredar estilos base del botón */
+    padding: 8px 15px;
+    font-size: 0.9em;
+    margin: 0; /* Anular márgenes generales */
+    flex: 1 1 auto; /* Permitir que los botones crezcan/encojan */
+    min-width: 100px; /* Asegurar un ancho mínimo para los botones */
+    border-width: 1px; /* Borde más fino para estos botones */
+}
+
+.edit-btn {
+    background-color: #FFD700; /* Amarillo/Oro */
+    color: var(--text-color-dark);
+    border-color: #FFD700;
+}
+
+.edit-btn:hover {
+    background-color: #DAA520; /* Tono más oscuro de amarillo */
+    color: var(--text-color-dark);
+}
+
+.delete-btn {
+    background-color: var(--error-color);
+    color: white;
+    border-color: var(--error-color);
+}
+
+.delete-btn:hover {
+    background-color: #C62828; /* Tono más oscuro de rojo */
+    color: white;
+}
+
 /* --- RESPONSIVE DESIGN --- */
 @media (max-width: 900px) { /* Ajustar breakpoint si es necesario */
     .header .container {
@@ -856,6 +981,14 @@ a:hover {
         flex-direction: column; /* Apilar el logo y Discord en pantallas pequeñas */
         justify-content: center; /* Centrar en móvil */
         gap: 10px; /* Espacio entre logo y Discord cuando están apilados */
+    }
+
+    .discord-auth-section {
+        flex-direction: column; /* Apilar los botones de discord y user info */
+        align-items: center;
+        gap: 8px; /* Reducir el gap en columnas */
+        width: auto; /* Dejar que el contenido defina el ancho */
+        padding-left: 0;
     }
 
     .header-bottom-row {
@@ -906,12 +1039,6 @@ a:hover {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
 
-    .discord-auth-section {
-        justify-content: center; /* Centrar el bloque de discord cuando está apilado */
-        width: 100%;
-        padding-left: 0;
-    }
-
     .header .logo {
         font-size: 1.5em;
         gap: 5px;
@@ -932,6 +1059,19 @@ a:hover {
 
     .auction-card .bid-input {
         width: 80%; /* Más ancho en móvil */
+    }
+
+    .modal .modal-content {
+        width: 95%; /* Más ancho en móviles */
+        padding: 20px;
+    }
+
+    .auction-form input[type="text"],
+    .auction-form input[type="url"],
+    .auction-form input[type="number"],
+    .auction-form input[type="datetime-local"],
+    .auction-form textarea {
+        width: calc(100% - 20px); /* Ajuste por box-sizing */
     }
 }
 
@@ -965,5 +1105,13 @@ a:hover {
     .feature-list li,
     .store-item {
         flex: 1 1 100%;
+    }
+
+    .admin-card-actions {
+        flex-direction: column;
+    }
+
+    .admin-card-actions .button {
+        width: 100%;
     }
 }
