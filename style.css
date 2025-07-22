@@ -32,7 +32,7 @@ body {
     margin: 0;
     line-height: 1.6;
     scroll-behavior: smooth;
-    /* Hemos eliminado el padding-top del body para que scroll-margin-top gestione el espacio */
+    /* Hemos eliminado el padding-top del body general para que scroll-margin-top gestione el espacio en navegación interna */
 }
 
 .container {
@@ -162,9 +162,8 @@ body {
     text-align: center;
     position: relative;
     overflow: hidden;
-    /* --- CAMBIO CLAVE: Añadido scroll-margin-top --- */
-    scroll-margin-top: 140px; /* Asegura que el contenido quede visible debajo del encabezado fijo */
-    /* ----------------------------------------------- */
+    /* Asegura que el contenido quede visible debajo del encabezado fijo al usar enlaces de ancla */
+    scroll-margin-top: 140px;
 }
 
 .section:nth-of-type(odd) {
@@ -964,4 +963,9 @@ a:hover {
     .store-item {
         flex: 1 1 100%;
     }
+}
+
+/* Ajuste para el encabezado fijo en el body de subpáginas */
+body.subpage-body {
+    padding-top: 130px; /* O un valor ligeramente superior a la altura de tu header si es necesario */
 }
