@@ -167,9 +167,9 @@ body.subpage-body {
     text-align: center;
     position: relative;
     overflow: hidden;
-    /* --- CAMBIO CLAVE REALIZADO AQUÍ --- */
-    /* Aumentamos de 250px a 300px para ser más agresivos y dar suficiente espacio. */
-    scroll-margin-top: 300px; 
+    /* --- CAMBIO CLAVE REALIZADO AQUÍ CON LA MEDIDA EXACTA --- */
+    /* Altura del encabezado (206.25px) + un pequeño margen extra para el título. */
+    scroll-margin-top: 210px;
     /* ----------------------------------------------- */
 }
 
@@ -891,9 +891,9 @@ a:hover {
 
     .section {
         padding: 60px 0;
-        /* --- CAMBIO ADICIONAL PARA MÓVILES --- */
-        /* Aumentamos de 250px a 300px también en móviles. */
-        scroll-margin-top: 300px;
+        /* --- CAMBIO ADICIONAL PARA MÓVILES CON LA MEDIDA EXACTA --- */
+        /* Altura del encabezado (206.25px) + un pequeño margen extra para el título. */
+        scroll-margin-top: 210px;
     }
 
     h1, h2 {
