@@ -3,7 +3,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     // URL de tu backend de Render
-    const BACKEND_URL = 'https://guerra-mundial-z-backend.onrender.com'; // <--- CORREGIDO AQUÍ PREVIAMENTE
+    const BACKEND_URL = 'https://guerra-mundial-z-backend.onrender.com';
 
     // Referencias a elementos del DOM (autenticación)
     const loginButton = document.getElementById('login-button');
@@ -38,27 +38,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function getAuthToken() {
         return localStorage.getItem('jwt_token');
     }
-
-    // --- CAMBIO CLAVE AQUÍ: Función para verificar si el usuario es administrador por ID de ROL ---
     function isAdmin(userRoles) {
-        // **IMPORTANTE:** Reemplaza 'TU_ID_DE_ROL_ADMIN_1', 'TU_ID_DE_ROL_ADMIN_2'
-        // con los IDs reales de los roles de Discord que consideras administradores.
-        // Estos IDs deben coincidir con los roles que tu backend verificará.
+        // **¡IMPORTANTE!**
+        // Reemplaza '1397175186935255091' con los IDs reales de los roles de Discord
+        // que deseas que tengan permisos de administrador en tu sitio web.
+        // Puedes añadir múltiples IDs de rol si tienes varios roles de administrador.
+        // Ejemplo: ['ID_ROL_ADMIN_1', 'ID_ROL_ADMIN_2', 'OTRO_ROL_ADMIN']
         const ADMIN_DISCORD_ROLE_IDS = [
-            '1397175186935255091', // Ejemplo: '123456789012345678'
-            // Añade más IDs si tienes múltiples roles de administrador
+            '1397175186935255091', // Tu ID de rol de administrador de Discord
+            // 'AGREGA_OTRA_ID_DE_ROL_AQUI_SI_ES_NECESARIO',
         ];
 
-        // userRoles debe ser un array de strings (IDs de rol de Discord)
+        // userRoles debe ser un array de strings (IDs de rol de Discord) que el backend enviará.
         if (!userRoles || !Array.isArray(userRoles) || userRoles.length === 0) {
             return false;
         }
 
-        // Verifica si el usuario tiene AL MENOS UNO de los roles de administrador definidos
+        // Verifica si el usuario tiene AL MENOS UNO de los roles definidos en ADMIN_DISCORD_ROLE_IDS.
         return userRoles.some(roleId => ADMIN_DISCORD_ROLE_IDS.includes(roleId));
     }
-    // --- FIN DEL CAMBIO ---
-
     // Función para verificar el estado de la sesión y actualizar la UI
     async function checkSession() {
         const token = getAuthToken();
