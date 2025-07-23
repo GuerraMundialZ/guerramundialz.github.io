@@ -293,7 +293,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="current-bidder">${auction.currentBidderName ? `Pujador actual: <strong>${auction.currentBidderName}</strong>` : 'Sé el primero en pujar!'}</p>
                             <p class="countdown" data-end-date="${auction.endDate}"></p>
                             <div class="bid-controls">
-                                <input type="number" class="bid-input" placeholder="Tu puja" min="${(auction.currentBid + 0.01).toFixed(2)}" step="5000" ${isEnded ? 'disabled' : ''}>
+                                <!-- [CAMBIO APLICADO] min attribute adjusted to currentBid + 5000 -->
+                                <input type="number" class="bid-input" placeholder="Tu puja" min="${(auction.currentBid + 5000).toFixed(0)}" step="5000" ${isEnded ? 'disabled' : ''}>
                                 <button class="button bid-button" data-id="${auction._id}" ${isEnded ? 'disabled' : ''}>Pujar</button>
                             </div>
                         </div>
@@ -326,21 +327,25 @@ document.addEventListener('DOMContentLoaded', () => {
                             showModalMessage('Error de Puja', 'Por favor, introduce una cantidad de puja válida y positiva.', 'error');
                             return;
                         }
-                        // Validar que la puja sea un múltiplo de 5000 y mayor que la puja actual
+                        
+                        // Obtener la puja actual del elemento span, limpiando el formato
                         const currentBidElement = e.target.closest('.auction-card-content').querySelector('.current-bid');
                         const currentBidText = currentBidElement.textContent.replace(/[^0-9,-]+/g, '').replace(',', '.'); // Limpiar y convertir a formato numérico
                         const currentBid = parseFloat(currentBidText);
 
-                        if (bidAmount <= currentBid) {
-                            showModalMessage('Error de Puja', `Tu puja (${formatCurrency(bidAmount)} Rublos) debe ser mayor que la puja actual (${formatCurrency(currentBid)} Rublos).`, 'error');
+                        // [CAMBIO APLICADO] Nueva validación: la puja debe ser al menos 5000 Rublos más que la actual
+                        if (bidAmount < (currentBid + 5000)) {
+                            showModalMessage('Error de Puja', `Tu puja (${formatCurrency(bidAmount)} Rublos) debe ser al menos ${formatCurrency(currentBid + 5000)} Rublos.`, 'error');
                             return;
                         }
 
-                        if ((bidAmount - currentBid) % 5000 !== 0 && bidAmount !== currentBid + 5000) {
+                        // [CAMBIO APLICADO] Validar que la diferencia entre la puja y la puja actual sea un múltiplo de 5000
+                        // Esto asegura que si pujas 15000 sobre 10000, es válido (15000-10000=5000, 5000%5000=0)
+                        // Si pujas 20000 sobre 10000, es válido (20000-10000=10000, 10000%5000=0)
+                        if ((bidAmount - currentBid) % 5000 !== 0) {
                             showModalMessage('Error de Puja', `Tu puja debe ser un incremento de 5.000 Rublos sobre la puja actual.`, 'error');
                             return;
                         }
-
 
                         // Obtener el token del usuario logueado
                         const token = getAuthToken();
@@ -371,7 +376,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                     card.querySelector('.current-bid').textContent = `${formatCurrency(updatedAuction.currentBid)} Rublos`;
                                     card.querySelector('.current-bidder').innerHTML = `Pujador actual: <strong>${updatedAuction.currentBidderName}</strong>`;
                                     // Actualizar el valor mínimo del input de puja
-                                    card.querySelector('.bid-input').min = (updatedAuction.currentBid + 0.01).toFixed(2);
+                                    // [CAMBIO APLICADO] min attribute adjusted to currentBid + 5000
+                                    card.querySelector('.bid-input').min = (updatedAuction.currentBid + 5000).toFixed(0);
                                     bidInput.value = ''; // Limpiar el input después de pujar
                                 }
                             } else {
