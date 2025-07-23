@@ -4,13 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Referencias a elementos del DOM (autenticación)
     const loginButton = document.getElementById('login-button');
-    const userDropdownWrapper = document.getElementById('user-dropdown-wrapper'); // Nuevo: Contenedor del dropdown
+    const logoutButton = document.getElementById('logout-button');
     const userDisplay = document.getElementById('user-display');
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
-    const userDropdownContent = document.getElementById('user-dropdown-content'); // Nuevo: Contenido del dropdown
-    const logoutButton = document.getElementById('logout-button');
-    const adminPanelBtnNav = document.getElementById('admin-panel-btn-nav');
+    // Eliminado: const createAuctionBtnNav = document.getElementById('create-auction-btn-nav');
+    const adminPanelBtnNav = document.getElementById('admin-panel-btn-nav');     // Botón "Panel Admin" en la navegación
 
     // Referencias para la sección de subastas activas (subastas.html)
     const activeAuctionsList = document.getElementById('active-auctions-list');
@@ -82,6 +81,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Función para formatear cantidades de dinero con separador de miles (punto) y decimales (solo si son necesarios)
+    function formatCurrency(amount) {
+        // Usa 'es-ES' para el formato base (punto para miles, coma para decimales)
+        const formatter = new Intl.NumberFormat('es-ES', {
+            minimumFractionDigits: 0, // Por defecto, 0 decimales
+            maximumFractionDigits: 2, // Máximo 2 decimales
+            useGrouping: true // Habilita el separador de miles
+        });
+
+        let formatted = formatter.format(amount);
+
+        // Si el número es un entero (ej. 12.00), Intl.NumberFormat con minimumFractionDigits: 0
+        // ya lo formatearía como "12". Si tiene decimales, los mostrará (ej. 12,50).
+        // No se necesita lógica adicional para eliminar ",00" si se usa minimumFractionDigits: 0.
+
+        return formatted;
+    }
+
     // Función para actualizar la UI de autenticación
     async function updateAuthUI() {
         const token = getAuthToken();
@@ -103,19 +120,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 userAvatar.src = avatar;
                 userName.textContent = username;
-                
+                userDisplay.style.display = 'flex';
                 loginButton.style.display = 'none';
-                userDropdownWrapper.style.display = 'flex'; // Mostrar el contenedor del dropdown
+                logoutButton.style.display = 'block';
 
-                // Mostrar/ocultar botón de Panel Admin dentro del dropdown
+                // Mostrar/ocultar botón de Panel Admin
                 if (adminPanelBtnNav) {
                     if (isAdminUser) {
-                        adminPanelBtnNav.style.display = 'block'; // Mostrar como bloque dentro del flex
+                        adminPanelBtnNav.style.display = 'block';
                     } else {
                         adminPanelBtnNav.style.display = 'none';
                     }
                 }
-                logoutButton.style.display = 'block'; // El botón de cerrar sesión siempre visible en el dropdown
 
                 // Redirigir si está en la página de admin y no es admin
                 if (window.location.pathname.includes('admin.html') && !isAdminUser) {
@@ -127,10 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 logoutUser(); // Token inválido o incompleto
             }
         } else {
-            loginButton.style.display = 'flex'; // Mostrar el botón de login
-            userDropdownWrapper.style.display = 'none'; // Ocultar el contenedor del dropdown
-            userDropdownContent.classList.remove('show'); // Asegurarse de que el dropdown esté cerrado
-            
+            userDisplay.style.display = 'none';
+            loginButton.style.display = 'block';
+            logoutButton.style.display = 'none';
+            if (adminPanelBtnNav) adminPanelBtnNav.style.display = 'none'; // Asegurarse de ocultarlo si no hay token
+
             // Redirigir si no hay token y está en la página de admin
             if (window.location.pathname.includes('admin.html')) {
                 window.location.href = 'index.html';
@@ -157,23 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (logoutButton) {
         logoutButton.addEventListener('click', logoutUser);
-    }
-
-    // Lógica para el dropdown del usuario
-    if (userDisplay) {
-        userDisplay.addEventListener('click', (event) => {
-            event.stopPropagation(); // Evitar que el clic se propague al documento
-            userDropdownContent.classList.toggle('show');
-            userDropdownWrapper.classList.toggle('active'); // Para rotar la flecha
-        });
-
-        // Cerrar el dropdown si se hace clic fuera de él
-        window.addEventListener('click', (event) => {
-            if (userDropdownContent.classList.contains('show') && !userDropdownWrapper.contains(event.target)) {
-                userDropdownContent.classList.remove('show');
-                userDropdownWrapper.classList.remove('active');
-            }
-        });
     }
 
     // Añadir listener para el botón "Panel Admin"
@@ -289,11 +289,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="auction-card-content">
                             <h3>${auction.title}</h3>
                             <p>${auction.description}</p>
-                            <p>Puja actual: <span class="current-bid">${auction.currentBid.toFixed(2)} Rublos</span></p>
+                            <p>Puja actual: <span class="current-bid">${formatCurrency(auction.currentBid)} Rublos</span></p>
                             <p class="current-bidder">${auction.currentBidderName ? `Pujador actual: <strong>${auction.currentBidderName}</strong>` : 'Sé el primero en pujar!'}</p>
                             <p class="countdown" data-end-date="${auction.endDate}"></p>
                             <div class="bid-controls">
-                                <input type="number" class="bid-input" placeholder="Tu puja" min="${(auction.currentBid + 0.01).toFixed(2)}" step="0.01" ${isEnded ? 'disabled' : ''}>
+                                <!-- [CAMBIO APLICADO] min attribute adjusted to currentBid + 5000 -->
+                                <input type="number" class="bid-input" placeholder="Tu puja" min="${(auction.currentBid + 5000).toFixed(0)}" step="5000" ${isEnded ? 'disabled' : ''}>
                                 <button class="button bid-button" data-id="${auction._id}" ${isEnded ? 'disabled' : ''}>Pujar</button>
                             </div>
                         </div>
@@ -326,6 +327,25 @@ document.addEventListener('DOMContentLoaded', () => {
                             showModalMessage('Error de Puja', 'Por favor, introduce una cantidad de puja válida y positiva.', 'error');
                             return;
                         }
+                        
+                        // Obtener la puja actual del elemento span, limpiando el formato
+                        const currentBidElement = e.target.closest('.auction-card-content').querySelector('.current-bid');
+                        const currentBidText = currentBidElement.textContent.replace(/[^0-9,-]+/g, '').replace(',', '.'); // Limpiar y convertir a formato numérico
+                        const currentBid = parseFloat(currentBidText);
+
+                        // [CAMBIO APLICADO] Nueva validación: la puja debe ser al menos 5000 Rublos más que la actual
+                        if (bidAmount < (currentBid + 5000)) {
+                            showModalMessage('Error de Puja', `Tu puja (${formatCurrency(bidAmount)} Rublos) debe ser al menos ${formatCurrency(currentBid + 5000)} Rublos.`, 'error');
+                            return;
+                        }
+
+                        // [CAMBIO APLICADO] Validar que la diferencia entre la puja y la puja actual sea un múltiplo de 5000
+                        // Esto asegura que si pujas 15000 sobre 10000, es válido (15000-10000=5000, 5000%5000=0)
+                        // Si pujas 20000 sobre 10000, es válido (20000-10000=10000, 10000%5000=0)
+                        if ((bidAmount - currentBid) % 5000 !== 0) {
+                            showModalMessage('Error de Puja', `Tu puja debe ser un incremento de 5.000 Rublos sobre la puja actual.`, 'error');
+                            return;
+                        }
 
                         // Obtener el token del usuario logueado
                         const token = getAuthToken();
@@ -352,10 +372,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const updatedAuction = result.auction;
                                 const card = document.querySelector(`.auction-card[data-id="${updatedAuction._id}"]`);
                                 if (card) {
-                                    card.querySelector('.current-bid').textContent = `${updatedAuction.currentBid.toFixed(2)} Rublos`;
+                                    // Usar formatCurrency para la visualización
+                                    card.querySelector('.current-bid').textContent = `${formatCurrency(updatedAuction.currentBid)} Rublos`;
                                     card.querySelector('.current-bidder').innerHTML = `Pujador actual: <strong>${updatedAuction.currentBidderName}</strong>`;
                                     // Actualizar el valor mínimo del input de puja
-                                    card.querySelector('.bid-input').min = (updatedAuction.currentBid + 0.01).toFixed(2);
+                                    // [CAMBIO APLICADO] min attribute adjusted to currentBid + 5000
+                                    card.querySelector('.bid-input').min = (updatedAuction.currentBid + 5000).toFixed(0);
                                     bidInput.value = ''; // Limpiar el input después de pujar
                                 }
                             } else {
