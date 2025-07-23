@@ -543,16 +543,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await response.json();
 
                 if (response.ok) {
-                    showMessage(auctionsErrorMessage, 'Subasta finalizada manualmente con éxito!', 'success');
-                    loadAdminAuctions(); // Recargar la tabla para ver el estado actualizado
-                } else {
-                    showMessage(auctionsErrorMessage, result.message || 'Error al finalizar la subasta manualmente.', 'error');
+                        showMessage(auctionsErrorMessage, 'Subasta finalizada manualmente con éxito!', 'success');
+                        loadAdminAuctions(); // Recargar la tabla para ver el estado actualizado
+                    } else {
+                        showMessage(auctionsErrorMessage, result.message || 'Error al finalizar la subasta manualmente.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error finalizing auction manually:', error);
+                    showMessage(auctionsErrorMessage, 'Error de conexión al finalizar la subasta.', 'error');
                 }
-            } catch (error) {
-                console.error('Error finalizing auction manually:', error);
-                showMessage(auctionsErrorMessage, 'Error de conexión al finalizar la subasta.', 'error');
             }
-        }
 
         // Llama a loadAdminAuctions solo si el usuario es admin (esto se maneja en updateAuthUI)
         // No se llama directamente aquí, ya que updateAuthUI se encarga de eso después de la autenticación.
