@@ -735,16 +735,25 @@ a:hover {
 .message.success, .success-message { /* Combinado para consistencia */
     background-color: var(--success-color);
     color: var(--text-color-dark); /* Texto oscuro para contraste en fondo claro */
+    display: inline-block; /* ¡IMPORTANTE! Hacer que el span sea visible */
+    padding: 5px 10px; /* Pequeño padding para el "chip" de estado */
+    border-radius: 5px;
 }
 
 .message.error, .error-message { /* Combinado para consistencia */
     background-color: var(--error-color);
     color: white;
+    display: inline-block; /* ¡IMPORTANTE! Hacer que el span sea visible */
+    padding: 5px 10px;
+    border-radius: 5px;
 }
 
 .message.info-message { /* Para mensajes de información/carga */
     background-color: var(--info-color);
     color: var(--text-color-dark);
+    display: inline-block; /* ¡IMPORTANTE! Hacer que el span sea visible */
+    padding: 5px 10px;
+    border-radius: 5px;
 }
 
 
