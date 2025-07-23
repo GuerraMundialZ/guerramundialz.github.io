@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const editTitleInput = document.getElementById('edit-title');
     const editDescriptionInput = document.getElementById('edit-description');
     const editImageUrlInput = document.getElementById('edit-image-url');
-    // CORRECCIÓN: Se corrigió la asignación de la variable editStartBidInput
     const editStartBidInput = document.getElementById('edit-start-bid');
     const editEndDateInput = document.getElementById('edit-end-date');
     const editStatusSelect = document.getElementById('edit-status');
@@ -84,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función para actualizar la UI de autenticación
     async function updateAuthUI() {
+        console.log('updateAuthUI: Iniciando...'); // DEBUG
         const token = getAuthToken();
         if (token) {
             const decodedToken = parseJwt(token);
@@ -116,16 +116,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Si estamos en admin.html y el usuario NO es admin, redirigir
                 if (window.location.pathname.includes('admin.html') && !isAdminUser) {
+                    console.log('updateAuthUI: Usuario no es admin, redirigiendo a index.html'); // DEBUG
                     window.location.href = 'index.html';
                 } else if (window.location.pathname.includes('admin.html') && isAdminUser) {
-                    // Si es admin y estamos en admin.html, cargar las subastas
+                    console.log('updateAuthUI: Usuario es admin en admin.html, cargando subastas.'); // DEBUG
                     loadAdminAuctions();
                 }
 
             } else {
+                console.log('updateAuthUI: Token inválido o incompleto, cerrando sesión.'); // DEBUG
                 logoutUser();
             }
         } else {
+            console.log('updateAuthUI: No hay token, mostrando botones de login.'); // DEBUG
             userDisplay.style.display = 'none';
             loginButton.style.display = 'block';
             logoutButton.style.display = 'none';
@@ -133,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Redirigir si no hay token y estamos en admin.html
             if (window.location.pathname.includes('admin.html')) {
+                console.log('updateAuthUI: No hay token en admin.html, redirigiendo a index.html'); // DEBUG
                 window.location.href = 'index.html';
             }
         }
@@ -141,12 +145,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para iniciar sesión (redirección a Discord OAuth)
     if (loginButton) {
         loginButton.addEventListener('click', () => {
+            console.log('Login button clicked, redirecting to Discord OAuth.'); // DEBUG
             window.location.href = `${BACKEND_URL}/auth/discord`;
         });
     }
 
     // Función para cerrar sesión
     function logoutUser() {
+        console.log('Logging out user.'); // DEBUG
         setAuthToken(null);
         updateAuthUI();
         if (window.location.pathname.includes('admin.html') || window.location.pathname.includes('subastas.html')) {
@@ -161,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Añadir listener para el botón "Panel Admin"
     if (adminPanelBtnNav) {
         adminPanelBtnNav.addEventListener('click', () => {
+            console.log('Admin Panel button clicked.'); // DEBUG
             window.location.href = 'admin.html'; // Redirige a la página de administración
         });
     }
@@ -169,12 +176,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     if (token) {
+        console.log('Token found in URL, setting token and updating UI.'); // DEBUG
         setAuthToken(token);
         window.history.replaceState({}, document.title, window.location.pathname);
         updateAuthUI();
+    } else {
+        console.log('No token found in URL, updating UI based on localStorage.'); // DEBUG
+        updateAuthUI(); // Llama a updateAuthUI al final para configurar la UI inicial
     }
-    // No hay 'else' aquí, updateAuthUI se llama al final si no hay token en la URL
-    // para manejar el estado inicial de la UI.
 
     // --- Lógica de Scroll Suave (mantener como estaba) ---
     document.querySelectorAll('.header nav ul li a[href^="#"]').forEach(anchor => {
@@ -201,15 +210,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Lógica específica para admin.html ---
     // Esta parte solo se ejecuta si la página actual es admin.html
     if (window.location.pathname.includes('admin.html')) {
+        console.log('admin.html: Script ejecutándose en la página de administración.'); // DEBUG
 
         // Función para cargar todas las subastas para el panel de administración
         async function loadAdminAuctions() {
+            console.log('loadAdminAuctions: Cargando subastas para admin...'); // DEBUG
             auctionsLoadingMessage.style.display = 'block';
             auctionsErrorMessage.style.display = 'none';
             adminAuctionsTableBody.innerHTML = ''; // Limpiar la tabla
 
             const token = getAuthToken();
             if (!token) {
+                console.log('loadAdminAuctions: No hay token, no se pueden cargar subastas.'); // DEBUG
                 auctionsLoadingMessage.style.display = 'none';
                 auctionsErrorMessage.style.display = 'block';
                 auctionsErrorMessage.textContent = 'No autenticado. Por favor, inicia sesión como administrador.';
@@ -224,10 +236,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.status === 403) { // Acceso denegado (no admin)
+                    console.warn('loadAdminAuctions: Acceso denegado (403).'); // DEBUG
                     auctionsLoadingMessage.style.display = 'none';
                     auctionsErrorMessage.style.display = 'block';
                     auctionsErrorMessage.textContent = 'Acceso denegado. No tienes permisos de administrador para ver las subastas.';
-                    // Opcional: Redirigir a index.html si no es admin
                     setTimeout(() => { window.location.href = 'index.html'; }, 3000);
                     return;
                 }
@@ -236,6 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const auctions = await response.json();
+                console.log('loadAdminAuctions: Subastas cargadas:', auctions); // DEBUG
                 auctionsLoadingMessage.style.display = 'none';
 
                 if (auctions.length === 0) {
@@ -252,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (auction.status === 'active' && endDate <= now) {
                         statusText = 'Finalizada (Pendiente de Cron)';
-                        statusClass = 'info-message'; // Un color para indicar que está pendiente
+                        statusClass = 'info-message';
                     } else if (auction.status === 'finalized') {
                         statusText = 'Finalizada';
                         statusClass = 'success-message';
@@ -297,31 +310,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // --- Lógica de Creación de Subasta ---
+        console.log('admin.html: Verificando createAuctionForm...'); // DEBUG
         if (createAuctionForm) {
+            console.log('admin.html: createAuctionForm encontrado. Añadiendo event listener.'); // DEBUG
             createAuctionForm.addEventListener('submit', async (e) => {
+                console.log('createAuctionForm: Evento submit disparado.'); // DEBUG
                 e.preventDefault();
 
                 const title = document.getElementById('auction-title').value;
                 const description = document.getElementById('auction-description').value;
-                // Asegurarse de que imageUrl sea null o una cadena vacía si el input está vacío
                 const imageUrl = document.getElementById('auction-image-url').value.trim();
                 const startBid = parseFloat(document.getElementById('auction-start-bid').value);
-                const endDate = document.getElementById('auction-end-date').value; // Formato "YYYY-MM-DDTHH:mm"
+                const endDate = document.getElementById('auction-end-date').value;
+
+                console.log('createAuctionForm: Datos del formulario:', { title, description, imageUrl, startBid, endDate }); // DEBUG
 
                 // Validaciones básicas antes de enviar
                 if (!title || !description || isNaN(startBid) || startBid < 0 || !endDate) {
                     showMessage(createAuctionMessage, 'Por favor, completa todos los campos obligatorios y asegúrate de que la puja inicial sea un número válido.', 'error');
+                    console.log('createAuctionForm: Fallo en validación de campos.'); // DEBUG
                     return;
                 }
 
                 const token = getAuthToken();
                 if (!token) {
                     showMessage(createAuctionMessage, 'Debes iniciar sesión para crear una subasta.', 'error');
+                    console.log('createAuctionForm: No hay token de autenticación.'); // DEBUG
                     return;
                 }
+                console.log('createAuctionForm: Token de autenticación presente.'); // DEBUG
 
                 try {
-                    const response = await fetch(`${BACKEND_URL}/api/auctions`, { // POST a /api/auctions
+                    console.log('createAuctionForm: Intentando enviar fetch POST a /api/auctions...'); // DEBUG
+                    const response = await fetch(`${BACKEND_URL}/api/auctions`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -330,32 +351,35 @@ document.addEventListener('DOMContentLoaded', () => {
                         body: JSON.stringify({
                             title,
                             description,
-                            imageUrl: imageUrl || null, // Enviar null si está vacío
+                            imageUrl: imageUrl || null,
                             startBid,
                             endDate
                         })
                     });
 
                     const result = await response.json();
+                    console.log('createAuctionForm: Respuesta del backend:', response.status, result); // DEBUG
 
                     if (response.ok) {
                         showMessage(createAuctionMessage, 'Subasta creada con éxito!', 'success');
-                        createAuctionForm.reset(); // Limpiar formulario
-                        loadAdminAuctions(); // Recargar la tabla de subastas en el panel de admin
+                        createAuctionForm.reset();
+                        loadAdminAuctions();
                     } else {
-                        // Mostrar el mensaje de error del backend
                         showMessage(createAuctionMessage, result.message || 'Error al crear la subasta.', 'error');
                     }
                 } catch (error) {
-                    console.error('Error creating auction:', error);
+                    console.error('Error creating auction:', error); // DEBUG
                     showMessage(createAuctionMessage, 'Error de conexión al crear la subasta. Inténtalo de nuevo.', 'error');
                 }
             });
+        } else {
+            console.error('admin.html: createAuctionForm NO ENCONTRADO. El formulario de creación no se inicializará.'); // DEBUG
         }
 
         // --- Lógica de Edición de Subasta ---
         // Abrir modal de edición
         async function openEditModal(auctionId) {
+            console.log('openEditModal: Abriendo modal de edición para ID:', auctionId); // DEBUG
             const token = getAuthToken();
             if (!token) {
                 showMessage(editAuctionMessage, 'No autenticado para editar.', 'error');
@@ -372,23 +396,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const auction = await response.json();
+                console.log('openEditModal: Datos de subasta para edición:', auction); // DEBUG
 
                 editAuctionIdInput.value = auction._id;
                 editTitleInput.value = auction.title;
                 editDescriptionInput.value = auction.description;
-                // Asegurarse de que el campo de URL de imagen se muestre correctamente o vacío
                 editImageUrlInput.value = auction.imageUrl && auction.imageUrl !== 'https://via.placeholder.com/300x200?text=No+Image' ? auction.imageUrl : '';
                 editStartBidInput.value = auction.startBid;
-                // Formatear la fecha para el input datetime-local
                 const date = new Date(auction.endDate);
                 const formattedDate = date.toISOString().slice(0, 16);
                 editEndDateInput.value = formattedDate;
                 editStatusSelect.value = auction.status;
 
-                editAuctionMessage.style.display = 'none'; // Ocultar mensajes anteriores
+                editAuctionMessage.style.display = 'none';
                 editAuctionModal.style.display = 'flex';
             } catch (error) {
-                console.error('Error fetching auction for edit:', error);
+                console.error('Error fetching auction for edit:', error); // DEBUG
                 showMessage(editAuctionMessage, 'Error al cargar los datos de la subasta para edición.', 'error');
             }
         }
@@ -396,11 +419,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Cerrar modal de edición
         if (editAuctionCloseBtn) {
             editAuctionCloseBtn.addEventListener('click', () => {
+                console.log('Edit modal close button clicked.'); // DEBUG
                 editAuctionModal.style.display = 'none';
             });
         }
         window.addEventListener('click', (event) => {
             if (event.target === editAuctionModal) {
+                console.log('Clicked outside edit modal.'); // DEBUG
                 editAuctionModal.style.display = 'none';
             }
         });
@@ -408,17 +433,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enviar formulario de edición
         if (editAuctionForm) {
             editAuctionForm.addEventListener('submit', async (e) => {
+                console.log('editAuctionForm: Evento submit disparado.'); // DEBUG
                 e.preventDefault();
 
                 const auctionId = editAuctionIdInput.value;
                 const updatedData = {
                     title: editTitleInput.value,
                     description: editDescriptionInput.value,
-                    imageUrl: editImageUrlInput.value.trim() || null, // Enviar null si está vacío
+                    imageUrl: editImageUrlInput.value.trim() || null,
                     startBid: parseFloat(editStartBidInput.value),
                     endDate: editEndDateInput.value,
                     status: editStatusSelect.value
                 };
+                console.log('editAuctionForm: Datos a actualizar:', updatedData); // DEBUG
 
                 const token = getAuthToken();
                 if (!token) {
@@ -427,6 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 try {
+                    console.log('editAuctionForm: Intentando enviar fetch PUT a /api/auctions/:id...'); // DEBUG
                     const response = await fetch(`${BACKEND_URL}/api/auctions/${auctionId}`, {
                         method: 'PUT',
                         headers: {
@@ -437,16 +465,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
 
                     const result = await response.json();
+                    console.log('editAuctionForm: Respuesta del backend:', response.status, result); // DEBUG
 
                     if (response.ok) {
                         showMessage(editAuctionMessage, 'Subasta actualizada con éxito!', 'success');
                         editAuctionModal.style.display = 'none';
-                        loadAdminAuctions(); // Recargar la tabla
+                        loadAdminAuctions();
                     } else {
                         showMessage(editAuctionMessage, result.message || 'Error al actualizar la subasta.', 'error');
                     }
                 } catch (error) {
-                    console.error('Error updating auction:', error);
+                    console.error('Error updating auction:', error); // DEBUG
                     showMessage(editAuctionMessage, 'Error de conexión al actualizar la subasta.', 'error');
                 }
             });
@@ -455,27 +484,31 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- Lógica de Eliminación de Subasta ---
         // Abrir modal de confirmación de eliminación
         function openDeleteConfirmModal(id, title) {
+            console.log('openDeleteConfirmModal: Abriendo modal de eliminación para ID:', id); // DEBUG
             auctionToDeleteId = id;
             auctionToDeleteTitleSpan.textContent = title;
-            deleteAuctionMessage.style.display = 'none'; // Ocultar mensajes anteriores
+            deleteAuctionMessage.style.display = 'none';
             confirmDeleteModal.style.display = 'flex';
         }
 
         // Cerrar modal de confirmación de eliminación
         if (confirmDeleteCloseBtn) {
             confirmDeleteCloseBtn.addEventListener('click', () => {
+                console.log('Delete confirm modal close button clicked.'); // DEBUG
                 confirmDeleteModal.style.display = 'none';
                 auctionToDeleteId = null;
             });
         }
         if (cancelDeleteBtn) {
             cancelDeleteBtn.addEventListener('click', () => {
+                console.log('Delete confirm modal cancel button clicked.'); // DEBUG
                 confirmDeleteModal.style.display = 'none';
                 auctionToDeleteId = null;
             });
         }
         window.addEventListener('click', (event) => {
             if (event.target === confirmDeleteModal) {
+                console.log('Clicked outside delete confirm modal.'); // DEBUG
                 confirmDeleteModal.style.display = 'none';
                 auctionToDeleteId = null;
             }
@@ -484,6 +517,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Confirmar y eliminar subasta
         if (confirmDeleteBtn) {
             confirmDeleteBtn.addEventListener('click', async () => {
+                console.log('confirmDeleteBtn: Eliminar confirmado para ID:', auctionToDeleteId); // DEBUG
                 if (!auctionToDeleteId) return;
 
                 const token = getAuthToken();
@@ -502,16 +536,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
 
                     const result = await response.json();
+                    console.log('deleteAuction: Respuesta del backend:', response.status, result); // DEBUG
 
                     if (response.ok) {
                         showMessage(deleteAuctionMessage, 'Subasta eliminada con éxito!', 'success');
                         confirmDeleteModal.style.display = 'none';
-                        loadAdminAuctions(); // Recargar la tabla
+                        loadAdminAuctions();
                     } else {
                         showMessage(deleteAuctionMessage, result.message || 'Error al eliminar la subasta.', 'error');
                     }
                 } catch (error) {
-                    console.error('Error deleting auction:', error);
+                    console.error('Error deleting auction:', error); // DEBUG
                     showMessage(deleteAuctionMessage, 'Error de conexión al eliminar la subasta.', 'error');
                 } finally {
                     auctionToDeleteId = null;
@@ -521,8 +556,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- Lógica de Finalización Manual de Subasta ---
         async function finalizeAuction(auctionId) {
+            console.log('finalizeAuction: Finalizando subasta manualmente para ID:', auctionId); // DEBUG
             if (!confirm('¿Estás seguro de que quieres finalizar esta subasta manualmente?')) {
-                return; // Si el admin cancela, no hacer nada
+                return;
             }
 
             const token = getAuthToken();
@@ -541,21 +577,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 const result = await response.json();
+                console.log('finalizeAuction: Respuesta del backend:', response.status, result); // DEBUG
 
                 if (response.ok) {
-                        showMessage(auctionsErrorMessage, 'Subasta finalizada manualmente con éxito!', 'success');
-                        loadAdminAuctions(); // Recargar la tabla para ver el estado actualizado
-                    } else {
-                        showMessage(auctionsErrorMessage, result.message || 'Error al finalizar la subasta manualmente.', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error finalizing auction manually:', error);
-                    showMessage(auctionsErrorMessage, 'Error de conexión al finalizar la subasta.', 'error');
+                    showMessage(auctionsErrorMessage, 'Subasta finalizada manualmente con éxito!', 'success');
+                    loadAdminAuctions();
+                } else {
+                    showMessage(auctionsErrorMessage, result.message || 'Error al finalizar la subasta manualmente.', 'error');
                 }
+            } catch (error) {
+                console.error('Error finalizing auction manually:', error); // DEBUG
+                showMessage(auctionsErrorMessage, 'Error de conexión al finalizar la subasta.', 'error');
             }
-
-        // Llama a loadAdminAuctions solo si el usuario es admin (esto se maneja en updateAuthUI)
-        // No se llama directamente aquí, ya que updateAuthUI se encarga de eso después de la autenticación.
+        }
     }
     // Llama a updateAuthUI al final para configurar la UI inicial
     updateAuthUI();
