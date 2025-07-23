@@ -2,13 +2,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // URL de tu backend de Render
     const BACKEND_URL = 'https://guerra-mundial-z-backend.onrender.com'; // Asegúrate de que esta URL sea correcta
 
+    // Importar Socket.IO
+    // Asegúrate de añadir <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> en tu subastas.html
+    const socket = io(BACKEND_URL); // Conectar al servidor de Socket.IO
+
     // Referencias a elementos del DOM (autenticación)
     const loginButton = document.getElementById('login-button');
     const logoutButton = document.getElementById('logout-button');
     const userDisplay = document.getElementById('user-display');
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
-    // Eliminado: const createAuctionBtnNav = document.getElementById('create-auction-btn-nav');
     const adminPanelBtnNav = document.getElementById('admin-panel-btn-nav');     // Botón "Panel Admin" en la navegación
 
     // Referencias para la sección de subastas activas (subastas.html)
@@ -231,9 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (bidInput) bidInput.disabled = true;
                 clearInterval(countdownIntervals[auctionId]); // Limpiar el intervalo
                 delete countdownIntervals[auctionId]; // Eliminar del objeto de intervalos
-                // Opcional: Recargar solo esta subasta para mostrar el ganador si ya está en el backend
-                // O simplemente recargar todas las subastas para actualizar el estado
-                loadActiveAuctions(); // Recargar para mostrar el estado finalizado
+                // No recargar loadActiveAuctions() aquí, ya que el evento socket.io 'auctionUpdated' se encargará.
                 return;
             }
 
@@ -363,17 +364,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             if (response.ok) {
                                 showModalMessage('Puja Exitosa', result.message, 'success');
-                                // Actualizar solo la tarjeta de subasta específica
-                                const updatedAuction = result.auction;
-                                const card = document.querySelector(`.auction-card[data-id="${updatedAuction._id}"]`);
-                                if (card) {
-                                    // Usar formatCurrency para la visualización
-                                    card.querySelector('.current-bid').textContent = `${formatCurrency(updatedAuction.currentBid)} Rublos`;
-                                    card.querySelector('.current-bidder').innerHTML = `Pujador actual: <strong>${updatedAuction.currentBidderName}</strong>`;
-                                    // Actualizar el valor mínimo del input de puja
-                                    card.querySelector('.bid-input').min = (updatedAuction.currentBid + 0.01).toFixed(2);
-                                    bidInput.value = ''; // Limpiar el input después de pujar
-                                }
+                                // La actualización de la UI se manejará a través del evento Socket.IO
+                                bidInput.value = ''; // Limpiar el input después de pujar
                             } else {
                                 showModalMessage('Error de Puja', result.message || 'Error al realizar la puja.', 'error');
                             }
@@ -392,6 +384,68 @@ document.addEventListener('DOMContentLoaded', () => {
                 auctionsErrorMessage.textContent = 'Error al cargar las subastas: ' + error.message;
             }
         }
+
+        // Lógica para manejar las actualizaciones de subastas en tiempo real
+        socket.on('auctionUpdated', (updatedAuction) => {
+            console.log('Subasta actualizada en tiempo real:', updatedAuction);
+            const card = document.querySelector(`.auction-card[data-id="${updatedAuction._id}"]`);
+            if (card) {
+                // Actualizar los elementos de la tarjeta con la nueva información
+                card.querySelector('.current-bid').textContent = `${formatCurrency(updatedAuction.currentBid)} Rublos`;
+                card.querySelector('.current-bidder').innerHTML = updatedAuction.currentBidderName ? `Pujador actual: <strong>${updatedAuction.currentBidderName}</strong>` : 'Sé el primero en pujar!';
+                card.querySelector('.bid-input').min = (updatedAuction.currentBid + 0.01).toFixed(2);
+
+                const countdownElement = card.querySelector('.countdown');
+                const bidButton = card.querySelector('.bid-button');
+                const bidInput = card.querySelector('.bid-input');
+
+                const endDate = new Date(updatedAuction.endDate).getTime();
+                const now = new Date().getTime();
+                const isEnded = updatedAuction.status === 'finalized' || updatedAuction.status === 'cancelled' || endDate < now;
+
+                if (isEnded) {
+                    countdownElement.innerHTML = '¡Finalizada!';
+                    if (bidButton) bidButton.disabled = true;
+                    if (bidInput) bidInput.disabled = true;
+                    clearInterval(countdownIntervals[updatedAuction._id]); // Limpiar el intervalo si finaliza
+                    delete countdownIntervals[updatedAuction._id];
+                    // Si la subasta ha finalizado, recargar para asegurar que se elimine o muestre el ganador
+                    loadActiveAuctions();
+                } else {
+                    // Si la subasta sigue activa, asegurar que el contador se actualice
+                    // y que los botones estén habilitados
+                    if (!countdownIntervals[updatedAuction._id]) {
+                        updateCountdown(updatedAuction._id, endDate, countdownElement, bidButton, bidInput);
+                        countdownIntervals[updatedAuction._id] = setInterval(() => {
+                            updateCountdown(updatedAuction._id, endDate, countdownElement, bidButton, bidInput);
+                        }, 1000);
+                    }
+                    if (bidButton) bidButton.disabled = false;
+                    if (bidInput) bidInput.disabled = false;
+                }
+            } else if (updatedAuction.status === 'active') {
+                // Si la subasta no existe en la lista y está activa, recargar para añadirla (nueva subasta)
+                loadActiveAuctions();
+            }
+        });
+
+        // Lógica para manejar la eliminación de subastas en tiempo real
+        socket.on('auctionDeleted', (deletedAuctionId) => {
+            console.log('Subasta eliminada en tiempo real:', deletedAuctionId);
+            const card = document.querySelector(`.auction-card[data-id="${deletedAuctionId}"]`);
+            if (card) {
+                // Limpiar el intervalo de la subasta eliminada
+                clearInterval(countdownIntervals[deletedAuctionId]);
+                delete countdownIntervals[deletedAuctionId];
+                // Eliminar la tarjeta de la subasta del DOM
+                card.remove();
+                // Si no quedan subastas, mostrar el mensaje de "no hay subastas"
+                if (activeAuctionsList.children.length === 0) {
+                    noAuctionsMessage.style.display = 'block';
+                }
+            }
+        });
+
 
         // Cargar subastas al cargar la página de subastas
         loadActiveAuctions();
