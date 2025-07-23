@@ -81,6 +81,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // [INICIO DE CAMBIOS] Función para formatear cantidades de dinero con separador de miles (punto) y dos decimales (coma)
+    function formatCurrency(amount) {
+        // Usamos 'es-ES' para el formato español: punto como separador de miles, coma como separador decimal.
+        return new Intl.NumberFormat('es-ES', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+            useGrouping: true // Habilita el separador de miles
+        }).format(amount);
+    }
+    // [FIN DE CAMBIOS]
+
     // Función para actualizar la UI de autenticación
     async function updateAuthUI() {
         const token = getAuthToken();
@@ -271,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="auction-card-content">
                             <h3>${auction.title}</h3>
                             <p>${auction.description}</p>
-                            <p>Puja actual: <span class="current-bid">${auction.currentBid.toFixed(2)} Rublos</span></p>
+                            <p>Puja actual: <span class="current-bid">${formatCurrency(auction.currentBid)} Rublos</span></p>
                             <p class="current-bidder">${auction.currentBidderName ? `Pujador actual: <strong>${auction.currentBidderName}</strong>` : 'Sé el primero en pujar!'}</p>
                             <p class="countdown" data-end-date="${auction.endDate}"></p>
                             <div class="bid-controls">
@@ -334,7 +345,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const updatedAuction = result.auction;
                                 const card = document.querySelector(`.auction-card[data-id="${updatedAuction._id}"]`);
                                 if (card) {
-                                    card.querySelector('.current-bid').textContent = `${updatedAuction.currentBid.toFixed(2)} Rublos`;
+                                    // [INICIO DE CAMBIOS] Usar formatCurrency para la visualización
+                                    card.querySelector('.current-bid').textContent = `${formatCurrency(updatedAuction.currentBid)} Rublos`;
+                                    // [FIN DE CAMBIOS]
                                     card.querySelector('.current-bidder').innerHTML = `Pujador actual: <strong>${updatedAuction.currentBidderName}</strong>`;
                                     // Actualizar el valor mínimo del input de puja
                                     card.querySelector('.bid-input').min = (updatedAuction.currentBid + 0.01).toFixed(2);
