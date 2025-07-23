@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const editImageUrlInput = document.getElementById('edit-image-url');
     const editStartBidInput = document.getElementById('edit-start-bid');
     const editEndDateInput = document.getElementById('edit-end-date');
+    // CORRECCIÓN: Se corrigió la asignación de la variable editStatusSelect
     const editStatusSelect = document.getElementById('edit-status');
     const editAuctionMessage = document.getElementById('edit-auction-message');
 
@@ -171,9 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setAuthToken(token);
         window.history.replaceState({}, document.title, window.location.pathname);
         updateAuthUI();
-    } else {
-        updateAuthUI();
     }
+    // No hay 'else' aquí, updateAuthUI se llama al final si no hay token en la URL
+    // para manejar el estado inicial de la UI.
 
     // --- Lógica de Scroll Suave (mantener como estaba) ---
     document.querySelectorAll('.header nav ul li a[href^="#"]').forEach(anchor => {
@@ -198,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Lógica específica para admin.html ---
+    // Esta parte solo se ejecuta si la página actual es admin.html
     if (window.location.pathname.includes('admin.html')) {
 
         // Función para cargar todas las subastas para el panel de administración
@@ -325,12 +327,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         },
-                        body: JSON.stringify({ 
-                            title, 
-                            description, 
+                        body: JSON.stringify({
+                            title,
+                            description,
                             imageUrl: imageUrl || null, // Enviar null si está vacío
-                            startBid, 
-                            endDate 
+                            startBid,
+                            endDate
                         })
                     });
 
@@ -341,6 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         createAuctionForm.reset(); // Limpiar formulario
                         loadAdminAuctions(); // Recargar la tabla de subastas en el panel de admin
                     } else {
+                        // Mostrar el mensaje de error del backend
                         showMessage(createAuctionMessage, result.message || 'Error al crear la subasta.', 'error');
                     }
                 } catch (error) {
@@ -493,6 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const response = await fetch(`${BACKEND_URL}/api/auctions/${auctionToDeleteId}`, {
                         method: 'DELETE',
                         headers: {
+                            'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         }
                     });
@@ -553,4 +557,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Llama a loadAdminAuctions solo si el usuario es admin (esto se maneja en updateAuthUI)
         // No se llama directamente aquí, ya que updateAuthUI se encarga de eso después de la autenticación.
     }
+    // Llama a updateAuthUI al final para configurar la UI inicial
+    updateAuthUI();
 });
