@@ -82,6 +82,195 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 5000); // Ocultar después de 5 segundos
     }
 
+    // [CORRECCIÓN DE ÁMBITO] Mover funciones relacionadas con la gestión de subastas fuera del bloque if(admin.html)
+    // para que sean accesibles desde updateAuthUI y otros lugares.
+
+    // Función para cargar todas las subastas para el panel de administración
+    async function loadAdminAuctions() {
+        console.log('[DEBUG] loadAdminAuctions: Cargando subastas para admin...'); // DEBUG
+        auctionsLoadingMessage.style.display = 'block';
+        auctionsErrorMessage.style.display = 'none';
+        adminAuctionsTableBody.innerHTML = ''; // Limpiar la tabla
+
+        const token = getAuthToken();
+        if (!token) {
+            console.log('[DEBUG] loadAdminAuctions: No hay token, no se pueden cargar subastas.'); // DEBUG
+            auctionsLoadingMessage.style.display = 'none';
+            auctionsErrorMessage.style.display = 'block';
+            auctionsErrorMessage.textContent = 'No autenticado. Por favor, inicia sesión como administrador.';
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/auctions`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 403) { // Acceso denegado (no admin)
+                console.warn('[DEBUG] loadAdminAuctions: Acceso denegado (403).'); // DEBUG
+                showMessage(auctionsErrorMessage, 'No tienes permisos para ver esta sección. Redirigiendo...', 'error');
+                setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+                return;
+            }
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const auctions = await response.json();
+            console.log('[DEBUG] loadAdminAuctions: Subastas cargadas:', auctions); // DEBUG
+            auctionsLoadingMessage.style.display = 'none';
+
+            if (auctions.length === 0) {
+                adminAuctionsTableBody.innerHTML = '<tr><td colspan="5">No hay subastas para mostrar.</td></tr>';
+                return;
+            }
+
+            auctions.forEach(auction => {
+                const row = adminAuctionsTableBody.insertRow();
+                const endDate = new Date(auction.endDate);
+                const formattedEndDate = endDate.toLocaleString('es-ES', {
+                    year: 'numeric', month: 'numeric', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+
+                let statusText = auction.status;
+                let statusClass = '';
+
+                // Lógica para el estado de la subasta
+                if (auction.status === 'active' && endDate <= new Date()) {
+                    statusText = 'Finalizada (Pendiente de Cron)';
+                    statusClass = 'info-message';
+                } else if (auction.status === 'finalized') {
+                    statusText = 'Finalizada';
+                    statusClass = 'success-message';
+                } else if (auction.status === 'cancelled') {
+                    statusText = 'Cancelada';
+                    statusClass = 'error-message';
+                } else if (auction.status === 'active') {
+                    statusText = 'Activa';
+                    statusClass = 'info-message';
+                }
+
+                row.innerHTML = `
+                    <td>${auction.title}</td>
+                    <td>${auction.currentBid.toFixed(2)} Rublos ${auction.currentBidderName ? `(${auction.currentBidderName})` : ''}</td>
+                    <td>${formattedEndDate}</td>
+                    <td><span class="message ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button class="button button-small button-edit edit-auction-btn" data-id="${auction._id}">Editar</button>
+                        <button class="button button-small button-danger delete-auction-btn" data-id="${auction._id}" data-title="${auction.title}">Eliminar</button>
+                        ${auction.status === 'active' ? `<button class="button button-small button-finalize finalize-auction-btn" data-id="${auction._id}">Finalizar</button>` : ''}
+                    </td>
+                `;
+            });
+
+            // Añadir event listeners a los botones de la tabla
+            adminAuctionsTableBody.querySelectorAll('.edit-auction-btn').forEach(button => {
+                button.addEventListener('click', (e) => openEditModal(e.target.dataset.id));
+            });
+            adminAuctionsTableBody.querySelectorAll('.delete-auction-btn').forEach(button => {
+                button.addEventListener('click', (e) => openConfirmDeleteModal(e.target.dataset.id, e.target.dataset.title));
+            });
+            adminAuctionsTableBody.querySelectorAll('.finalize-auction-btn').forEach(button => {
+                button.addEventListener('click', (e) => finalizeAuction(e.target.dataset.id));
+            });
+
+        } catch (error) {
+            console.error('[DEBUG] Error loading admin auctions:', error);
+            auctionsLoadingMessage.style.display = 'none';
+            showMessage(auctionsErrorMessage, 'Error al cargar las subastas: ' + error.message, 'error');
+        }
+    }
+
+    // Abrir modal de edición y cargar datos
+    async function openEditModal(auctionId) {
+        console.log('[DEBUG] openEditModal: Abriendo modal de edición para ID:', auctionId); // DEBUG
+        editAuctionMessage.style.display = 'none'; // Ocultar mensajes anteriores
+        const token = getAuthToken();
+        if (!token) {
+            showMessage(editAuctionMessage, 'No autenticado para editar.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/auctions/${auctionId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const auction = await response.json();
+            console.log('[DEBUG] openEditModal: Datos de subasta para edición:', auction); // DEBUG
+
+            editAuctionIdInput.value = auction._id;
+            editTitleInput.value = auction.title;
+            editDescriptionInput.value = auction.description;
+            editImageUrlInput.value = auction.imageUrl && auction.imageUrl !== 'https://via.placeholder.com/300x200?text=No+Image' ? auction.imageUrl : '';
+            editStartBidInput.value = auction.startBid;
+            const date = new Date(auction.endDate);
+            const formattedDate = date.toISOString().slice(0, 16);
+            editEndDateInput.value = formattedDate;
+            editStatusSelect.value = auction.status;
+
+            editAuctionMessage.style.display = 'none';
+            editAuctionModal.style.display = 'flex';
+        } catch (error) {
+            console.error('[DEBUG] Error fetching auction for edit:', error);
+            showMessage(editAuctionMessage, 'Error al cargar los datos de la subasta para edición.', 'error');
+        }
+    }
+
+    // Abrir modal de confirmación de eliminación
+    function openConfirmDeleteModal(id, title) {
+        console.log('[DEBUG] openConfirmDeleteModal: Abriendo modal de eliminación para ID:', id); // DEBUG
+        auctionToDeleteId = id;
+        auctionToDeleteTitleSpan.textContent = title;
+        deleteAuctionMessage.style.display = 'none';
+        confirmDeleteModal.style.display = 'flex';
+    }
+
+    // Manejar finalización manual de subasta
+    async function finalizeAuction(auctionId) {
+        console.log('[DEBUG] finalizeAuction: Finalizando subasta manualmente para ID:', auctionId); // DEBUG
+        if (!confirm('¿Estás seguro de que quieres finalizar esta subasta manualmente?')) {
+            return;
+        }
+
+        const token = getAuthToken();
+        if (!token) {
+            showMessage(auctionsErrorMessage, 'No autenticado para finalizar subastas.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/auctions/${auctionId}/finalize`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const result = await response.json();
+            console.log('[DEBUG] finalizeAuction: Respuesta del backend:', response.status, result); // DEBUG
+
+            if (response.ok) {
+                showMessage(auctionsErrorMessage, 'Subasta finalizada manualmente con éxito!', 'success');
+                loadAdminAuctions();
+            } else {
+                showMessage(auctionsErrorMessage, result.message || 'Error al finalizar la subasta manualmente.', 'error');
+            }
+        } catch (error) {
+            console.error('[DEBUG] Error finalizing auction manually:', error); // DEBUG
+            showMessage(auctionsErrorMessage, 'Error de conexión al finalizar la subasta.', 'error');
+        }
+    }
+
+
     // Función para actualizar la UI de autenticación
     async function updateAuthUI() {
         console.log('[DEBUG] updateAuthUI: Iniciando...'); // DEBUG
@@ -121,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = 'index.html';
                 } else if (window.location.pathname.includes('admin.html') && isAdminUser) {
                     console.log('[DEBUG] updateAuthUI: Usuario es admin en admin.html, cargando subastas.'); // DEBUG
-                    loadAdminAuctions();
+                    loadAdminAuctions(); // Llamada a la función ahora accesible
                 }
 
             } else {
@@ -213,87 +402,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname.includes('admin.html')) {
         console.log('[DEBUG] admin.html: Script ejecutándose en la página de administración.'); // DEBUG
 
-        // Función para cargar todas las subastas para el panel de administración
-        async function loadAdminAuctions() {
-            console.log('[DEBUG] loadAdminAuctions: Cargando subastas para admin...'); // DEBUG
-            auctionsLoadingMessage.style.display = 'block';
-            auctionsErrorMessage.style.display = 'none';
-            adminAuctionsTableBody.innerHTML = ''; // Limpiar la tabla
-
-            const token = getAuthToken();
-            if (!token) {
-                console.log('[DEBUG] loadAdminAuctions: No hay token, no se pueden cargar subastas.'); // DEBUG
-                auctionsLoadingMessage.style.display = 'none';
-                auctionsErrorMessage.style.display = 'block';
-                auctionsErrorMessage.textContent = 'No autenticado. Por favor, inicia sesión como administrador.';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/auctions`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (response.status === 403) { // Acceso denegado (no admin)
-                    console.warn('[DEBUG] loadAdminAuctions: Acceso denegado (403).'); // DEBUG
-                    showMessage(auctionsErrorMessage, 'No tienes permisos para ver esta sección. Redirigiendo...', 'error');
-                    setTimeout(() => { window.location.href = 'index.html'; }, 2000);
-                    return;
-                }
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const auctions = await response.json();
-                console.log('[DEBUG] loadAdminAuctions: Subastas cargadas:', auctions); // DEBUG
-                auctionsLoadingMessage.style.display = 'none';
-
-                if (auctions.length === 0) {
-                    adminAuctionsTableBody.innerHTML = '<tr><td colspan="5">No hay subastas para mostrar.</td></tr>';
-                    return;
-                }
-
-                auctions.forEach(auction => {
-                    const row = adminAuctionsTableBody.insertRow();
-                    const endDate = new Date(auction.endDate);
-                    const formattedEndDate = endDate.toLocaleString('es-ES', {
-                        year: 'numeric', month: 'numeric', day: 'numeric',
-                        hour: '2-digit', minute: '2-digit'
-                    });
-
-                    row.innerHTML = `
-                        <td>${auction.title}</td>
-                        <td>${auction.currentBid.toFixed(2)} Rublos ${auction.currentBidderName ? `(${auction.currentBidderName})` : ''}</td>
-                        <td>${formattedEndDate}</td>
-                        <td>${auction.status === 'active' ? 'Activa' : (auction.status === 'finalized' ? 'Finalizada' : 'Cancelada')}</td>
-                        <td>
-                            <button class="button button-small button-edit edit-auction-btn" data-id="${auction._id}">Editar</button>
-                            <button class="button button-small button-danger delete-auction-btn" data-id="${auction._id}" data-title="${auction.title}">Eliminar</button>
-                            ${auction.status === 'active' ? `<button class="button button-small button-finalize finalize-auction-btn" data-id="${auction._id}">Finalizar</button>` : ''}
-                        </td>
-                    `;
-                });
-
-                // Añadir event listeners a los botones de la tabla
-                adminAuctionsTableBody.querySelectorAll('.edit-auction-btn').forEach(button => {
-                    button.addEventListener('click', (e) => openEditModal(e.target.dataset.id));
-                });
-                adminAuctionsTableBody.querySelectorAll('.delete-auction-btn').forEach(button => {
-                    button.addEventListener('click', (e) => openConfirmDeleteModal(e.target.dataset.id, e.target.dataset.title));
-                });
-                adminAuctionsTableBody.querySelectorAll('.finalize-auction-btn').forEach(button => {
-                    button.addEventListener('click', (e) => finalizeAuction(e.target.dataset.id));
-                });
-
-            } catch (error) {
-                console.error('[DEBUG] Error loading admin auctions:', error);
-                auctionsLoadingMessage.style.display = 'none';
-                showMessage(auctionsErrorMessage, 'Error al cargar las subastas: ' + error.message, 'error');
-            }
-        }
-
         // --- Lógica de Creación de Subasta ---
         console.log('[DEBUG] admin.html: Verificando createAuctionForm...');
         if (createAuctionForm) {
@@ -361,46 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('[DEBUG] admin.html: createAuctionForm NO ENCONTRADO. El formulario de creación no se inicializará.');
         }
 
-        // --- Lógica de Edición de Subasta ---
-        // Abrir modal de edición
-        async function openEditModal(auctionId) {
-            console.log('[DEBUG] openEditModal: Abriendo modal de edición para ID:', auctionId);
-            const token = getAuthToken();
-            if (!token) {
-                showMessage(editAuctionMessage, 'No autenticado para editar.', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/auctions/${auctionId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const auction = await response.json();
-                console.log('[DEBUG] openEditModal: Datos de subasta para edición:', auction);
-
-                editAuctionIdInput.value = auction._id;
-                editTitleInput.value = auction.title;
-                editDescriptionInput.value = auction.description;
-                editImageUrlInput.value = auction.imageUrl && auction.imageUrl !== 'https://via.placeholder.com/300x200?text=No+Image' ? auction.imageUrl : '';
-                editStartBidInput.value = auction.startBid;
-                const date = new Date(auction.endDate);
-                const formattedDate = date.toISOString().slice(0, 16);
-                editEndDateInput.value = formattedDate;
-                editStatusSelect.value = auction.status;
-
-                editAuctionMessage.style.display = 'none';
-                editAuctionModal.style.display = 'flex';
-            } catch (error) {
-                console.error('[DEBUG] Error fetching auction for edit:', error);
-                showMessage(editAuctionMessage, 'Error al cargar los datos de la subasta para edición.', 'error');
-            }
-        }
-
         // Cerrar modal de edición
         if (editAuctionCloseBtn) {
             editAuctionCloseBtn.addEventListener('click', () => {
@@ -466,16 +534,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // --- Lógica de Eliminación de Subasta ---
-        // Abrir modal de confirmación de eliminación
-        function openConfirmDeleteModal(id, title) {
-            console.log('[DEBUG] openConfirmDeleteModal: Abriendo modal de eliminación para ID:', id);
-            auctionToDeleteId = id;
-            auctionToDeleteTitleSpan.textContent = title;
-            deleteAuctionMessage.style.display = 'none';
-            confirmDeleteModal.style.display = 'flex';
-        }
-
         // Cerrar modal de confirmación de eliminación
         if (confirmDeleteCloseBtn) {
             confirmDeleteCloseBtn.addEventListener('click', () => {
@@ -537,43 +595,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     auctionToDeleteId = null;
                 }
             });
-        }
-
-        // --- Lógica de Finalización Manual de Subasta ---
-        async function finalizeAuction(auctionId) {
-            console.log('[DEBUG] finalizeAuction: Finalizando subasta manualmente para ID:', auctionId);
-            if (!confirm('¿Estás seguro de que quieres finalizar esta subasta manualmente?')) {
-                return;
-            }
-
-            const token = getAuthToken();
-            if (!token) {
-                showMessage(auctionsErrorMessage, 'No autenticado para finalizar subastas.', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/auctions/${auctionId}/finalize`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                const result = await response.json();
-                console.log('[DEBUG] finalizeAuction: Respuesta del backend:', response.status, result);
-
-                if (response.ok) {
-                    showMessage(auctionsErrorMessage, 'Subasta finalizada manualmente con éxito!', 'success');
-                    loadAdminAuctions();
-                } else {
-                    showMessage(auctionsErrorMessage, result.message || 'Error al finalizar la subasta manualmente.', 'error');
-                }
-            } catch (error) {
-                console.error('[DEBUG] Error finalizing auction manually:', error);
-                showMessage(auctionsErrorMessage, 'Error de conexión al finalizar la subasta.', 'error');
-            }
         }
     }
     // Llama a updateAuthUI al final para configurar la UI inicial
