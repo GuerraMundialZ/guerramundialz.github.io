@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // [INICIO DE CAMBIOS] Función para formatear cantidades de dinero con separador de miles (punto) y decimales (solo si son necesarios)
+    // Función para formatear cantidades de dinero con separador de miles (punto) y decimales (solo si son necesarios)
     function formatCurrency(amount) {
         // Usa 'es-ES' para el formato base (punto para miles, coma para decimales)
         const formatter = new Intl.NumberFormat('es-ES', {
@@ -98,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return formatted;
     }
-    // [FIN DE CAMBIOS]
 
     // Función para actualizar la UI de autenticación
     async function updateAuthUI() {
@@ -294,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="current-bidder">${auction.currentBidderName ? `Pujador actual: <strong>${auction.currentBidderName}</strong>` : 'Sé el primero en pujar!'}</p>
                             <p class="countdown" data-end-date="${auction.endDate}"></p>
                             <div class="bid-controls">
-                                <input type="number" class="bid-input" placeholder="Tu puja" min="${(auction.currentBid + 0.01).toFixed(2)}" step="0.01" ${isEnded ? 'disabled' : ''}>
+                                <input type="number" class="bid-input" placeholder="Tu puja" min="${(auction.currentBid + 0.01).toFixed(2)}" step="5000" ${isEnded ? 'disabled' : ''}>
                                 <button class="button bid-button" data-id="${auction._id}" ${isEnded ? 'disabled' : ''}>Pujar</button>
                             </div>
                         </div>
@@ -327,6 +326,21 @@ document.addEventListener('DOMContentLoaded', () => {
                             showModalMessage('Error de Puja', 'Por favor, introduce una cantidad de puja válida y positiva.', 'error');
                             return;
                         }
+                        // Validar que la puja sea un múltiplo de 5000 y mayor que la puja actual
+                        const currentBidElement = e.target.closest('.auction-card-content').querySelector('.current-bid');
+                        const currentBidText = currentBidElement.textContent.replace(/[^0-9,-]+/g, '').replace(',', '.'); // Limpiar y convertir a formato numérico
+                        const currentBid = parseFloat(currentBidText);
+
+                        if (bidAmount <= currentBid) {
+                            showModalMessage('Error de Puja', `Tu puja (${formatCurrency(bidAmount)} Rublos) debe ser mayor que la puja actual (${formatCurrency(currentBid)} Rublos).`, 'error');
+                            return;
+                        }
+
+                        if ((bidAmount - currentBid) % 5000 !== 0 && bidAmount !== currentBid + 5000) {
+                            showModalMessage('Error de Puja', `Tu puja debe ser un incremento de 5.000 Rublos sobre la puja actual.`, 'error');
+                            return;
+                        }
+
 
                         // Obtener el token del usuario logueado
                         const token = getAuthToken();
