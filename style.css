@@ -21,19 +21,16 @@
 /* Estilos Generales */
 body {
     font-family: var(--font-secondary);
-    /* Restaurado el fondo original del body */
     background-image: url('img/fondoweb.jpg');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-color: var(--bg-color-primary); /* Color de respaldo si la imagen no carga */
-
     color: var(--text-color);
     margin: 0;
     line-height: 1.6;
     scroll-behavior: smooth;
-    /* Asegurado que no haya display:flex o flex-direction:column aquí que afecte el flujo global */
 }
 
 .subpage-body {
@@ -152,37 +149,34 @@ a:hover {
     background-color: rgba(26, 26, 26, 0.9); /* Un poco transparente */
     color: var(--text-color);
     padding: 15px 0;
-    position: fixed; /* Restaurado a 'fixed' como en tu original */
+    position: fixed;
     width: 100%;
     top: 0;
     left: 0;
-    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    z-index: 1000;
     box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    backdrop-filter: blur(5px); /* Efecto de desenfoque */
+    backdrop-filter: blur(5px);
 }
 
-/* Modificado: header .container para organizar las filas */
 .header .container {
     display: flex;
-    flex-direction: column; /* Apila las dos filas verticalmente */
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    gap: 10px; /* Espacio entre la fila superior y la inferior */
+    gap: 10px;
 }
 
-/* Fila Superior del Encabezado */
 .header-top-row {
-    width: 100%; /* Ocupa todo el ancho */
+    width: 100%;
     display: flex;
-    justify-content: space-between; /* Distribuye el logo a la izquierda y Discord a la derecha */
+    justify-content: space-between;
     align-items: center;
 }
 
-/* Estilos para el contenedor del logo (clase .logo que ya existe) */
 .header .logo {
     display: flex;
     align-items: center;
-    gap: 10px; /* Espacio entre el logo y el texto */
+    gap: 10px;
     font-family: var(--font-primary);
     font-size: 1.8em;
     font-weight: bold;
@@ -193,20 +187,18 @@ a:hover {
     padding: 0;
 }
 
-/* Estilos para la imagen del logo dentro del contenedor */
 .logo-img {
-    height: 80px; /* Ajusta la altura de tu logo */
+    height: 80px;
     width: auto;
     vertical-align: middle;
 }
 
-/* Fila Inferior del Encabezado (para la navegación) */
 .header-bottom-row {
-    width: 100%; /* Ocupa todo el ancho */
+    width: 100%;
     display: flex;
-    justify-content: center; /* Centra la navegación */
+    justify-content: center;
     align-items: center;
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    flex-wrap: wrap;
 }
 
 .header nav ul {
@@ -215,11 +207,11 @@ a:hover {
     padding: 0;
     display: flex;
     align-items: center;
-    gap: 30px; /* Espacio entre cada elemento del menú */
+    gap: 30px;
 }
 
 .header nav ul li {
-    margin: 0; /* Reiniciamos márgenes para evitar conflictos con gap */
+    margin: 0;
 }
 
 .header nav ul li a {
@@ -234,7 +226,6 @@ a:hover {
     display: block;
 }
 
-/* Subrayado animado para enlaces de texto */
 .header nav ul li a::after {
     content: '';
     position: absolute;
@@ -255,12 +246,9 @@ a:hover {
     width: 100%;
 }
 
-/* --- */
-/* Estilo para el texto rojo */
 .text-red {
     color: #ff0000;
 }
-
 
 /* Secciones generales */
 .section {
@@ -338,7 +326,7 @@ p {
     align-items: center;
     color: rgb(255, 255, 255);
     text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
-    padding-top: 150px; /* Mantenemos este padding para el diseño visual del hero */
+    padding-top: 150px;
     position: relative;
     z-index: 1;
 }
@@ -519,7 +507,6 @@ p {
     font-size: 0.9em;
     text-align: center;
     border-top: 1px solid #333;
-    /* Asegurado que no haya margin-top:auto que afecte el flujo */
 }
 
 .footer p {
@@ -639,14 +626,33 @@ a:hover {
 }
 
 /* --- ESTILOS PARA LA SECCIÓN DE AUTENTICACIÓN DE DISCORD --- */
+/* Nuevo contenedor para agrupar los elementos de Discord */
+.discord-auth-container {
+    border: 2px solid var(--discord-brand-color); /* Borde del color de Discord */
+    border-radius: 10px; /* Bordes redondeados */
+    padding: 10px 15px; /* Espaciado interno */
+    background-color: rgba(88, 101, 242, 0.1); /* Fondo ligeramente transparente del color de Discord */
+    display: flex; /* Para organizar los elementos internos */
+    align-items: center; /* Centrar verticalmente */
+    gap: 10px; /* Espacio entre los elementos */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Sombra para profundidad */
+    transition: all 0.3s ease; /* Transición suave para cualquier cambio */
+}
+
+.discord-auth-container:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); /* Sombra más pronunciada al pasar el ratón */
+    border-color: var(--discord-brand-color-dark); /* Color de borde más oscuro al pasar el ratón */
+}
+
+/* Ajuste para el .discord-auth-section existente para que se adapte al nuevo contenedor */
 .discord-auth-section {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Espacio entre el avatar/nombre y el botón de Discord */
+    /* Eliminado display: flex; y gap: 10px; de aquí, ahora manejado por .discord-auth-container */
+    /* Se mantiene para compatibilidad o si se usa en otro contexto, pero idealmente se simplificaría */
+    display: contents; /* Hace que los hijos sean directos del padre, ignorando este contenedor */
 }
 
 .discord-auth-section .user-info {
-    display: flex;
+    display: flex; /* Mantener flex para avatar y nombre */
     align-items: center;
     gap: 8px;
     color: var(--text-color);
@@ -661,7 +667,9 @@ a:hover {
     border: 2px solid var(--discord-brand-color);
 }
 
-.discord-auth-section .button.discord-login-button {
+.discord-auth-section .button.discord-login-button,
+.discord-auth-section .button.logout-button,
+.discord-auth-section .button#admin-panel-btn-nav { /* Aplicar a todos los botones dentro de la sección */
     background-color: var(--discord-brand-color);
     color: white;
     border: none;
@@ -683,26 +691,24 @@ a:hover {
 }
 
 .discord-auth-section .button.logout-button {
-    background-color: var(--error-color);
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.9em;
-    transition: background-color 0.3s ease;
-    margin: 0; /* Asegura que no tenga los márgenes del .button general */
+    background-color: var(--error-color); /* Color específico para logout */
 }
 
 .discord-auth-section .button.logout-button:hover {
     background-color: #cc3c3c;
 }
 
+.discord-auth-section .button#admin-panel-btn-nav {
+    background-color: #f39c12; /* Un color distinto para el botón de admin si se desea */
+}
+
+.discord-auth-section .button#admin-panel-btn-nav:hover {
+    background-color: #e67e22;
+}
+
 
 /* --- NUEVOS ESTILOS PARA LA SECCIÓN DE SUBASTAS Y ADMIN --- */
-.admin-section { /* Renombrado de .admin-panel para ser más general */
+.admin-section {
     background-color: var(--bg-color-secondary);
     border: 2px solid var(--accent-color);
     border-radius: 8px;
@@ -712,10 +718,10 @@ a:hover {
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
 
-.admin-section h2, .admin-section h3 { /* Ajuste para títulos dentro de secciones admin */
+.admin-section h2, .admin-section h3 {
     color: var(--accent-color);
     font-family: var(--font-primary);
-    font-size: 2em; /* Un poco más pequeño que los h1/h2 principales */
+    font-size: 2em;
     margin-top: 0;
     margin-bottom: 25px;
     text-align: center;
@@ -724,32 +730,28 @@ a:hover {
 /* Estilos para los mensajes de formulario (éxito/error) */
 .message {
     padding: 10px 15px;
-    margin-top: 15px; /* Ajustado para que no se pegue al elemento anterior */
+    margin-top: 15px;
     margin-bottom: 15px;
     border-radius: 5px;
     font-weight: bold;
     text-align: center;
-    /* [CORRECCIÓN DE VISIBILIDAD] Se elimina display: none; de la clase base .message */
+    display: none; /* Por defecto oculto, JS lo mostrará */
 }
 
-.message.success, .success-message { /* Combinado para consistencia */
+.message.success, .success-message {
     background-color: var(--success-color);
-    color: var(--text-color-dark); /* Texto oscuro para contraste en fondo claro */
-    display: inline-block; /* [CORRECCIÓN DE VISIBILIDAD] */
+    color: var(--text-color-dark);
 }
 
-.message.error, .error-message { /* Combinado para consistencia */
+.message.error, .error-message {
     background-color: var(--error-color);
     color: white;
-    display: inline-block; /* [CORRECCIÓN DE VISIBILIDAD] */
 }
 
-.message.info-message { /* Para mensajes de información/carga */
+.message.info-message {
     background-color: var(--info-color);
     color: var(--text-color-dark);
-    display: inline-block; /* [CORRECCIÓN DE VISIBILIDAD] */
 }
-
 
 /* Estilos de la Modal (General para todas las modales) */
 .modal {
@@ -762,8 +764,8 @@ a:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1050; /* Más alto que el preloader/popup normal */
-    display: none; /* Oculto por defecto, JS lo mostrará */
+    z-index: 1050;
+    display: none;
 }
 
 .modal .modal-content {
@@ -775,7 +777,7 @@ a:hover {
     width: 90%;
     position: relative;
     border: 2px solid var(--accent-color);
-    text-align: left; /* Restablecer el texto a la izquierda dentro de la modal */
+    text-align: left;
 }
 
 .modal .modal-content .close-button {
@@ -819,7 +821,7 @@ a:hover {
 .admin-form input[type="number"],
 .admin-form input[type="datetime-local"],
 .admin-form textarea,
-.admin-form select { /* Añadido select para el estado de la subasta */
+.admin-form select {
     width: calc(100% - 20px);
     padding: 10px;
     border: 1px solid #555;
@@ -827,11 +829,11 @@ a:hover {
     background-color: #3a3a3a;
     color: var(--text-color);
     font-size: 1em;
-    box-sizing: border-box; /* Incluye padding en el ancho */
+    box-sizing: border-box;
 }
 
 .admin-form textarea {
-    resize: vertical; /* Permite redimensionar verticalmente */
+    resize: vertical;
     min-height: 80px;
 }
 
@@ -856,7 +858,7 @@ a:hover {
 
 /* Estilos para la tabla de administración de subastas */
 .table-responsive {
-    overflow-x: auto; /* Permite el scroll horizontal en tablas grandes */
+    overflow-x: auto;
     margin-top: 20px;
 }
 
@@ -866,7 +868,7 @@ a:hover {
     margin-top: 20px;
     background-color: var(--bg-color-primary);
     border-radius: 8px;
-    overflow: hidden; /* Para que los bordes redondeados se apliquen al contenido */
+    overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
@@ -886,11 +888,11 @@ a:hover {
 }
 
 .admin-table tbody tr:nth-child(even) {
-    background-color: #222; /* Fila par */
+    background-color: #222;
 }
 
 .admin-table tbody tr:hover {
-    background-color: #3a3a3a; /* Resaltar fila al pasar el ratón */
+    background-color: #3a3a3a;
 }
 
 .admin-table td {
@@ -899,9 +901,8 @@ a:hover {
 }
 
 .admin-table td:last-child {
-    white-space: nowrap; /* Evita que los botones se rompan en varias líneas */
+    white-space: nowrap;
 }
-
 
 /* Estilos para las tarjetas de subasta en subastas.html */
 .auction-grid {
@@ -931,8 +932,8 @@ a:hover {
 
 .auction-card img {
     max-width: 100%;
-    height: 200px; /* Altura fija para las imágenes */
-    object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse */
+    height: 200px;
+    object-fit: cover;
     border-radius: 5px;
     margin-bottom: 15px;
     border: 1px solid #666;
@@ -949,7 +950,7 @@ a:hover {
 .auction-card p {
     font-size: 1em;
     margin-bottom: 10px;
-    flex-grow: 1; /* Permite que el párrafo de descripción ocupe el espacio disponible */
+    flex-grow: 1;
 }
 
 .auction-card p strong {
@@ -966,10 +967,10 @@ a:hover {
 
 .auction-card .countdown {
     font-weight: bold;
-    color: var(--info-color); /* Color azul para el contador */
+    color: var(--info-color);
     font-size: 1.1em;
     margin-bottom: 15px;
-    display: block; /* Para que ocupe su propia línea */
+    display: block;
 }
 
 .auction-card .bid-controls {
@@ -978,7 +979,7 @@ a:hover {
     margin-top: 15px;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    flex-wrap: wrap;
 }
 
 .auction-card .bid-input {
@@ -995,7 +996,7 @@ a:hover {
 .auction-card .bid-button {
     padding: 8px 15px;
     font-size: 0.9em;
-    margin: 0; /* Anula el margen general del botón */
+    margin: 0;
 }
 
 /* Mensajes de puja específicos por tarjeta */
@@ -1004,7 +1005,7 @@ a:hover {
     padding: 5px 10px;
     border-radius: 3px;
     margin-top: 10px;
-    width: 100%; /* Ocupa todo el ancho disponible */
+    width: 100%;
     box-sizing: border-box;
 }
 
@@ -1019,34 +1020,34 @@ a:hover {
 }
 
 /* --- RESPONSIVE DESIGN --- */
-@media (max-width: 900px) { /* Ajustar breakpoint si es necesario */
+@media (max-width: 900px) {
     .header .container {
-        gap: 10px; /* Mantener el espacio entre filas */
+        gap: 10px;
     }
 
     .header-top-row {
-        flex-direction: column; /* Apilar el logo y Discord en pantallas pequeñas */
-        justify-content: center; /* Centrar en móvil */
-        gap: 10px; /* Espacio entre logo y Discord cuando están apilados */
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
     }
 
     .header-bottom-row {
-        flex-direction: column; /* Apila nav verticalmente */
-        gap: 15px; /* Espacio entre nav */
+        flex-direction: column;
+        gap: 15px;
     }
 
     .header nav ul {
-        flex-wrap: wrap; /* Permitir que los ítems del menú se envuelvan */
+        flex-wrap: wrap;
         justify-content: center;
-        gap: 15px; /* Reducir el gap del menú en móviles */
+        gap: 15px;
     }
 
     .header nav ul li {
-        margin: 0; /* Reiniciar márgenes específicos para móvil */
+        margin: 0;
     }
 
     .hero {
-        padding-top: 120px; /* Reducir el padding para el hero en móviles */
+        padding-top: 120px;
     }
 
     .hero-content h1 {
@@ -1078,10 +1079,19 @@ a:hover {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
 
+    /* El contenedor principal de Discord ahora maneja su propio diseño */
+    .discord-auth-container {
+        width: 100%; /* Ocupa todo el ancho disponible */
+        justify-content: center; /* Centra el contenido dentro del contenedor */
+        padding: 10px; /* Ajusta el padding para móviles si es necesario */
+    }
+
+    /* Ocultar el .discord-auth-section en móviles si está vacío, o ajustar su display */
     .discord-auth-section {
-        justify-content: center; /* Centrar el bloque de discord cuando está apilado */
-        width: 100%;
-        padding-left: 0;
+        display: flex; /* Asegura que los elementos internos se muestren en línea */
+        flex-wrap: wrap; /* Permite que los elementos se envuelvan si no caben */
+        justify-content: center; /* Centra los elementos envueltos */
+        gap: 10px; /* Espacio entre los elementos */
     }
 
     .header .logo {
@@ -1090,11 +1100,11 @@ a:hover {
     }
 
     .logo-img {
-        height: 50px; /* Ajustar el tamaño del logo en móvil */
+        height: 50px;
     }
 
     .auction-grid {
-        grid-template-columns: 1fr; /* Una columna en móvil */
+        grid-template-columns: 1fr;
     }
 
     .auction-card .bid-controls {
@@ -1103,7 +1113,7 @@ a:hover {
     }
 
     .auction-card .bid-input {
-        width: 80%; /* Más ancho en móvil */
+        width: 80%;
     }
 }
 
