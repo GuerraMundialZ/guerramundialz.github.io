@@ -601,8 +601,9 @@ a:hover {
 }
 
 /* FIX: Asegura que el título del modal de error tenga texto blanco */
-.popup-content h3.error-message {
-    color: white; /* Sobrescribe el color del título a blanco cuando es un mensaje de error */
+/* Se aplica directamente al #bid-modal-title que es el h3 dentro del modal de mensajes de puja */
+#bid-modal-title {
+    color: white; /* Sobrescribe el color del título a blanco para que sea legible */
 }
 
 .popup-content p {
