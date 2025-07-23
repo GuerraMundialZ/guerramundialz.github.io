@@ -301,9 +301,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const title = document.getElementById('auction-title').value;
                 const description = document.getElementById('auction-description').value;
-                const imageUrl = document.getElementById('auction-image-url').value;
+                // Asegurarse de que imageUrl sea null o una cadena vacía si el input está vacío
+                const imageUrl = document.getElementById('auction-image-url').value.trim();
                 const startBid = parseFloat(document.getElementById('auction-start-bid').value);
-                const endDate = document.getElementById('auction-end-date').value;
+                const endDate = document.getElementById('auction-end-date').value; // Formato "YYYY-MM-DDTHH:mm"
+
+                // Validaciones básicas antes de enviar
+                if (!title || !description || isNaN(startBid) || startBid < 0 || !endDate) {
+                    showMessage(createAuctionMessage, 'Por favor, completa todos los campos obligatorios y asegúrate de que la puja inicial sea un número válido.', 'error');
+                    return;
+                }
 
                 const token = getAuthToken();
                 if (!token) {
@@ -318,7 +325,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         },
-                        body: JSON.stringify({ title, description, imageUrl, startBid, endDate })
+                        body: JSON.stringify({ 
+                            title, 
+                            description, 
+                            imageUrl: imageUrl || null, // Enviar null si está vacío
+                            startBid, 
+                            endDate 
+                        })
                     });
 
                     const result = await response.json();
@@ -326,13 +339,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (response.ok) {
                         showMessage(createAuctionMessage, 'Subasta creada con éxito!', 'success');
                         createAuctionForm.reset(); // Limpiar formulario
-                        loadAdminAuctions(); // Recargar la tabla de subastas
+                        loadAdminAuctions(); // Recargar la tabla de subastas en el panel de admin
                     } else {
                         showMessage(createAuctionMessage, result.message || 'Error al crear la subasta.', 'error');
                     }
                 } catch (error) {
                     console.error('Error creating auction:', error);
-                    showMessage(createAuctionMessage, 'Error de conexión al crear la subasta.', 'error');
+                    showMessage(createAuctionMessage, 'Error de conexión al crear la subasta. Inténtalo de nuevo.', 'error');
                 }
             });
         }
@@ -360,9 +373,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 editAuctionIdInput.value = auction._id;
                 editTitleInput.value = auction.title;
                 editDescriptionInput.value = auction.description;
-                editImageUrlInput.value = auction.imageUrl === 'https://via.placeholder.com/300x200?text=No+Image' ? '' : auction.imageUrl; // Limpiar si es placeholder
+                // Asegurarse de que el campo de URL de imagen se muestre correctamente o vacío
+                editImageUrlInput.value = auction.imageUrl && auction.imageUrl !== 'https://via.placeholder.com/300x200?text=No+Image' ? auction.imageUrl : '';
                 editStartBidInput.value = auction.startBid;
-                editEndDateInput.value = new Date(auction.endDate).toISOString().slice(0, 16); // Formato para datetime-local
+                // Formatear la fecha para el input datetime-local
+                const date = new Date(auction.endDate);
+                const formattedDate = date.toISOString().slice(0, 16);
+                editEndDateInput.value = formattedDate;
                 editStatusSelect.value = auction.status;
 
                 editAuctionMessage.style.display = 'none'; // Ocultar mensajes anteriores
@@ -394,7 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const updatedData = {
                     title: editTitleInput.value,
                     description: editDescriptionInput.value,
-                    imageUrl: editImageUrlInput.value,
+                    imageUrl: editImageUrlInput.value.trim() || null, // Enviar null si está vacío
                     startBid: parseFloat(editStartBidInput.value),
                     endDate: editEndDateInput.value,
                     status: editStatusSelect.value
