@@ -82,9 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 5000); // Ocultar después de 5 segundos
     }
 
-    // [CORRECCIÓN DE ÁMBITO] Mover funciones relacionadas con la gestión de subastas fuera del bloque if(admin.html)
-    // para que sean accesibles desde updateAuthUI y otros lugares.
-
     // Función para cargar todas las subastas para el panel de administración
     async function loadAdminAuctions() {
         console.log('[DEBUG] loadAdminAuctions: Cargando subastas para admin...'); // DEBUG
@@ -135,22 +132,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     hour: '2-digit', minute: '2-digit'
                 });
 
-                let statusText = auction.status;
-                let statusClass = '';
+                let statusText;
+                let statusClass;
+                const now = new Date(); // Obtener la fecha actual una vez para comparación
 
-                // Lógica para el estado de la subasta
-                if (auction.status === 'active' && endDate <= new Date()) {
-                    statusText = 'Finalizada (Pendiente de Cron)';
-                    statusClass = 'info-message';
-                } else if (auction.status === 'finalized') {
+                // Lógica mejorada para el estado de la subasta
+                if (auction.status === 'finalized') {
                     statusText = 'Finalizada';
                     statusClass = 'success-message';
                 } else if (auction.status === 'cancelled') {
                     statusText = 'Cancelada';
                     statusClass = 'error-message';
+                } else if (auction.status === 'active' && endDate <= now) {
+                    // Activa pero la fecha de fin ya pasó, esperando la tarea cron
+                    statusText = 'Finalizada (Pendiente de Cron)';
+                    statusClass = 'info-message';
                 } else if (auction.status === 'active') {
+                    // Todavía activa y la fecha de fin está en el futuro
                     statusText = 'Activa';
                     statusClass = 'info-message';
+                } else {
+                    // Fallback para cualquier estado inesperado
+                    statusText = 'Desconocido';
+                    statusClass = 'info-message'; 
                 }
 
                 row.innerHTML = `
@@ -372,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAuthUI();
     } else {
         console.log('[DEBUG] No token found in URL, updating UI based on localStorage.'); // DEBUG
-        updateAuthUI(); // [CORRECCIÓN DE DUPLICACIÓN] Esta es la única llamada para la carga inicial si no hay token en la URL
+        updateAuthUI(); // Esta es la única llamada para la carga inicial si no hay token en la URL
     }
 
     // --- Lógica de Scroll Suave (mantener como estaba) ---
@@ -597,6 +601,4 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
-    // [CORRECCIÓN DE DUPLICACIÓN] Se elimina la llamada redundante a updateAuthUI()
-    // updateAuthUI();
 });
