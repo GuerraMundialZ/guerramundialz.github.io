@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAuthUI();
     } else {
         console.log('[DEBUG] No token found in URL, updating UI based on localStorage.'); // DEBUG
-        updateAuthUI(); // Llama a updateAuthUI al final para configurar la UI inicial
+        updateAuthUI(); // [CORRECCIÓN DE DUPLICACIÓN] Esta es la única llamada para la carga inicial si no hay token en la URL
     }
 
     // --- Lógica de Scroll Suave (mantener como estaba) ---
@@ -597,6 +597,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
-    // Llama a updateAuthUI al final para configurar la UI inicial
-    updateAuthUI();
+    // [CORRECCIÓN DE DUPLICACIÓN] Se elimina la llamada redundante a updateAuthUI()
+    // updateAuthUI();
 });
