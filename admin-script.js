@@ -412,10 +412,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[DEBUG] Token encontrado en la URL, estableciendo token y actualizando UI.'); // DEBUG
         setAuthToken(token);
         window.history.replaceState({}, document.title, window.location.pathname);
-        updateAuthUI();
+        // updateAuthUI(); // [ELIMINADO] Llamada redundante
     } else {
         console.log('[DEBUG] No token found in URL, updating UI based on localStorage.'); // DEBUG
-        updateAuthUI(); // Esta es la única llamada para la carga inicial si no hay token en la URL
+        // updateAuthUI(); // [ELIMINADO] Llamada redundante
     }
 
     // --- Lógica de Scroll Suave (mantener como estaba) ---
