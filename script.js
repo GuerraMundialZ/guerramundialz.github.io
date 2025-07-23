@@ -1,18 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded en script.js'); // Línea de depuración 1
+
     // URL de tu backend de Render
     const BACKEND_URL = 'https://guerra-mundial-z-backend.onrender.com'; // Asegúrate de que esta URL sea correcta
 
     // Importar Socket.IO
     // Asegúrate de añadir <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> en tu subastas.html
+    // ¡Esta línea es CRÍTICA para que Socket.IO funcione y el resto del script no falle!
     const socket = io(BACKEND_URL); // Conectar al servidor de Socket.IO
+    console.log('Socket.IO conectado:', socket); // Línea de depuración 2
 
     // Referencias a elementos del DOM (autenticación)
     const loginButton = document.getElementById('login-button');
+    console.log('Elemento loginButton:', loginButton); // Línea de depuración 3
+
     const logoutButton = document.getElementById('logout-button');
     const userDisplay = document.getElementById('user-display');
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
-    const adminPanelBtnNav = document.getElementById('admin-panel-btn-nav');     // Botón "Panel Admin" en la navegación
+    const adminPanelBtnNav = document.getElementById('admin-panel-btn-nav');
 
     // Referencias para la sección de subastas activas (subastas.html)
     const activeAuctionsList = document.getElementById('active-auctions-list');
@@ -86,20 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función para formatear cantidades de dinero con separador de miles (punto) y decimales (solo si son necesarios)
     function formatCurrency(amount) {
-        // Usa 'es-ES' para el formato base (punto para miles, coma para decimales)
         const formatter = new Intl.NumberFormat('es-ES', {
-            minimumFractionDigits: 0, // Por defecto, 0 decimales
-            maximumFractionDigits: 2, // Máximo 2 decimales
-            useGrouping: true // Habilita el separador de miles
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+            useGrouping: true
         });
-
-        let formatted = formatter.format(amount);
-
-        // Si el número es un entero (ej. 12.00), Intl.NumberFormat con minimumFractionDigits: 0
-        // ya lo formatearía como "12". Si tiene decimales, los mostrará (ej. 12,50).
-        // No se necesita lógica adicional para eliminar ",00" si se usa minimumFractionDigits: 0.
-
-        return formatted;
+        return formatter.format(amount);
     }
 
     // Función para actualizar la UI de autenticación
@@ -160,9 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función para iniciar sesión (redirección a Discord OAuth)
     if (loginButton) {
+        console.log('Adjuntando listener de clic al loginButton.'); // Línea de depuración 4
         loginButton.addEventListener('click', () => {
+            console.log('Botón de inicio de sesión clicado. Redirigiendo a Discord OAuth.'); // Línea de depuración 5
             window.location.href = `${BACKEND_URL}/auth/discord`;
         });
+    } else {
+        console.error('Botón de inicio de sesión no encontrado con ID "login-button".'); // Línea de depuración 6
     }
 
     // Función para cerrar sesión
@@ -234,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (bidInput) bidInput.disabled = true;
                 clearInterval(countdownIntervals[auctionId]); // Limpiar el intervalo
                 delete countdownIntervals[auctionId]; // Eliminar del objeto de intervalos
-                // No recargar loadActiveAuctions() aquí, ya que el evento socket.io 'auctionUpdated' se encargará.
+                loadActiveAuctions(); // Recargar para mostrar el estado finalizado
                 return;
             }
 
