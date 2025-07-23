@@ -81,14 +81,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // [INICIO DE CAMBIOS] Función para formatear cantidades de dinero con separador de miles (punto) y dos decimales (coma)
+    // [INICIO DE CAMBIOS] Función para formatear cantidades de dinero con separador de miles (punto) y decimales (solo si son necesarios)
     function formatCurrency(amount) {
-        // Usamos 'es-ES' para el formato español: punto como separador de miles, coma como separador decimal.
-        return new Intl.NumberFormat('es-ES', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+        // Usa 'es-ES' para el formato base (punto para miles, coma para decimales)
+        const formatter = new Intl.NumberFormat('es-ES', {
+            minimumFractionDigits: 0, // Por defecto, 0 decimales
+            maximumFractionDigits: 2, // Máximo 2 decimales
             useGrouping: true // Habilita el separador de miles
-        }).format(amount);
+        });
+
+        let formatted = formatter.format(amount);
+
+        // Si el número es un entero (ej. 12.00), Intl.NumberFormat con minimumFractionDigits: 0
+        // ya lo formatearía como "12". Si tiene decimales, los mostrará (ej. 12,50).
+        // No se necesita lógica adicional para eliminar ",00" si se usa minimumFractionDigits: 0.
+
+        return formatted;
     }
     // [FIN DE CAMBIOS]
 
@@ -345,9 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const updatedAuction = result.auction;
                                 const card = document.querySelector(`.auction-card[data-id="${updatedAuction._id}"]`);
                                 if (card) {
-                                    // [INICIO DE CAMBIOS] Usar formatCurrency para la visualización
+                                    // Usar formatCurrency para la visualización
                                     card.querySelector('.current-bid').textContent = `${formatCurrency(updatedAuction.currentBid)} Rublos`;
-                                    // [FIN DE CAMBIOS]
                                     card.querySelector('.current-bidder').innerHTML = `Pujador actual: <strong>${updatedAuction.currentBidderName}</strong>`;
                                     // Actualizar el valor mínimo del input de puja
                                     card.querySelector('.bid-input').min = (updatedAuction.currentBid + 0.01).toFixed(2);
