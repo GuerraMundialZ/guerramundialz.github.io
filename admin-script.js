@@ -698,6 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const response = await fetch(`${BACKEND_URL}/api/auctions/${auctionToDeleteId}`, {
                         method: 'DELETE',
                         headers: {
+                            'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         }
                     });
