@@ -8,7 +8,7 @@
     <link rel="icon" href="img/logo.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-    <!-- Add the Socket.IO library here -->
+    <!-- Añadir la librería de Socket.IO aquí -->
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body class="subpage-body">
@@ -90,7 +90,10 @@
                         <thead>
                             <tr>
                                 <th>Título</th>
+                                <th>Creador</th>
+                                <th>Puja Inicial</th>
                                 <th>Puja Actual</th>
+                                <th>Pujador Actual</th>
                                 <th>Finaliza</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
@@ -113,29 +116,37 @@
             <form id="edit-auction-form" class="admin-form">
                 <input type="hidden" id="edit-auction-id">
                 <div class="form-group">
-                    <label for="edit-title">Título:</label>
-                    <input type="text" id="edit-title" required>
+                    <label for="edit-auction-title">Título:</label>
+                    <input type="text" id="edit-auction-title" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit-description">Descripción:</label>
-                    <textarea id="edit-description" rows="5" required></textarea>
+                    <label for="edit-auction-description">Descripción:</label>
+                    <textarea id="edit-auction-description" rows="5" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="edit-image-url">URL de la Imagen:</label>
-                    <input type="url" id="edit-image-url" placeholder="Opcional">
+                    <label for="edit-auction-image-url">URL de la Imagen:</label>
+                    <input type="url" id="edit-auction-image-url" placeholder="Opcional">
                 </div>
                 <div class="form-group">
-                    <label for="edit-start-bid">Puja Inicial:</label>
+                    <label for="edit-auction-start-bid">Puja Inicial:</label>
                     <!-- CHANGE: step="5000" for increments of 5000 -->
-                    <input type="number" id="edit-start-bid" min="0" step="5000" required>
+                    <input type="number" id="edit-auction-start-bid" min="0" step="5000" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit-end-date">Fecha y Hora de Finalización:</label>
-                    <input type="datetime-local" id="edit-end-date" required>
+                    <label for="edit-auction-current-bid">Puja Actual:</label>
+                    <input type="number" id="edit-auction-current-bid" min="0" step="0.01" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit-status">Estado:</label>
-                    <select id="edit-status">
+                    <label for="edit-auction-current-bidder-name">Pujador Actual:</label>
+                    <input type="text" id="edit-auction-current-bidder-name" placeholder="N/A si no hay pujas">
+                </div>
+                <div class="form-group">
+                    <label for="edit-auction-end-date">Fecha y Hora de Finalización:</label>
+                    <input type="datetime-local" id="edit-auction-end-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-auction-status">Estado:</label>
+                    <select id="edit-auction-status">
                         <option value="active">Activa</option>
                         <option value="finalized">Finalizada</option>
                         <option value="cancelled">Cancelada</option>
@@ -158,6 +169,19 @@
                 <button id="cancel-delete-btn" class="button button-secondary">Cancelar</button>
             </div>
             <p id="delete-auction-message" class="message" style="display: none;"></p>
+        </div>
+    </div>
+
+    <!-- Modal for General Confirmation (e.g., Finalize Auction) -->
+    <div id="general-confirm-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 id="general-confirm-title"></h3>
+            <p id="general-confirm-message"></p>
+            <div class="modal-actions">
+                <button id="general-confirm-action-btn" class="button"></button>
+                <button id="general-cancel-btn" class="button button-secondary">Cancelar</button>
+            </div>
         </div>
     </div>
 
