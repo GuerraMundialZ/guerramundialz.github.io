@@ -729,25 +729,22 @@ a:hover {
     border-radius: 5px;
     font-weight: bold;
     text-align: center;
-    /* [CORRECCIÓN DE VISIBILIDAD] Se elimina display: none; de la clase base .message */
+    display: none; /* Por defecto oculto, JS lo mostrará */
 }
 
 .message.success, .success-message { /* Combinado para consistencia */
     background-color: var(--success-color);
     color: var(--text-color-dark); /* Texto oscuro para contraste en fondo claro */
-    display: inline-block; /* [CORRECCIÓN DE VISIBILIDAD] */
 }
 
 .message.error, .error-message { /* Combinado para consistencia */
     background-color: var(--error-color);
     color: white;
-    display: inline-block; /* [CORRECCIÓN DE VISIBILIDAD] */
 }
 
 .message.info-message { /* Para mensajes de información/carga */
     background-color: var(--info-color);
     color: var(--text-color-dark);
-    display: inline-block; /* [CORRECCIÓN DE VISIBILIDAD] */
 }
 
 
