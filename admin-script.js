@@ -27,9 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const editTitleInput = document.getElementById('edit-title');
     const editDescriptionInput = document.getElementById('edit-description');
     const editImageUrlInput = document.getElementById('edit-image-url');
+    // CORRECCIÓN: Se corrigió la asignación de la variable editStartBidInput
     const editStartBidInput = document.getElementById('edit-start-bid');
     const editEndDateInput = document.getElementById('edit-end-date');
-    // CORRECCIÓN: Se corrigió la asignación de la variable editStatusSelect
     const editStatusSelect = document.getElementById('edit-status');
     const editAuctionMessage = document.getElementById('edit-auction-message');
 
