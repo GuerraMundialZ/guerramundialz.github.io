@@ -595,9 +595,14 @@ a:hover {
 
 .popup-content h3 {
     margin-top: 0;
-    color: var(--accent-color);
+    color: var(--accent-color); /* Color original del título */
     font-size: 1.8em;
     margin-bottom: 15px;
+}
+
+/* FIX: Asegura que el título del modal de error tenga texto blanco */
+.popup-content h3.error-message {
+    color: white; /* Sobrescribe el color del título a blanco cuando es un mensaje de error */
 }
 
 .popup-content p {
@@ -742,7 +747,7 @@ a:hover {
 
 .message.error, .error-message { /* Combinado para consistencia */
     background-color: var(--error-color);
-    color: white; /* FIX: Asegura que el texto sea blanco para que sea visible */
+    color: white;
     display: inline-block; /* ¡IMPORTANTE! Hacer que el span sea visible */
     padding: 5px 10px;
     border-radius: 5px;
