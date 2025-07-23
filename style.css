@@ -11,152 +11,51 @@
     --discord-brand-color: #5865F2; /* Color azul de Discord */
     --discord-brand-color-dark: #454FBF; /* Versión más oscura para hover */
     --error-color: #f04747; /* Color rojo para errores/logout */
-    --text-color-dark: #1a1a1a; /* Color oscuro para el texto de los botones popup y éxito */
+    --text-color-dark: #1a1a1a; /* Color oscuro para el texto de los botones popup */
     --text-color-light: #cccccc; /* Color claro para el texto/icono de cierre popup */
     /* Nuevas variables para mensajes de éxito/error */
     --success-color: #4CAF50; /* Verde para mensajes de éxito */
-    --info-color: #2196F3; /* Azul para información */
+    --info-color: #2196F3; /* Azul para mensajes informativos */
 }
 
-/* Estilos Generales */
+/* Base */
 body {
     font-family: var(--font-secondary);
-    /* Restaurado el fondo original del body */
     background-image: url('img/fondoweb.jpg');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-color: var(--bg-color-primary); /* Color de respaldo si la imagen no carga */
+    background-color: var(--bg-color-primary);
 
     color: var(--text-color);
     margin: 0;
     line-height: 1.6;
     scroll-behavior: smooth;
-    /* Asegurado que no haya display:flex o flex-direction:column aquí que afecte el flujo global */
+    /* Hemos eliminado el padding-top del body general para que scroll-margin-top gestione el espacio en navegación interna */
 }
 
-.subpage-body {
-    padding-top: 150px; /* Mantener este padding para subpáginas con encabezado fijo */
-    background-color: var(--bg-color-secondary); /* Un color ligeramente diferente para subpáginas */
+/* Esta regla es para las subpáginas que cargan directamente y tienen el header fijo */
+body.subpage-body {
+    padding-top: 150px; /* Mantengo este valor, que funciona para subastas */
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    width: 100%;
-    box-sizing: border-box;
 }
 
-h1, h2, h3 {
-    font-family: var(--font-primary);
-    color: var(--accent-color);
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-p {
-    margin-bottom: 10px;
-}
-
-a {
-    color: var(--accent-color);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-a:hover {
-    color: var(--dark-accent-color);
-}
-
-.button {
-    display: inline-block;
-    background-color: var(--accent-color);
-    color: var(--text-color);
-    padding: 10px 20px;
-    border-radius: 8px;
-    text-transform: uppercase;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-    font-size: 0.9em;
-}
-
-.button:hover {
-    background-color: var(--dark-accent-color);
-    transform: translateY(-2px);
-}
-
-.button:active {
-    transform: translateY(0);
-}
-
-.button:disabled {
-    background-color: #555;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-.button.discord-login-button {
-    background-color: var(--discord-brand-color);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 15px;
-}
-
-.button.discord-login-button:hover {
-    background-color: var(--discord-brand-color-dark);
-}
-
-.button-small {
-    padding: 5px 10px;
-    font-size: 0.8em;
-    border-radius: 5px;
-    margin: 2px;
-}
-
-.button-edit {
-    background-color: var(--info-color);
-}
-.button-edit:hover {
-    background-color: #1a7bbd;
-}
-
-.button-danger {
-    background-color: var(--error-color);
-}
-.button-danger:hover {
-    background-color: #c43030;
-}
-
-.button-finalize {
-    background-color: #f39c12; /* Naranja */
-}
-.button-finalize:hover {
-    background-color: #e67e22;
-}
-
-.button-secondary {
-    background-color: #555;
-}
-.button-secondary:hover {
-    background-color: #444;
-}
-
-/* Header */
+/* Encabezado (Header) */
 .header {
     background-color: rgba(26, 26, 26, 0.9); /* Un poco transparente */
     color: var(--text-color);
     padding: 15px 0;
-    position: fixed; /* Restaurado a 'fixed' como en tu original */
+    position: fixed;
     width: 100%;
     top: 0;
     left: 0;
-    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    z-index: 1000;
     box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     backdrop-filter: blur(5px); /* Efecto de desenfoque */
 }
@@ -519,7 +418,6 @@ p {
     font-size: 0.9em;
     text-align: center;
     border-top: 1px solid #333;
-    /* Asegurado que no haya margin-top:auto que afecte el flujo */
 }
 
 .footer p {
@@ -701,8 +599,8 @@ a:hover {
 }
 
 
-/* --- NUEVOS ESTILOS PARA LA SECCIÓN DE SUBASTAS Y ADMIN --- */
-.admin-section { /* Renombrado de .admin-panel para ser más general */
+/* --- NUEVOS ESTILOS PARA LA SECCIÓN DE SUBASTAS --- */
+.admin-panel {
     background-color: var(--bg-color-secondary);
     border: 2px solid var(--accent-color);
     border-radius: 8px;
@@ -712,10 +610,10 @@ a:hover {
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
 
-.admin-section h2, .admin-section h3 { /* Ajuste para títulos dentro de secciones admin */
+.admin-panel h3 {
     color: var(--accent-color);
     font-family: var(--font-primary);
-    font-size: 2em; /* Un poco más pequeño que los h1/h2 principales */
+    font-size: 1.8em;
     margin-top: 0;
     margin-bottom: 25px;
     text-align: center;
@@ -724,7 +622,6 @@ a:hover {
 /* Estilos para los mensajes de formulario (éxito/error) */
 .message {
     padding: 10px 15px;
-    margin-top: 15px; /* Ajustado para que no se pegue al elemento anterior */
     margin-bottom: 15px;
     border-radius: 5px;
     font-weight: bold;
@@ -732,24 +629,18 @@ a:hover {
     display: none; /* Por defecto oculto, JS lo mostrará */
 }
 
-.message.success, .success-message { /* Combinado para consistencia */
+.message.success {
     background-color: var(--success-color);
     color: var(--text-color-dark); /* Texto oscuro para contraste en fondo claro */
 }
 
-.message.error, .error-message { /* Combinado para consistencia */
+.message.error {
     background-color: var(--error-color);
     color: white;
 }
 
-.message.info-message { /* Para mensajes de información/carga */
-    background-color: var(--info-color);
-    color: var(--text-color-dark);
-}
-
-
-/* Estilos de la Modal (General para todas las modales) */
-.modal {
+/* Estilos de la Modal de Creación de Subastas */
+#create-auction-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -763,7 +654,7 @@ a:hover {
     display: none; /* Oculto por defecto, JS lo mostrará */
 }
 
-.modal .modal-content {
+#create-auction-modal .modal-content {
     background-color: var(--bg-color-primary);
     padding: 30px;
     border-radius: 10px;
@@ -775,7 +666,7 @@ a:hover {
     text-align: left; /* Restablecer el texto a la izquierda dentro de la modal */
 }
 
-.modal .modal-content .close-button {
+#create-auction-modal .modal-content .close-button {
     position: absolute;
     top: 10px;
     right: 15px;
@@ -786,11 +677,11 @@ a:hover {
     transition: color 0.2s ease;
 }
 
-.modal .modal-content .close-button:hover {
+#create-auction-modal .modal-content .close-button:hover {
     color: var(--accent-color);
 }
 
-.modal h3 {
+#create-auction-modal h3 {
     color: var(--accent-color);
     font-family: var(--font-primary);
     font-size: 2em;
@@ -799,24 +690,22 @@ a:hover {
     text-align: center;
 }
 
-/* Form Styles (General para formularios de admin y creación de subastas) */
-.admin-form .form-group {
+.auction-form .form-group {
     margin-bottom: 20px;
 }
 
-.admin-form label {
+.auction-form label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
     color: var(--text-color);
 }
 
-.admin-form input[type="text"],
-.admin-form input[type="url"],
-.admin-form input[type="number"],
-.admin-form input[type="datetime-local"],
-.admin-form textarea,
-.admin-form select { /* Añadido select para el estado de la subasta */
+.auction-form input[type="text"],
+.auction-form input[type="url"],
+.auction-form input[type="number"],
+.auction-form input[type="datetime-local"],
+.auction-form textarea {
     width: calc(100% - 20px);
     padding: 10px;
     border: 1px solid #555;
@@ -827,12 +716,12 @@ a:hover {
     box-sizing: border-box; /* Incluye padding en el ancho */
 }
 
-.admin-form textarea {
+.auction-form textarea {
     resize: vertical; /* Permite redimensionar verticalmente */
     min-height: 80px;
 }
 
-.admin-form button[type="submit"] {
+.auction-form button[type="submit"] {
     display: block;
     width: 100%;
     padding: 15px;
@@ -846,61 +735,11 @@ a:hover {
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.admin-form button[type="submit"]:hover {
+.auction-form button[type="submit"]:hover {
     background-color: var(--dark-accent-color);
     transform: translateY(-2px);
 }
 
-/* Estilos para la tabla de administración de subastas */
-.table-responsive {
-    overflow-x: auto; /* Permite el scroll horizontal en tablas grandes */
-    margin-top: 20px;
-}
-
-.admin-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background-color: var(--bg-color-primary);
-    border-radius: 8px;
-    overflow: hidden; /* Para que los bordes redondeados se apliquen al contenido */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
-
-.admin-table th,
-.admin-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #444;
-}
-
-.admin-table th {
-    background-color: var(--accent-color);
-    color: var(--bg-color-primary);
-    font-family: var(--font-primary);
-    text-transform: uppercase;
-    font-size: 0.9em;
-}
-
-.admin-table tbody tr:nth-child(even) {
-    background-color: #222; /* Fila par */
-}
-
-.admin-table tbody tr:hover {
-    background-color: #3a3a3a; /* Resaltar fila al pasar el ratón */
-}
-
-.admin-table td {
-    color: var(--text-color-light);
-    vertical-align: middle;
-}
-
-.admin-table td:last-child {
-    white-space: nowrap; /* Evita que los botones se rompan en varias líneas */
-}
-
-
-/* Estilos para las tarjetas de subasta en subastas.html */
 .auction-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -953,17 +792,9 @@ a:hover {
     color: var(--text-color);
 }
 
-.auction-card .current-bid {
-    font-family: var(--font-primary);
-    font-size: 1.8em;
-    color: var(--accent-color);
-    margin-bottom: 15px;
-    display: block;
-}
-
 .auction-card .countdown {
     font-weight: bold;
-    color: var(--info-color); /* Color azul para el contador */
+    color: var(--accent-color);
     font-size: 1.1em;
     margin-bottom: 15px;
     display: block; /* Para que ocupe su propia línea */
