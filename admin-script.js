@@ -82,25 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 5000); // Ocultar después de 5 segundos
     }
 
-    // [INICIO DE CAMBIOS] Función para formatear cantidades de dinero con separador de miles (punto) y decimales (solo si son necesarios)
-    function formatCurrency(amount) {
-        // Usa 'es-ES' para el formato base (punto para miles, coma para decimales)
-        const formatter = new Intl.NumberFormat('es-ES', {
-            minimumFractionDigits: 0, // Por defecto, 0 decimales
-            maximumFractionDigits: 2, // Máximo 2 decimales
-            useGrouping: true // Habilita el separador de miles
-        });
-
-        let formatted = formatter.format(amount);
-
-        // Si el número es un entero (ej. 12.00), Intl.NumberFormat con minimumFractionDigits: 0
-        // ya lo formatearía como "12". Si tiene decimales, los mostrará (ej. 12,50).
-        // No se necesita lógica adicional para eliminar ",00" si se usa minimumFractionDigits: 0.
-
-        return formatted;
-    }
-    // [FIN DE CAMBIOS]
-
     // Función para cargar todas las subastas para el panel de administración
     async function loadAdminAuctions() {
         console.log('[DEBUG] loadAdminAuctions: Cargando subastas para admin...'); // DEBUG
@@ -178,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 row.innerHTML = `
                     <td>${auction.title}</td>
-                    <td>${formatCurrency(auction.currentBid)} Rublos ${auction.currentBidderName ? `(${auction.currentBidderName})` : ''}</td>
+                    <td>${auction.currentBid.toFixed(2)} Rublos ${auction.currentBidderName ? `(${auction.currentBidderName})` : ''}</td>
                     <td>${formattedEndDate}</td>
                     <td><span class="message ${statusClass}">${statusText}</span></td>
                     <td>
@@ -238,11 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const formattedDate = date.toISOString().slice(0, 16);
             editEndDateInput.value = formattedDate;
             editStatusSelect.value = auction.status;
-
-            // [INICIO DE CAMBIOS] Asegurar que el input de puja inicial tenga step="5000"
-            editStartBidInput.step = "5000";
-            editStartBidInput.min = "0"; // Asegurar que el mínimo sea 0
-            // [FIN DE CAMBIOS]
 
             editAuctionMessage.style.display = 'none';
             editAuctionModal.style.display = 'flex';
@@ -453,14 +429,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                // [INICIO DE CAMBIOS] Validar que la puja inicial sea un múltiplo de 5000
-                if (startBid % 5000 !== 0) {
-                    showMessage(createAuctionMessage, 'La puja inicial debe ser un múltiplo de 5.000 Rublos.', 'error');
-                    console.log('[DEBUG] createAuctionForm: Puja inicial no es múltiplo de 5000.');
-                    return;
-                }
-                // [FIN DE CAMBIOS]
-
                 const token = getAuthToken();
                 if (!token) {
                     showMessage(createAuctionMessage, 'Debes iniciar sesión para crear una subasta.', 'error');
@@ -535,14 +503,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     status: editStatusSelect.value
                 };
                 console.log('[DEBUG] editAuctionForm: Datos a actualizar:', updatedData);
-
-                // [INICIO DE CAMBIOS] Validar que la puja inicial sea un múltiplo de 5000 al editar
-                if (updatedData.startBid % 5000 !== 0) {
-                    showMessage(editAuctionMessage, 'La puja inicial debe ser un múltiplo de 5.000 Rublos.', 'error');
-                    console.log('[DEBUG] editAuctionForm: Puja inicial no es múltiplo de 5000.');
-                    return;
-                }
-                // [FIN DE CAMBIOS]
 
                 const token = getAuthToken();
                 if (!token) {
