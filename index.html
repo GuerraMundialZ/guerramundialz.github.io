@@ -22,20 +22,12 @@
                     <a id="login-button" class="button discord-login-button" href="#">
                         <i class="fab fa-discord"></i> Iniciar Sesión
                     </a>
-                    <!-- Contenedor para el avatar, nombre y el menú desplegable -->
-                    <div id="user-dropdown-wrapper" class="user-dropdown-wrapper" style="display: none;">
-                        <div id="user-display" class="user-info">
-                            <img id="user-avatar" src="" alt="Avatar de usuario">
-                            <span id="user-name"></span>
-                            <i class="fas fa-caret-down dropdown-arrow"></i> <!-- Flecha para indicar desplegable -->
-                        </div>
-                        <div id="user-dropdown-content" class="user-dropdown-content">
-                            <!-- Botón de Panel Admin, ahora dentro del desplegable -->
-                            <button id="admin-panel-btn-nav" class="button dropdown-item" style="display: none;">Panel Admin</button>
-                            <!-- Botón de Cerrar Sesión, ahora dentro del desplegable -->
-                            <button id="logout-button" class="button dropdown-item logout-button">Cerrar Sesión</button>
-                        </div>
+                    <div id="user-display" class="user-info" style="display: none;">
+                        <img id="user-avatar" src="" alt="Avatar de usuario">
+                        <span id="user-name"></span>
                     </div>
+                    <button id="logout-button" class="button logout-button" style="display: none;">Cerrar Sesión</button>
+                    <button id="admin-panel-btn-nav" class="button" style="display: none;">Panel Admin</button>
                 </div>
             </div>
 
