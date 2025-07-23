@@ -8,7 +8,7 @@
     <link rel="icon" href="img/logo.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-    <!-- Añadir la librería de Socket.IO aquí -->
+    <!-- Add the Socket.IO library here -->
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body class="subpage-body">
@@ -69,7 +69,7 @@
                     </div>
                     <div class="form-group">
                         <label for="auction-start-bid">Puja Inicial (Rublos):</label>
-                        <!-- CAMBIO: step="5000" para incrementos de 5000 -->
+                        <!-- CHANGE: step="5000" for increments of 5000 -->
                         <input type="number" id="auction-start-bid" min="0" step="5000" required>
                     </div>
                     <div class="form-group">
@@ -97,7 +97,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Las subastas se cargarán aquí -->
+                            <!-- Auctions will be loaded here -->
                         </tbody>
                     </table>
                 </div>
@@ -105,7 +105,7 @@
         </div>
     </main>
 
-    <!-- Modal para Editar Subasta -->
+    <!-- Modal for Editing Auction -->
     <div id="edit-auction-modal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
@@ -126,7 +126,7 @@
                 </div>
                 <div class="form-group">
                     <label for="edit-start-bid">Puja Inicial:</label>
-                    <!-- CAMBIO: step="5000" para incrementos de 5000 -->
+                    <!-- CHANGE: step="5000" for increments of 5000 -->
                     <input type="number" id="edit-start-bid" min="0" step="5000" required>
                 </div>
                 <div class="form-group">
@@ -147,7 +147,7 @@
         </div>
     </div>
 
-    <!-- Modal para Confirmación de Eliminación -->
+    <!-- Modal for Delete Confirmation -->
     <div id="confirm-delete-modal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
@@ -167,7 +167,7 @@
             <p><a href="https://youtu.be/dQw4w9WgXcQ?si=h80lQTUMHSiquPd-" target="_blank">💣GMZ💣</a></p> </div>
     </footer>
 
-    <!-- ¡CORRECCIÓN CRÍTICA AQUÍ! Cambiado de script.js a admin-script.js -->
+    <!-- CRITICAL FIX HERE! Changed from script.js to admin-script.js -->
     <script src="admin-script.js"></script>
 </body>
 </html>

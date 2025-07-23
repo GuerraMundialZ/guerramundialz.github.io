@@ -25,7 +25,7 @@
                         <img id="user-avatar" src="" alt="Avatar de usuario">
                         <span id="user-name"></span>
                     </div>
-                    <!-- Botones de sesión y admin, ahora fuera de user-info pero dentro de discord-auth-section -->
+                    <!-- Session and admin buttons, now outside user-info but inside discord-auth-section -->
                     <button id="logout-button" class="button logout-button" style="display: none;">Cerrar Sesión</button>
                     <button id="admin-panel-btn-nav" class="button" style="display: none;">Panel Admin</button>
                 </div>
@@ -54,13 +54,13 @@
             <p id="auctions-loading-message" class="message info-message" style="display: none;">Cargando subastas...</p>
             <p id="auctions-error-message" class="message error-message" style="display: none;"></p>
             <div id="active-auctions-list" class="auction-grid">
-                <!-- Las tarjetas de subasta se cargarán aquí dinámicamente mediante JavaScript -->
+                <!-- Auction cards will be loaded here dynamically via JavaScript -->
             </div>
             <p id="no-auctions-message" class="message info-message" style="display: none;">No hay subastas activas en este momento. ¡Vuelve pronto!</p>
         </div>
     </main>
 
-    <!-- Modal para mensajes de puja -->
+    <!-- Modal for bid messages -->
     <div id="bid-message-modal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
@@ -79,7 +79,7 @@
         </div>
     </footer>
 
-    <!-- ¡IMPORTANTE! Añadir la librería de Socket.IO aquí -->
+    <!-- IMPORTANT! Add the Socket.IO library here -->
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script src="script.js"></script>
 </body>
