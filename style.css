@@ -742,7 +742,7 @@ a:hover {
 
 .message.error, .error-message { /* Combinado para consistencia */
     background-color: var(--error-color);
-    color: white;
+    color: white; /* FIX: Asegura que el texto sea blanco para que sea visible */
     display: inline-block; /* ¡IMPORTANTE! Hacer que el span sea visible */
     padding: 5px 10px;
     border-radius: 5px;
