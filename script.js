@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Content Loaded en script.js'); // Debugging line 1
+    console.log('DOM Content Loaded en script.js'); // Línea de depuración 1
 
     // URL de tu backend de Render
-    const BACKEND_URL = 'https://guerra-mundial-z-backend.onrender.com'; // Make sure this URL is correct
+    const BACKEND_URL = 'https://guerra-mundial-z-backend.onrender.com'; // Asegúrate de que esta URL sea correcta
 
     // Import Socket.IO
     // Make sure to add <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> in your subastas.html
@@ -32,260 +32,221 @@ document.addEventListener('DOMContentLoaded', () => {
     const bidModalMessage = document.getElementById('bid-modal-message');
     const bidModalCloseBtn = document.getElementById('bid-modal-close-btn');
 
-    // Object to store countdown intervals for each auction
+    // Stores countdown intervals to clear them
     const countdownIntervals = {};
 
-    // Function to get the Discord authentication token from localStorage
-    function getAuthToken() {
-        return localStorage.getItem('discord_token');
-    }
-
-    // Function to save the Discord authentication token to localStorage
-    function saveAuthToken(token) {
-        localStorage.setItem('discord_token', token);
-    }
-
-    // Function to remove the Discord authentication token from localStorage
-    function removeAuthToken() {
-        localStorage.removeItem('discord_token');
-    }
-
-    // Function to show a modal message
-    function showModalMessage(title, message, type) {
-        bidModalTitle.textContent = title;
-        bidModalMessage.textContent = message;
-        bidMessageModal.style.display = 'block';
-
-        // Apply styles based on message type
-        bidModalTitle.className = ''; // Reset classes
-        bidModalMessage.className = ''; // Reset classes
-        if (type === 'success') {
-            bidModalTitle.classList.add('success-text');
-        } else if (type === 'error') {
-            bidModalTitle.classList.add('error-text');
-        } else if (type === 'info') {
-            bidModalTitle.classList.add('info-text');
+    // Function to save the JWT token
+    function setAuthToken(token) {
+        if (token) {
+            localStorage.setItem('jwtToken', token);
+        } else {
+            localStorage.removeItem('jwtToken');
         }
     }
 
-    // Close bid message modal
-    if (bidModalCloseBtn) {
-        bidModalCloseBtn.addEventListener('click', () => {
+    // Function to get the JWT token
+    function getAuthToken() {
+        return localStorage.getItem('jwtToken');
+    }
+
+    // Function to decode the JWT token and get user information
+    function parseJwt(token) {
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        } catch (e) {
+            console.error("Error parsing JWT:", e);
+            return null;
+        }
+    }
+
+    // Function to display messages in a modal (used for bids)
+    function showModalMessage(title, message, type = 'info') {
+        bidModalTitle.textContent = title;
+        // Adjust the class for the modal title color
+        bidModalTitle.className = type === 'success' ? 'success-message' : (type === 'error' ? 'error-message' : 'info-message');
+        bidModalMessage.textContent = message;
+        bidMessageModal.style.display = 'flex'; // Use flex for centering
+    }
+
+    // Close message modal
+    if (bidMessageModal) {
+        bidMessageModal.querySelector('.close-button').addEventListener('click', () => {
             bidMessageModal.style.display = 'none';
+        });
+        if (bidModalCloseBtn) {
+            bidModalCloseBtn.addEventListener('click', () => {
+                bidMessageModal.style.display = 'none';
+            });
+        }
+        window.addEventListener('click', (event) => {
+            if (event.target === bidMessageModal) {
+                bidMessageModal.style.display = 'none';
+            }
         });
     }
 
-    // Close modal when clicking outside
-    window.addEventListener('click', (event) => {
-        if (event.target === bidMessageModal) {
-            bidMessageModal.style.display = 'none';
-        }
-    });
+    // Function to format currency amounts with thousands separator (dot) and decimals (only if necessary)
+    function formatCurrency(amount) {
+        // Use 'es-ES' for the base format (dot for thousands, comma for decimals)
+        const formatter = new Intl.NumberFormat('es-ES', {
+            minimumFractionDigits: 0, // By default, 0 decimals
+            maximumFractionDigits: 2, // Maximum 2 decimals
+            useGrouping: true // Enable thousands separator
+        });
+        return formatter.format(amount);
+    }
 
-    // Function to update the authentication UI
+    // Function to update authentication UI
     async function updateAuthUI() {
         const token = getAuthToken();
         if (token) {
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/auth/user`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (response.ok) {
-                    const user = await response.json();
-                    userName.textContent = user.username;
-                    userAvatar.src = user.avatarUrl;
-                    userDisplay.style.display = 'flex';
-                    loginButton.style.display = 'none';
-                    logoutButton.style.display = 'block';
+            const decodedToken = parseJwt(token);
+            if (decodedToken && decodedToken.id) {
+                // Check if the token has expired
+                const currentTime = Date.now() / 1000;
+                if (decodedToken.exp < currentTime) {
+                    console.log("Token expired. Logging out automatically.");
+                    logoutUser();
+                    return;
+                }
 
-                    // Show admin panel button if the user is an admin
-                    if (user.isAdmin) {
+                const userId = decodedToken.id;
+                const username = decodedToken.username || 'Usuario';
+                const avatar = decodedToken.avatar ? `https://cdn.discordapp.com/avatars/${userId}/${decodedToken.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/${parseInt(userId) % 5}.png`;
+                const isAdminUser = decodedToken.isAdmin; // Assuming the token contains isAdmin
+
+                userAvatar.src = avatar;
+                userName.textContent = username;
+                userDisplay.style.display = 'flex';
+                loginButton.style.display = 'none';
+                logoutButton.style.display = 'block';
+
+                // Show/hide Admin Panel button
+                if (adminPanelBtnNav) {
+                    if (isAdminUser) {
                         adminPanelBtnNav.style.display = 'block';
                     } else {
                         adminPanelBtnNav.style.display = 'none';
                     }
-                } else {
-                    console.error('Failed to fetch user data:', response.statusText);
-                    logoutUser(); // Log out if token is invalid
                 }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                logoutUser(); // Log out on network error
+
+                // Redirect if on admin page and not admin
+                if (window.location.pathname.includes('admin.html') && !isAdminUser) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+            } else {
+                logoutUser(); // Invalid or incomplete token
             }
         } else {
             userDisplay.style.display = 'none';
             loginButton.style.display = 'block';
             logoutButton.style.display = 'none';
-            adminPanelBtnNav.style.display = 'none'; // Hide admin button if not logged in
+            if (adminPanelBtnNav) adminPanelBtnNav.style.display = 'none'; // Ensure it's hidden if no token
+
+            // Redirect if no token and on admin page
+            if (window.location.pathname.includes('admin.html')) {
+                window.location.href = 'index.html';
+            }
         }
     }
 
-    // Function to log out the user
-    function logoutUser() {
-        removeAuthToken();
-        updateAuthUI();
-        // Redirect to home or refresh page if necessary
-        if (window.location.pathname.includes('admin.html')) {
-            window.location.href = 'index.html'; // Redirect admin to home if logged out
-        }
-    }
-
-    // Add event listeners for login/logout buttons
+    // Function to log in (redirect to Discord OAuth)
     if (loginButton) {
+        console.log('Attaching click listener to loginButton.'); // Debugging line 4
         loginButton.addEventListener('click', () => {
-            // Redirect to backend Discord login endpoint
-            window.location.href = `${BACKEND_URL}/api/auth/discord`;
+            console.log('Login button clicked. Redirecting to Discord OAuth.'); // Debugging line 5
+            window.location.href = `${BACKEND_URL}/auth/discord`;
         });
+    } else {
+        console.error('Login button not found with ID "login-button".'); // Debugging line 6
+    }
+
+    // Function to log out
+    function logoutUser() {
+        setAuthToken(null);
+        updateAuthUI();
+        // Redirect to main page if logging out from subastas.html or admin.html
+        if (window.location.pathname.includes('subastas.html') || window.location.pathname.includes('admin.html')) {
+            window.location.href = 'index.html';
+        }
     }
 
     if (logoutButton) {
         logoutButton.addEventListener('click', logoutUser);
     }
 
-    // Handle Discord callback
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    if (token) {
-        saveAuthToken(token);
-        // Clean URL after saving token
-        window.history.replaceState({}, document.title, window.location.pathname);
-        updateAuthUI();
-    } else {
-        updateAuthUI(); // Update UI on page load
+    // Add listener for "Admin Panel" button
+    if (adminPanelBtnNav) {
+        adminPanelBtnNav.addEventListener('click', () => {
+            window.location.href = 'admin.html'; // Redirect to the administration page
+        });
     }
 
-    // --- Auction specific logic (subastas.html) ---
-    if (activeAuctionsList) {
-        // Function to format time remaining
-        function formatTimeRemaining(ms) {
-            if (ms <= 0) return 'Finalizada';
-            const seconds = Math.floor((ms / 1000) % 60);
-            const minutes = Math.floor((ms / (1000 * 60)) % 60);
-            const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
-            const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+    // Handle Discord OAuth callback
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token) {
+        setAuthToken(token);
+        // Clear the URL so the token is not visible
+        window.history.replaceState({}, document.title, window.location.pathname);
+        updateAuthUI(); // Update UI after getting the token
+    } else {
+        updateAuthUI(); // Update UI on page load if no token in URL
+    }
 
-            let parts = [];
-            if (days > 0) parts.push(`${days}d`);
-            if (hours > 0) parts.push(`${hours}h`);
-            if (minutes > 0) parts.push(`${minutes}m`);
-            if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`); // Show seconds even if 0 if no other parts
+    // --- Smooth Scroll Logic (keep as is) ---
+    document.querySelectorAll('.header nav ul li a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
 
-            return parts.join(' ');
-        }
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
 
-        // Function to update countdown for a specific auction
+            if (targetElement) {
+                const header = document.querySelector('.header');
+                const headerHeight = header ? header.offsetHeight : 0;
+
+                const targetPosition = targetElement.offsetTop - headerHeight;
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // --- Specific logic for the auctions page (subastas.html) ---
+    if (window.location.pathname.includes('subastas.html')) {
+
+        // Function to update the auction countdown
         function updateCountdown(auctionId, endDate, countdownElement, bidButton, bidInput) {
             const now = new Date().getTime();
-            const distance = new Date(endDate).getTime() - now;
+            const distance = endDate - now;
 
             if (distance < 0) {
-                countdownElement.textContent = 'Finalizada';
-                countdownElement.classList.add('finalized');
+                countdownElement.innerHTML = '¡Finalizada!';
                 if (bidButton) bidButton.disabled = true;
                 if (bidInput) bidInput.disabled = true;
-                clearInterval(countdownIntervals[auctionId]); // Clear interval once finished
-                delete countdownIntervals[auctionId];
+                clearInterval(countdownIntervals[auctionId]); // Clear the interval
+                delete countdownIntervals[auctionId]; // Remove from the intervals object
+                loadActiveAuctions(); // Reload to show finalized status
                 return;
             }
 
-            countdownElement.textContent = formatTimeRemaining(distance);
-            countdownElement.classList.remove('finalized'); // Ensure class is removed if auction becomes active again
-            if (bidButton) bidButton.disabled = false;
-            if (bidInput) bidInput.disabled = false;
-        }
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        // Function to create an auction card HTML
-        function createAuctionCard(auction) {
-            const card = document.createElement('div');
-            card.className = 'auction-card';
-            card.dataset.id = auction._id; // Store auction ID in data attribute
-
-            const endDate = new Date(auction.endDate);
-            const now = new Date();
-            const isEnded = endDate <= now;
-            const statusClass = isEnded ? 'finalized' : ''; // Initial status class
-
-            const currentBidDisplay = auction.currentBidderName ?
-                `Pujador actual: <strong>${auction.currentBidderName}</strong>` :
-                'Sé el primero en pujar!';
-
-            card.innerHTML = `
-                <img src="${auction.imageUrl}" alt="${auction.title}" class="auction-image" onerror="this.onerror=null;this.src='https://placehold.co/400x300/333/FFF?text=Imagen+no+disponible';">
-                <h3 class="auction-title">${auction.title}</h3>
-                <p class="auction-description">${auction.description}</p>
-                <div class="auction-details">
-                    <p>Puja inicial: <strong>${auction.startBid.toFixed(2)} Rublos</strong></p>
-                    <p>Puja actual: <strong class="current-bid">${auction.currentBid.toFixed(2)} Rublos</strong></p>
-                    <p class="current-bidder">${currentBidDisplay}</p>
-                    <p>Finaliza en: <span class="countdown ${statusClass}" data-end-date="${auction.endDate}"></span></p>
-                </div>
-                <div class="bid-controls">
-                    <input type="number" step="0.01" min="${(auction.currentBid + 0.01).toFixed(2)}" placeholder="Tu puja" class="bid-input" ${isEnded ? 'disabled' : ''}>
-                    <button class="button bid-button" data-id="${auction._id}" ${isEnded ? 'disabled' : ''}>Pujar</button>
-                </div>
-            `;
-
-            const countdownElement = card.querySelector('.countdown');
-            const bidButton = card.querySelector('.bid-button');
-            const bidInput = card.querySelector('.bid-input');
-
-            // Initialize countdown
-            if (!isEnded) {
-                // Clear any existing interval for this auction before setting a new one
-                if (countdownIntervals[auction._id]) {
-                    clearInterval(countdownIntervals[auction._id]);
-                }
-                countdownIntervals[auction._id] = setInterval(() => {
-                    updateCountdown(auction._id, auction.endDate, countdownElement, bidButton, bidInput);
-                }, 1000);
-            }
-            // Initial call to set the countdown text immediately
-            updateCountdown(auction._id, auction.endDate, countdownElement, bidButton, bidInput);
-
-            // Add event listener for bid button
-            if (bidButton) {
-                bidButton.addEventListener('click', async () => {
-                    const bidAmount = parseFloat(bidInput.value);
-                    const token = getAuthToken();
-
-                    if (!token) {
-                        showModalMessage('Error de Autenticación', 'Necesitas iniciar sesión para pujar.', 'error');
-                        return;
-                    }
-
-                    if (isNaN(bidAmount) || bidAmount <= auction.currentBid) {
-                        showModalMessage('Puja Inválida', `Tu puja debe ser mayor que la puja actual (${auction.currentBid.toFixed(2)} Rublos).`, 'error');
-                        return;
-                    }
-
-                    try {
-                        const response = await fetch(`${BACKEND_URL}/api/auctions/${auction._id}/bid`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${token}`
-                            },
-                            body: JSON.stringify({ bidAmount })
-                        });
-
-                        const result = await response.json();
-
-                        if (response.ok) {
-                            showModalMessage('Puja Exitosa', result.message, 'success');
-                            // The Socket.IO listener will handle updating the UI for this bid
-                            // No need to manually update here, as the 'auctionUpdated' event will trigger
-                        } else {
-                            showModalMessage('Error de Puja', result.message || 'Error al realizar la puja.', 'error');
-                        }
-                    } catch (error) {
-                        console.error('Error placing bid:', error);
-                        showModalMessage('Error de Conexión', 'Error al conectar con el servidor para realizar la puja.', 'error');
-                    }
-                });
-            }
-            return card;
+            countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
         }
 
         // Function to load active auctions
@@ -293,31 +254,135 @@ document.addEventListener('DOMContentLoaded', () => {
             auctionsLoadingMessage.style.display = 'block';
             auctionsErrorMessage.style.display = 'none';
             noAuctionsMessage.style.display = 'none';
-            activeAuctionsList.innerHTML = ''; // Clear previous auctions
+            activeAuctionsList.innerHTML = ''; // Clear the auction list
 
-            // Clear all existing countdown intervals before reloading
-            for (const auctionId in countdownIntervals) {
-                clearInterval(countdownIntervals[auctionId]);
-                delete countdownIntervals[auctionId];
+            // Clear all existing intervals before reloading
+            for (const id in countdownIntervals) {
+                clearInterval(countdownIntervals[id]);
             }
+            Object.keys(countdownIntervals).forEach(key => delete countdownIntervals[key]);
+
 
             try {
+                // Call the new /api/auctions/active route
                 const response = await fetch(`${BACKEND_URL}/api/auctions/active`);
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                const auctions = await response.json();
 
+                const auctions = await response.json();
                 auctionsLoadingMessage.style.display = 'none';
 
                 if (auctions.length === 0) {
                     noAuctionsMessage.style.display = 'block';
-                } else {
-                    auctions.forEach(auction => {
-                        const card = createAuctionCard(auction);
-                        activeAuctionsList.appendChild(card);
-                    });
+                    return;
                 }
+
+                auctions.forEach(auction => {
+                    const auctionCard = document.createElement('div');
+                    auctionCard.className = 'auction-card';
+                    auctionCard.dataset.id = auction._id; // Store the auction ID
+
+                    const endDate = new Date(auction.endDate).getTime();
+                    const now = new Date().getTime();
+                    const isEnded = auction.status === 'finalized' || auction.status === 'cancelled' || endDate < now;
+
+                    // Calculate the minimum value for the next bid
+                    // Ensure the minimum is an integer and a multiple of 5000
+                    const nextMinBid = Math.floor(auction.currentBid / 5000) * 5000 + 5000;
+
+                    auctionCard.innerHTML = `
+                        <img src="${auction.imageUrl}" alt="${auction.title}" onerror="this.onerror=null;this.src='https://placehold.co/300x200?text=No+Image';">
+                        <div class="auction-card-content">
+                            <h3>${auction.title}</h3>
+                            <p>${auction.description}</p>
+                            <p>Puja actual: <span class="current-bid">${formatCurrency(auction.currentBid)} Rublos</span></p>
+                            <p class="current-bidder">${auction.currentBidderName ? `Pujador actual: <strong>${auction.currentBidderName}</strong>` : 'Sé el primero en pujar!'}</p>
+                            <p class="countdown" data-end-date="${auction.endDate}"></p>
+                            <div class="bid-controls">
+                                <input type="number" class="bid-input" placeholder="Tu puja" min="${nextMinBid}" step="5000" ${isEnded ? 'disabled' : ''}>
+                                <button class="button bid-button" data-id="${auction._id}" ${isEnded ? 'disabled' : ''}>Pujar</button>
+                            </div>
+                        </div>
+                    `;
+                    activeAuctionsList.appendChild(auctionCard);
+
+                    const countdownElement = auctionCard.querySelector('.countdown');
+                    const bidButton = auctionCard.querySelector('.bid-button');
+                    const bidInput = auctionCard.querySelector('.bid-input');
+
+                    // Start/update the countdown
+                    if (!isEnded) {
+                        updateCountdown(auction._id, endDate, countdownElement, bidButton, bidInput); // Initial call
+                        countdownIntervals[auction._id] = setInterval(() => {
+                            updateCountdown(auction._id, endDate, countdownElement, bidButton, bidInput);
+                        }, 1000);
+                    } else {
+                        countdownElement.innerHTML = '¡Finalizada!';
+                    }
+                });
+
+                // Add event listeners to bid buttons
+                activeAuctionsList.querySelectorAll('.bid-button').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const auctionId = e.target.dataset.id;
+                        const bidInput = e.target.closest('.bid-controls').querySelector('.bid-input');
+                        const bidAmount = parseInt(bidInput.value); // Convert to integer
+
+                        if (isNaN(bidAmount) || bidAmount <= 0) {
+                            showModalMessage('Error de Puja', 'Por favor, introduce una cantidad de puja válida y positiva.', 'error');
+                            return;
+                        }
+                        // Validate that the bid is a multiple of 5000 and greater than the current bid
+                        const currentBidElement = e.target.closest('.auction-card-content').querySelector('.current-bid');
+                        // Clean the text to get only the number and convert to integer
+                        const currentBid = parseInt(currentBidElement.textContent.replace(/[^0-9]/g, ''));
+
+                        if (bidAmount <= currentBid) {
+                            showModalMessage('Error de Puja', `Tu puja (${formatCurrency(bidAmount)} Rublos) debe ser mayor que la puja actual (${formatCurrency(currentBid)} Rublos).`, 'error');
+                            return;
+                        }
+
+                        // The bid must be an increment of 5000 over the current bid
+                        if ((bidAmount - currentBid) % 5000 !== 0) {
+                             showModalMessage('Error de Puja', `Tu puja debe ser un incremento de 5.000 Rublos sobre la puja actual.`, 'error');
+                             return;
+                        }
+
+                        // Get the logged-in user's token
+                        const token = getAuthToken();
+                        if (!token) {
+                            showModalMessage('Error de Autenticación', 'Debes iniciar sesión para realizar una puja.', 'error');
+                            return;
+                        }
+
+                        try {
+                            const response = await fetch(`${BACKEND_URL}/api/auctions/${auctionId}/bid`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                                body: JSON.stringify({ bidAmount })
+                            });
+
+                            const result = await response.json();
+
+                            if (response.ok) {
+                                showModalMessage('Puja Exitosa', result.message, 'success');
+                                // UI update will be handled via Socket.IO event
+                                bidInput.value = ''; // Clear input after bidding
+                            } else {
+                                showModalMessage('Error de Puja', result.message || 'Error al realizar la puja.', 'error');
+                            }
+                        } catch (error) {
+                            console.error('Error placing bid:', error);
+                            showModalMessage('Error de Conexión', 'Error al conectar con el servidor para realizar la puja.', 'error');
+                        }
+                    });
+                });
+
             } catch (error) {
                 console.error('Error loading active auctions:', error);
                 auctionsLoadingMessage.style.display = 'none';
@@ -327,42 +392,42 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // --- Socket.IO Real-time updates for auctions ---
+        // Logic to handle real-time auction updates
         socket.on('auctionUpdated', (updatedAuction) => {
-            console.log('Subasta actualizada en tiempo real:', updatedAuction);
+            console.log('Auction updated in real time:', updatedAuction);
             const card = document.querySelector(`.auction-card[data-id="${updatedAuction._id}"]`);
             if (card) {
-                // Update existing card
-                const currentBidElement = card.querySelector('.current-bid');
-                const currentBidderElement = card.querySelector('.current-bidder');
+                // Update card elements with new information
+                card.querySelector('.current-bid').textContent = `${formatCurrency(updatedAuction.currentBid)} Rublos`;
+                card.querySelector('.current-bidder').innerHTML = updatedAuction.currentBidderName ? `Pujador actual: <strong>${updatedAuction.currentBidderName}</strong>` : 'Sé el primero en pujar!';
+                
+                // Update the minimum value of the bid input
+                // Ensure the minimum is an integer and a multiple of 5000
+                const nextMinBid = Math.floor(updatedAuction.currentBid / 5000) * 5000 + 5000;
+                card.querySelector('.bid-input').min = nextMinBid;
+
+
                 const countdownElement = card.querySelector('.countdown');
-                const bidInput = card.querySelector('.bid-input');
                 const bidButton = card.querySelector('.bid-button');
+                const bidInput = card.querySelector('.bid-input');
 
-                if (currentBidElement) currentBidElement.textContent = `${updatedAuction.currentBid.toFixed(2)} Rublos`;
-                if (currentBidderElement) {
-                    currentBidderElement.innerHTML = updatedAuction.currentBidderName ?
-                        `Pujador actual: <strong>${updatedAuction.currentBidderName}</strong>` :
-                        'Sé el primero en pujar!';
-                }
-
-                // Update countdown and button/input states
-                const endDate = new Date(updatedAuction.endDate);
-                const now = new Date();
-                const isEnded = endDate <= now;
+                const endDate = new Date(updatedAuction.endDate).getTime();
+                const now = new Date().getTime();
+                const isEnded = updatedAuction.status === 'finalized' || updatedAuction.status === 'cancelled' || endDate < now;
 
                 if (isEnded) {
-                    countdownElement.textContent = 'Finalizada';
-                    countdownElement.classList.add('finalized');
+                    countdownElement.innerHTML = '¡Finalizada!';
                     if (bidButton) bidButton.disabled = true;
                     if (bidInput) bidInput.disabled = true;
-                    clearInterval(countdownIntervals[updatedAuction._id]);
+                    clearInterval(countdownIntervals[updatedAuction._id]); // Clear interval if ended
                     delete countdownIntervals[updatedAuction._id];
+                    // If the auction has ended, reload to ensure it is removed or the winner is shown
+                    loadActiveAuctions();
                 } else {
-                    // If the auction was finalized but now active again (e.g., admin changed status)
-                    // or if it's an active auction getting updated
+                    // If the auction is still active, ensure the counter is updated
+                    // and buttons are enabled
                     if (!countdownIntervals[updatedAuction._id]) {
-                        // Start new interval if it doesn't exist
+                        updateCountdown(updatedAuction._id, endDate, countdownElement, bidButton, bidInput);
                         countdownIntervals[updatedAuction._id] = setInterval(() => {
                             updateCountdown(updatedAuction._id, endDate, countdownElement, bidButton, bidInput);
                         }, 1000);
@@ -370,8 +435,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (bidButton) bidButton.disabled = false;
                     if (bidInput) bidInput.disabled = false;
                 }
-                if (bidInput) bidInput.min = (updatedAuction.currentBid + 0.01).toFixed(2);
-                if (bidInput) bidInput.value = ''; // Clear the input after a bid
             } else if (updatedAuction.status === 'active') {
                 // If the auction does not exist in the list and is active, reload to add it (new auction)
                 loadActiveAuctions();
@@ -380,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Logic to handle real-time auction deletion
         socket.on('auctionDeleted', (deletedAuctionId) => {
-            console.log('Subasta eliminada en tiempo real:', deletedAuctionId);
+            console.log('Auction deleted in real time:', deletedAuctionId);
             const card = document.querySelector(`.auction-card[data-id="${deletedAuctionId}"]`);
             if (card) {
                 // Clear the interval of the deleted auction
