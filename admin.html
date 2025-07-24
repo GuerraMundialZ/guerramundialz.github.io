@@ -69,7 +69,7 @@
                     </div>
                     <div class="form-group">
                         <label for="auction-start-bid">Puja Inicial (Rublos):</label>
-                        <!-- CHANGE: step="5000" for increments of 5000 -->
+                        <!-- CAMBIO: step="5000" para incrementos de 5000 -->
                         <input type="number" id="auction-start-bid" min="0" step="5000" required>
                     </div>
                     <div class="form-group">
@@ -90,17 +90,14 @@
                         <thead>
                             <tr>
                                 <th>Título</th>
-                                <th>Creador</th>
-                                <th>Puja Inicial</th>
                                 <th>Puja Actual</th>
-                                <th>Pujador Actual</th>
                                 <th>Finaliza</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Auctions will be loaded here -->
+                            <!-- Las subastas se cargarán aquí -->
                         </tbody>
                     </table>
                 </div>
@@ -108,7 +105,7 @@
         </div>
     </main>
 
-    <!-- Modal for Editing Auction -->
+    <!-- Modal para Editar Subasta -->
     <div id="edit-auction-modal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
@@ -116,37 +113,29 @@
             <form id="edit-auction-form" class="admin-form">
                 <input type="hidden" id="edit-auction-id">
                 <div class="form-group">
-                    <label for="edit-auction-title">Título:</label>
-                    <input type="text" id="edit-auction-title" required>
+                    <label for="edit-title">Título:</label>
+                    <input type="text" id="edit-title" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit-auction-description">Descripción:</label>
-                    <textarea id="edit-auction-description" rows="5" required></textarea>
+                    <label for="edit-description">Descripción:</label>
+                    <textarea id="edit-description" rows="5" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="edit-auction-image-url">URL de la Imagen:</label>
-                    <input type="url" id="edit-auction-image-url" placeholder="Opcional">
+                    <label for="edit-image-url">URL de la Imagen:</label>
+                    <input type="url" id="edit-image-url" placeholder="Opcional">
                 </div>
                 <div class="form-group">
-                    <label for="edit-auction-start-bid">Puja Inicial:</label>
-                    <!-- CHANGE: step="5000" for increments of 5000 -->
-                    <input type="number" id="edit-auction-start-bid" min="0" step="5000" required>
+                    <label for="edit-start-bid">Puja Inicial:</label>
+                    <!-- CAMBIO: step="5000" para incrementos de 5000 -->
+                    <input type="number" id="edit-start-bid" min="0" step="5000" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit-auction-current-bid">Puja Actual:</label>
-                    <input type="number" id="edit-auction-current-bid" min="0" step="0.01" required>
+                    <label for="edit-end-date">Fecha y Hora de Finalización:</label>
+                    <input type="datetime-local" id="edit-end-date" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit-auction-current-bidder-name">Pujador Actual:</label>
-                    <input type="text" id="edit-auction-current-bidder-name" placeholder="N/A si no hay pujas">
-                </div>
-                <div class="form-group">
-                    <label for="edit-auction-end-date">Fecha y Hora de Finalización:</label>
-                    <input type="datetime-local" id="edit-auction-end-date" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-auction-status">Estado:</label>
-                    <select id="edit-auction-status">
+                    <label for="edit-status">Estado:</label>
+                    <select id="edit-status">
                         <option value="active">Activa</option>
                         <option value="finalized">Finalizada</option>
                         <option value="cancelled">Cancelada</option>
@@ -158,7 +147,7 @@
         </div>
     </div>
 
-    <!-- Modal for Delete Confirmation -->
+    <!-- Modal para Confirmación de Eliminación -->
     <div id="confirm-delete-modal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
@@ -172,26 +161,13 @@
         </div>
     </div>
 
-    <!-- Modal for General Confirmation (e.g., Finalize Auction) -->
-    <div id="general-confirm-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h3 id="general-confirm-title"></h3>
-            <p id="general-confirm-message"></p>
-            <div class="modal-actions">
-                <button id="general-confirm-action-btn" class="button"></button>
-                <button id="general-cancel-btn" class="button button-secondary">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
     <footer class="footer">
         <div class="container">
             <p>© 2022-2025 Guerra Mundial Z - Servidor de DayZ. Todos los derechos reservados.</p>
             <p><a href="https://youtu.be/dQw4w9WgXcQ?si=h80lQTUMHSiquPd-" target="_blank">💣GMZ💣</a></p> </div>
     </footer>
 
-    <!-- CRITICAL FIX HERE! Changed from script.js to admin-script.js -->
+    <!-- ¡CORRECCIÓN CRÍTICA AQUÍ! Cambiado de script.js a admin-script.js -->
     <script src="admin-script.js"></script>
 </body>
 </html>
